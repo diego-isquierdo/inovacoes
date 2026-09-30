@@ -14,7 +14,7 @@
 
 | No repositório (`painel-servicos-tecnicos/…`) | Origem no computador (`%USERPROFILE%\OneDrive - Starian\Projuris\Diego\Inovações\…`) |
 |---|---|
-| `MAPA.md`, `PLANEJAMENTO.md`, `LOG.md` | `Painel de Gestão\Serviços Técnicos\` |
+| `MAPA.md`, `PLANEJAMENTO.md`, `LOG.md`, `MAPA_MELHORIAS_INDICADORES.md` | `Painel de Gestão\Serviços Técnicos\` |
 | `extracao/*.md` | `Painel de Gestão\Serviços Técnicos\extracao\` |
 | `automacao/*.ps1`, `*.vbs`, `*.md`, `poc/poc_botao.html` | `Painel de Gestão\Serviços Técnicos\automacao\` |
 | `painel/painel_v1.html` | `Painel de Gestão\Serviços Técnicos\painel\` (fonte do artefato) |
@@ -34,7 +34,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\enviar_github.ps1         
 
 ## Rotina para uma nova versão
 
-**Pelo Claude** (com o repositório autorizado na sessão): ele copia as versões em uso, atualiza o LOG, faz o commit, cria a etiqueta e envia.
+**Por enquanto o versionamento é manual** (decisão do Diego, 30/09/2026): o Claude não faz commits. As mudanças são validadas primeiro, e só depois o Diego versiona pelo computador.
 
 **Pelo computador** (com o git instalado e um clone local):
 
@@ -50,3 +50,4 @@ O script copia os arquivos da tabela acima para o clone, mostra o `git status` e
 | Etiqueta | Data | Conteúdo |
 |---|---|---|
 | `painel-st-v0.5.0` | 30/09/2026 | Primeira versão versionada: extrações validadas, automação no Windows (Agendador + vigia), painel com 9 abas (S&OP geral, S&OP por squad, Plano de Ação com Análise real), PoC do botão validada, mensageiro e coleta criados (falta liberar as pastas das tarefas e validar o clique real) |
+| (sem etiqueta) | 30/09/2026 | Commit a pedido do Diego: Fase 7.1–7.3 (SLA, forecast, tendência), Plano de Ação com "quando estabiliza" e "automação das ativações", mapa de melhorias dos indicadores |

@@ -31,6 +31,7 @@ $mapa = @(
     @("$ST\automacao\poc\poc_botao.html", "automacao\poc\poc_botao.html"),
     @("$ST\painel\painel_v1.html", "painel\painel_v1.html"),
     @("$ST\README.md", "README.md"), @("$ST\VERSIONAMENTO.md", "VERSIONAMENTO.md"),
+    @("$ST\MAPA_MELHORIAS_INDICADORES.md", "MAPA_MELHORIAS_INDICADORES.md"),
     @("$ST\tarefas\README.md", "tarefas\README.md"),
     @("$ST\ferramentas\sincronizar_repo.ps1", "ferramentas\sincronizar_repo.ps1"),
     @("$ST\ferramentas\enviar_github.ps1", "ferramentas\enviar_github.ps1"),

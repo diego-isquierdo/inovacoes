@@ -69,7 +69,7 @@ Plano: [`automacao/PLANEJAMENTO_BOTAO_ATUALIZAR.md`](automacao/PLANEJAMENTO_BOTA
 - ✅ Execução das 12:30 mantida (o botão libera depois de ~17:30)
 - ✅ 5.0 Provas de conceito (30/09): botão agenda a tarefa (update_trigger + run_once_at), a execução roda com o computador, pedido lido do banco, ciclo em 2 min 21 s, sem aprovações
 - ✅ 5.1 (validada 30/09: pedido atendido em 2 min 1 s, hibernação e manifesto ok) Vigia do Windows + ajustes no `atualizar_bases.ps1` (trava, estado, manifesto, origem)
-- 🔄 5.2 (montada 30/09; falta liberar pastas das tarefas) Tarefa "Mensageiro do painel" (modos pedido e coleta 07:50/12:50)
+- ✅ 5.2 (coleta validada 30/09: bases carregadas com sha256, arquivos antigos apagados) Tarefa "Mensageiro do painel" (modos pedido e coleta 07:50/12:50)
 - 🔄 5.3 (publicado 30/09, versão 7) Botão no painel com hibernação de 5 h (`cfg/atualizacao`)
 - ⏳ 5.4 Validação contra a carga manual
 - ⏳ 5.5 (opcional) Atalho mais rápido no desktop via MCP local
@@ -80,7 +80,20 @@ Plano: [`automacao/PLANEJAMENTO_BOTAO_ATUALIZAR.md`](automacao/PLANEJAMENTO_BOTA
 - ✅ `.gitignore` bloqueia segredos (`.env`), bases, **planilhas das extrações** (`*.xlsx`), logs e estados de execução
 - ✅ `VERSIONAMENTO.md` (plano, mapa origem → repositório, rotina) e `ferramentas/sincronizar_repo.ps1`
 - ✅ Etiqueta `painel-st-v0.5.0`
-- ⏳ A cada marco: sincronizar, registrar no LOG e criar a etiqueta
+- ⏳ A cada marco: sincronizar, registrar no LOG e criar a etiqueta — **manualmente pelo Diego e só depois de validar** (decisão de 30/09: o Claude não faz commits)
+
+## Fase 7 — Indicadores de gestão operacional ⏳ (planejada em 30/09/2026)
+
+Mapa: [`MAPA_MELHORIAS_INDICADORES.md`](MAPA_MELHORIAS_INDICADORES.md). Decisões: esforço pela média da subcategoria (saldo por ticket), data planejada sugerida pelo painel e ajustável à mão, priorização por formulário no painel, SLA em dias corridos sem pausa ("próximo" = últimos 25% do prazo).
+
+- 🔄 7.1 (publicada 30/09, versão 8; linha de base reproduzida — aguarda validação) Motor de cálculo (tipo de serviço, SLA, saldo, situação) — aceite: reproduzir a linha de base de 30/09 (863 · 431 · 100/30/733)
+- 🔄 7.2 (publicada 30/09, aguarda validação) Forecast (3 meses completos ÷ 3, por tipo) e tendência de 6 meses
+- 🔄 7.3 (publicada 30/09, aguarda validação) Aba SLA + colunas de SLA no Backlog
+- ⏳ 7.4 Carteira por analista
+- ⏳ 7.5 Planejamento semanal (plano sugerido + ajuste manual em `plano/{ticket}`)
+- ⏳ 7.6 Priorização (formulário + impacto no plano)
+- ⏳ 7.7 Visão executiva (8 perguntas)
+- ⏳ 7.8 Validação com o Diego (versionamento manual depois do aceite)
 
 ## Pendências e riscos em aberto
 

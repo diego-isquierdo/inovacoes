@@ -37,8 +37,9 @@ portal "Customizações & Estratégia":
 | Referência da API do Painel de Serviços | `MCP Painel de Serviços\OpenAI.json` (OpenAPI 3.1) e skill `integrar-painel-servicos-projuris` | Contratos de apontamentos, relatórios, capacidade, calendário |
 | MCP do Painel de Serviços | `%USERPROFILE%\.claude\mcp-servers\painel-servicos\` (cópia em `MCP Painel de Serviços\mcp_server\`) | O `.env` da cópia é usado pela extração de horas |
 | **Painel (v1)** | Artefato "Painel Serviços Técnicos" (claude.ai) · fonte em [`painel/painel_v1.html`](painel/painel_v1.html) | Bases carregadas como arquivos do artefato; parâmetros e time no banco (`cfg/params`, `cfg/bases`) |
+| **Melhorias de indicadores (Fase 7)** | [`MAPA_MELHORIAS_INDICADORES.md`](MAPA_MELHORIAS_INDICADORES.md) | SLA por tipo, forecast, carteira por analista, planejamento semanal, priorização, visão executiva (planejado) |
 | **Tarefas agendadas do Claude** | Mensageiro (botão) e Coleta (07:50/12:50) · ver [`tarefas/README.md`](tarefas/README.md) no repositório | Roteiro em [`automacao/mensageiro_prompt.md`](automacao/mensageiro_prompt.md) |
-| **Versionamento (GitHub)** | https://github.com/diego-isquierdo/inovacoes · pasta `painel-servicos-tecnicos/` | Só código e documentação; nunca `.env`, bases, planilhas ou logs. Rotina em [`VERSIONAMENTO.md`](VERSIONAMENTO.md) (no repositório) |
+| **Versionamento (GitHub)** | https://github.com/diego-isquierdo/inovacoes · pasta `painel-servicos-tecnicos/` | Só código e documentação; nunca `.env`, bases, planilhas ou logs. **Versionamento manual pelo Diego, só depois de validar** (decisão de 30/09). Rotina em [`VERSIONAMENTO.md`](VERSIONAMENTO.md) |
 | Protótipo visual (canvas) | Artefato "Dashboard · Backlog de Serviços Técnicos" (claude.ai) | Estudo de layout com dados estáticos de 28/09; não é o painel final |
 | Modelo de referência | Artefato "Customizações & Estratégia" (claude.ai) | Portal vivo com banco, sincronização agendada e S&OP |
 

@@ -9,6 +9,119 @@ muda o entendimento do projeto.
 Modelo de entrada:
 
 ```
+## 2026-09-30 — Novo commit no GitHub (pedido do Diego)
+
+- O commit reúne o que foi feito depois de `painel-st-v0.5.0`:
+  - Fase 7.1 a 7.3: motor de SLA, forecast e tendência, aba SLA, colunas no Backlog;
+  - Plano de Ação: "Quando a operação estabiliza" e "Cenário: automação das ativações";
+  - `MAPA_MELHORIAS_INDICADORES.md`;
+  - documentação atualizada (MAPA, PLANEJAMENTO, LOG, VERSIONAMENTO).
+- Sem etiqueta nova: a etiqueta `painel-st-v0.6.0` fica para o aceite da Fase 7.
+- Continuam fora do repositório: planilhas, bases, `.env`, logs e estados.
+
+## 2026-09-30 — Plano de Ação: cenário "automação das ativações" + validação da atualização automática (painel versão 10)
+
+- **Novo quadro "Cenário: automação das ativações"**, logo abaixo de "Quando a operação estabiliza". Tudo o que já existia foi mantido.
+  - Usa a mesma simulação semanal e a mesma ordem de atendimento.
+  - A partir do mês de corte, entram só as ativações não automatizadas.
+  - Mostra 2 variantes (o time ainda limpa o backlog de ativações × a automação também absorve esse backlog) para 4, 3 e 2 analistas.
+- **Premissas novas, editáveis:** % de ativações automatizadas (padrão 100%) e mês de início (padrão mês 3 = dez/26).
+- **Resultado (bases de 30/09):**
+  - entradas depois do corte: 69 tickets e 335 h por mês, o equivalente a **2,8 pessoas**;
+  - com 4 analistas, estabiliza em **fev/27** (absorve) ou **abr/27** (limpa) e depois fica ~73% ocupado (folga de ~131 h/mês);
+  - com 3 analistas, não estabiliza em 18 meses;
+  - com 2 analistas, a capacidade fica abaixo das entradas.
+- **Validação da atualização a cada extração:**
+  - Todas as análises da aba são recalculadas a partir das bases carregadas (`cfg/bases`): veredito, alavancas, quando estabiliza, automação, análise real, volume, peso por demanda, balanceamento e outras análises.
+  - Quando o mensageiro (botão ou coleta 07:50/12:50) grava bases novas, a página recarrega sozinha (escuta `cfg/bases`) e refaz os cálculos. As simulações usam a data do dia.
+  - **Teste**: rodei a aba com as bases de 29/09 e de 30/09. Os números mudaram com a base (backlog 794 → 863; déficit 461 → 491 h/mês; fila de ativações 649 → 713; fila ativa no corte 51 → 67), e o forecast ficou igual, porque os meses completos são os mesmos (jun–ago).
+  - **Corrigido na revisão**: 4 textos fixos passaram a vir dos dados:
+    - "hoje: 2 e 2" → composição atual dos squads;
+    - "(jun/2026)" → 1º mês com apontamento;
+    - "60 dias" e "últimos 2 meses" → janela configurada.
+  - As premissas (reduções, dias, contratação, meta, automação) são parâmetros do usuário e não mudam com a extração.
+- Nenhum commit (versionamento manual).
+
+## 2026-09-30 — Plano de Ação: "Quando a operação estabiliza" (painel versão 9)
+
+- O Diego não encontrava no Plano de Ação quando a operação volta a entregar ao menos 80% no prazo. Essa visão não existia e foi criada.
+- **Novo quadro, logo abaixo do veredito.** Simula a fila ativa semana a semana por 18 meses:
+  - parte de 431 tickets e 664 h de saldo;
+  - entradas pelo forecast (319 tickets e 585 h por mês);
+  - atendimento na ordem do plano (vence antes, sai antes);
+  - entrega no prazo = concluída até a data limite do SLA do tipo.
+  - "Estabiliza" é o 1º mês a partir do qual todos os meses ficam na meta ou acima.
+- **Cenários:**
+  - sem mudanças;
+  - com as ações de eficiência, cada uma entrando no mês do seu prazo;
+  - ações + a menor contratação que estabiliza em até 6 meses;
+  - ações + a contratação das premissas;
+  - só a contratação.
+- **Resultado com as bases de 30/09** (cenário total, contratação a partir do mês 4, 121 h/mês por pessoa):
+
+| Cenário | Capacidade final | Estabiliza (≥ 80% no prazo) | Vencidos zerados |
+|---|---:|---|---|
+| Sem mudanças | 484 h/mês (< 585 h de entrada) | não estabiliza em 18 meses | — |
+| Só as ações de eficiência | 649 h/mês | out/27 (mês 13) | set/27 |
+| Ações + 2 pessoas (mínimo para até 6 meses) | 891 h/mês | mar/27 (mês 6) | fev/27 |
+| Ações + 3 pessoas | 1.012 h/mês | mar/27 (mês 6) | fev/27 |
+| Só 3 pessoas | 847 h/mês | abr/27 (mês 7) | mar/27 |
+
+- **Leitura:** enquanto houver vencidos na fila, eles saem primeiro e contam como fora do prazo. O índice só sobe quando o estoque de vencidos acaba. A condição é a capacidade ficar acima das entradas.
+- **Premissas novas, editáveis:** pessoas a contratar, mês de entrada da contratação e meta de entregas no prazo.
+- Nenhum commit (versionamento manual).
+
+## 2026-09-30 — Fase 7.1 a 7.3 publicadas (painel versão 8), aguardando validação
+
+- **7.1 Motor**: cada ticket passou a ter tipo de serviço, situação ativa, esforço, saldo, prazo de SLA, data limite, situação do SLA e dias de atraso. Nos concluídos, a situação é "no prazo" ou "fora do prazo". Os prazos e o limite de "próximo" são editáveis em Configuração (`cfg/params.sla`).
+  - **Aceite ok**: com as bases de 30/09, os números batem exatamente com a linha de base:
+    - backlog 863, sendo 431 ativos;
+    - 100 dentro do SLA, 30 próximos e 733 vencidos, dos quais 309 ativos;
+    - valores por tipo idênticos aos do mapa.
+- **7.2 Forecast e tendência**: novo cartão no S&OP geral.
+  - Forecast jun–ago = **318,7 tickets por mês**: Ativações 250,0 · Importação de Dados 17,0 · Importação de Anexos 13,7 · Scripts 18,0 · Migrações 19,7. Aparece com a faixa e as horas por mês (585 h).
+  - Vazão prevista = 484 h ÷ 1,84 h = **264 tickets por mês**. As saídas observadas ficam lado a lado (630 · 379 · 142).
+  - Tendência para 6 meses: **cresce** tanto no total (863 → 1.193) quanto no ativo (431 → 761).
+- **7.3 Aba SLA** (nova, depois do Diagnóstico):
+  - selos de dentro, próximo e vencido;
+  - tabelas por tipo de serviço e por analista, com vencidos ativos × aguardando terceiros, atraso mediano e saldo;
+  - faixas de atraso;
+  - concluídos no prazo por mês (desde jun: 466 de 1.581 concluídos no prazo na base toda).
+  - No **Backlog**, entraram as colunas Serviço, SLA, Limite, Atraso e Saldo, os filtros por tipo de serviço e por situação do SLA, 2 selos novos e as mesmas colunas no CSV.
+- Nenhum commit (versionamento manual).
+
+## 2026-09-30 — Planejamento da Fase 7 (indicadores) e versionamento manual
+
+- O Diego levantou 7 frentes para o painel: backlog com saldo por ticket, forecast, SLA por tipo, carteira por analista, planejamento semanal, priorização e visão executiva. O plano completo está em `MAPA_MELHORIAS_INDICADORES.md`.
+- Decisões:
+  - esforço = **média por subcategoria**, sem estimativa individual; o campo "Estimativa (h)" do Freshdesk fica fora;
+  - data planejada **sugerida pelo painel e ajustável à mão**, respeitando o "Data Início" do Freshdesk quando existir;
+  - priorização por **formulário no painel**, com cálculo do impacto;
+  - SLA em **dias corridos desde a abertura, sem pausa**; "próximo do vencimento" = últimos 25% do prazo.
+- Linha de base (bases de 30/09):
+  - backlog de 863 (431 ativos): **733 vencidos (85%)**, 30 próximos e 100 dentro do SLA; 309 dos vencidos estão ativos;
+  - forecast jun–ago de 318,7 por mês (Ativação 250,0 · Dados 17,0 · Anexos 13,7 · Scripts 18,0 · Migrações 19,7);
+  - saídas caindo de 630 (junho) para 142 (agosto);
+  - 86 tickets sem responsável ativo;
+  - "Data Início" preenchido em só 18% do backlog.
+- **Versionamento: manual.** O Claude não faz novos commits. O Diego versiona depois de validar as atualizações. O repositório local do Claude ficou no commit `25656da` (igual ao GitHub).
+
+## 2026-09-30 — Coleta validada: bases de hoje carregadas no painel pelo mensageiro
+
+- Com as pastas liberadas, a coleta disparada às 07:24 (UTC) rodou em cerca de 30 s:
+  - leu o manifesto;
+  - viu que o `cfg/bases` não tinha sha256 e tratou as bases como novas;
+  - conferiu os hashes e enviou as 2 bases (tickets 1,0 MB e 2.444 linhas; horas 4,9 MB e 6.372 apontamentos);
+  - gravou `cfg/bases` com `sha256` e apagou os 2 arquivos antigos (o painel ficou só com os novos, 5,9 MB);
+  - gravou `cfg/atualizacao` ok, com o botão liberado às 07:02 (horário de Brasília).
+- Os SHA-256 no painel conferem com o `manifesto.json` (806b45a3… e c77562f2…).
+- Falta o clique real no botão. Depois da execução das 07:30 do Agendador (e da coleta das 07:50), o botão hiberna até ~12:30. O clique pode ser testado entre 07:02 e 07:30 ou depois de ~17:30.
+
+## 2026-09-30 — GitHub: primeiro envio confirmado
+
+- O Diego rodou `ferramentas\enviar_github.ps1`. O GitHub agora tem `main` = `25656da` e a etiqueta `painel-st-v0.5.0`, iguais ao histórico gerado.
+- Novo teste da coleta às 07:15 (UTC): a execução ainda **não recebeu as pastas**. Continua pendente a liberação do acesso às pastas das tarefas "Mensageiro do painel" e "Coleta do painel" no app desktop.
+
 ## 2026-09-30 — Versionamento no GitHub (`painel-st-v0.5.0`)
 
 - Repositório: https://github.com/diego-isquierdo/inovacoes. Um repositório para todos os projetos de inovação, e o painel na pasta **`painel-servicos-tecnicos/`** (o "sub-repositório", por decisão do Diego).

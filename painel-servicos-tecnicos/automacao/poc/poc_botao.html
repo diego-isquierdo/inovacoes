@@ -1,0 +1,152 @@
+<title>PoC Botão Atualizar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: uma coluna estreita — ação no topo, checklist dos critérios da PoC, linha do tempo do mensageiro; tokens do design system Projuris */
+:root{
+  --background:#FFFFFF;--foreground:#030712;--card:#FFFFFF;--muted:#F4F4F5;--muted-foreground:#64748B;--border:#E5E7EB;
+  --primary:#2563EB;--primary-foreground:#FAFAFA;--destructive:#B91C1C;--success:#15803D;--warning:#C2410C;
+  --tag-green:#DCFCE7;--tag-green-fg:#15803D;--tag-red:#FEE2E2;--tag-red-fg:#B91C1C;--tag-gray:#F4F4F5;--tag-gray-fg:#4B5563;--tag-blue:#DBEAFE;--tag-blue-fg:#1D4ED8;
+  --font:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --background:#09090B;--foreground:#FAFAFA;--card:#18181B;--muted:#27272A;--muted-foreground:#9CA3AF;--border:rgba(255,255,255,.10);
+  --primary:#3B82F6;--primary-foreground:#FAFAFA;--destructive:#EF4444;--success:#22C55E;--warning:#FB923C;
+  --tag-green:#052E16;--tag-green-fg:#86EFAC;--tag-red:#450A0A;--tag-red-fg:#FCA5A5;--tag-gray:#27272A;--tag-gray-fg:#9CA3AF;--tag-blue:#172554;--tag-blue-fg:#93C5FD;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --background:#09090B;--foreground:#FAFAFA;--card:#18181B;--muted:#27272A;--muted-foreground:#9CA3AF;--border:rgba(255,255,255,.10);
+  --primary:#3B82F6;--primary-foreground:#FAFAFA;--destructive:#EF4444;--success:#22C55E;--warning:#FB923C;
+  --tag-green:#052E16;--tag-green-fg:#86EFAC;--tag-red:#450A0A;--tag-red-fg:#FCA5A5;--tag-gray:#27272A;--tag-gray-fg:#9CA3AF;--tag-blue:#172554;--tag-blue-fg:#93C5FD;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--background);color:var(--foreground);font:14px/20px var(--font);margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:16px}
+h1{font-size:22px;line-height:28px;font-weight:600;margin:0;text-wrap:balance}
+h2{font-size:15px;line-height:20px;font-weight:600;margin:0}
+p{margin:0}
+.sub{color:var(--muted-foreground)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:500 14px/20px var(--font);border-radius:8px;padding:10px 16px;border:1px solid var(--border);background:var(--muted);color:var(--foreground);cursor:pointer}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:var(--primary-foreground)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;line-height:16px;font-weight:500;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.chip.ok{background:var(--tag-green);color:var(--tag-green-fg)}
+.chip.bad{background:var(--tag-red);color:var(--tag-red-fg)}
+.chip.wait{background:var(--tag-gray);color:var(--tag-gray-fg)}
+.chip.run{background:var(--tag-blue);color:var(--tag-blue-fg)}
+ul.chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+ul.chk li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:10px 0;border-top:1px solid var(--border);align-items:start}
+ul.chk li:first-child{border-top:0}
+ul.chk .d{grid-column:1/-1;color:var(--muted-foreground);font-size:12px;line-height:16px;overflow-wrap:anywhere}
+.mono{font-family:var(--mono);font-size:12px;line-height:16px;font-variant-numeric:tabular-nums}
+pre{margin:0;background:var(--muted);border-radius:8px;padding:12px;overflow-x:auto;font:12px/16px var(--mono)}
+.note{color:var(--muted-foreground);font-size:12px;line-height:16px}
+</style>
+
+<div class="wrap">
+ <div>
+  <h1>PoC · botão Atualizar do painel</h1>
+  <p class="sub">Testa a ponte painel → tarefa agendada do Claude → computador do Diego → painel. Não roda as extrações e não mexe no Painel Serviços Técnicos.</p>
+ </div>
+
+ <div class="card">
+  <div class="row" style="justify-content:space-between">
+   <h2>Disparar o mensageiro de teste</h2>
+   <span class="chip wait" id="st">Carregando…</span>
+  </div>
+  <p class="sub" id="stTxt">Conectando ao banco da página.</p>
+  <div class="row">
+   <button class="btn pri" id="go" disabled>Disparar teste</button>
+   <span class="note" id="disp"></span>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Critérios da PoC</h2>
+  <ul class="chk" id="chk"></ul>
+ </div>
+
+ <div class="card">
+  <h2>Último retorno do mensageiro</h2>
+  <p class="note" id="retNote">Nenhum retorno ainda. Depois do disparo, a tarefa é agendada para daqui a 1–2 min e leva cerca de 1 min para responder.</p>
+  <pre id="ret" hidden></pre>
+  <div id="assetBox" hidden><h2 style="margin-bottom:8px">Arquivo enviado pelo mensageiro</h2><pre id="asset"></pre></div>
+ </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const S={db:null,mcp:null,cfg:null,pedido:null,res:null,disparo:null,erro:null};
+const fmt=iso=>{if(!iso)return"–";const d=new Date(iso);return isNaN(d)?iso:d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"});};
+const seg=(a,b)=>a&&b?Math.round((new Date(b)-new Date(a))/1000)+" s":"–";
+const dispositivo=()=>{const u=navigator.userAgent||"";if(/Android|iPhone|iPad|Mobile/i.test(u))return"celular";if(/Claude/i.test(u)||/Electron/i.test(u))return"app desktop";return"navegador";};
+$("disp").textContent="Este dispositivo: "+dispositivo();
+
+function criterios(){
+  const p=S.pedido,r=S.res,mesmo=r&&p&&r.pedido_id===p.pedido_id;
+  const est=(ok,falhou)=>ok?["ok","Ok"]:falhou?["bad","Falhou"]:["wait","Aguardando"];
+  const L=[
+   ["Painel dispara a tarefa (Claude Code Remote)",est(S.disparo&&S.disparo.ok,S.disparo&&!S.disparo.ok),S.disparo?(S.disparo.ok?`Aceito em ${fmt(S.disparo.em)}${S.disparo.agendado_para?` · agendado para ${fmt(S.disparo.agendado_para)}`:""} · ${S.disparo.dispositivo}`:`Erro: ${S.disparo.erro}`):"Clique em Disparar teste, no navegador e depois no celular."],
+   ["Mensageiro recebe o pedido",est(mesmo&&r.recebido_em,mesmo&&r.erro&&!r.recebido_em),mesmo?`Recebido em ${fmt(r.recebido_em)} · ${seg(p.pedido_em,r.recebido_em)} após o clique`:"–"],
+   ["Grava o pedido na pasta automacao\\poc do computador",est(mesmo&&r.arquivo_gravado,mesmo&&r.erro&&!r.arquivo_gravado),mesmo&&r.arquivo_gravado?r.arquivo_gravado:"–"],
+   ["Lê um arquivo gerado no computador (ultima_atualizacao.json)",est(mesmo&&r.leitura&&r.leitura.ok,mesmo&&r.leitura&&!r.leitura.ok),mesmo&&r.leitura?(r.leitura.ok?`${r.leitura.bytes} bytes · modificado em ${fmt(r.leitura.modificado_em)}`:r.leitura.erro):"–"],
+   ["Envia um arquivo a esta página",est(mesmo&&r.asset_id,mesmo&&r.erro&&!r.asset_id),mesmo&&r.asset_id?`Arquivo ${r.asset_id}`:"–"],
+   ["Grava o resultado no banco da página",est(mesmo&&r.finalizado_em,false),mesmo&&r.finalizado_em?`Concluído em ${fmt(r.finalizado_em)} · ${seg(p.pedido_em,r.finalizado_em)} de ponta a ponta`:"–"],
+   ["Rodou sem pedir aprovação manual",est(mesmo&&r.finalizado_em&&r.sem_aprovacao!==false,mesmo&&r.sem_aprovacao===false),mesmo&&r.finalizado_em?(r.sem_aprovacao===false?"Precisou de aprovação: ligar a aprovação automática da tarefa.":"Concluiu sozinho."):"–"]
+  ];
+  $("chk").innerHTML="";
+  for(const [t,[c,l],d] of L){const li=document.createElement("li");const b=document.createElement("b");b.style.fontWeight="500";b.textContent=t;const ch=document.createElement("span");ch.className="chip "+c;ch.textContent=l;const dd=document.createElement("span");dd.className="d";dd.textContent=d;li.append(b,ch,dd);$("chk").append(li);}
+}
+function status(){
+  const st=$("st"),tx=$("stTxt"),go=$("go");
+  if(!S.db){st.className="chip bad";st.textContent="Sem banco";tx.textContent="Abra a página conectado ao claude.ai.";go.disabled=true;return;}
+  if(!S.mcp){st.className="chip bad";st.textContent="Sem conector";tx.textContent="O conector Claude Code Remote não está disponível nesta visualização.";go.disabled=true;return;}
+  if(!S.cfg||!S.cfg.trigger_id){st.className="chip wait";st.textContent="Não configurado";tx.textContent="A tarefa de teste ainda não foi registrada nesta página.";go.disabled=true;return;}
+  const p=S.pedido,r=S.res,mesmo=r&&p&&r.pedido_id===p.pedido_id;
+  if(p&&!mesmo&&Date.now()-new Date(p.pedido_em)<15*60e3){st.className="chip run";st.textContent="Aguardando mensageiro";tx.textContent=`Pedido ${p.pedido_id} enviado em ${fmt(p.pedido_em)} (${p.dispositivo}).`;go.disabled=false;return;}
+  if(mesmo&&r.finalizado_em){st.className="chip ok";st.textContent="Ponta a ponta ok";tx.textContent=`Último teste: ${p.dispositivo}, ${seg(p.pedido_em,r.finalizado_em)} do clique ao resultado.`;go.disabled=false;return;}
+  if(mesmo&&r.erro){st.className="chip bad";st.textContent="Falhou";tx.textContent=r.erro;go.disabled=false;return;}
+  st.className="chip wait";st.textContent="Pronto";tx.textContent="Tarefa de teste registrada. Dispare pelo navegador e pelo celular.";go.disabled=false;
+}
+function retorno(){
+  const r=S.res;if(!r){$("ret").hidden=true;$("retNote").hidden=false;return;}
+  $("retNote").hidden=true;$("ret").hidden=false;$("ret").textContent=JSON.stringify(r,null,2);
+  if(r.asset_id){fetch("/_blob/"+r.asset_id).then(x=>x.ok?x.text():Promise.reject(x.status)).then(t=>{$("assetBox").hidden=false;$("asset").textContent=t;}).catch(()=>{$("assetBox").hidden=false;$("asset").textContent="Não foi possível abrir o arquivo enviado.";});}
+}
+function render(){status();criterios();retorno();}
+
+async function disparar(){
+  const go=$("go");go.disabled=true;
+  const pedido={pedido_id:"poc-"+Date.now().toString(36),pedido_em:new Date().toISOString(),dispositivo:dispositivo()};
+  try{await S.db.doc("poc/pedido").set(pedido);}catch(e){S.disparo={ok:false,erro:"não foi possível gravar o pedido no banco ("+(e&&e.code||e)+")",dispositivo:pedido.dispositivo};render();return;}
+  try{
+    // Agenda a tarefa para o próximo minuto cheio (+1): execuções agendadas rodam com o computador; o pedido fica no banco
+    const t=new Date(Date.now()+60e3);t.setUTCSeconds(0,0);t.setUTCMinutes(t.getUTCMinutes()+1);
+    const quando=t.toISOString().replace(".000Z","Z");
+    await S.mcp.callTool("Claude Code Remote","update_trigger",{trigger_id:S.cfg.trigger_id,run_once_at:quando,enabled:true},{cache:false});
+    S.disparo={ok:true,em:new Date().toISOString(),agendado_para:quando,dispositivo:pedido.dispositivo};
+  }catch(e){
+    const c=e&&e.code;const msg={server_not_connected:"o conector Claude Code Remote não está conectado nesta conta",needs_reauth:"reconecte o Claude Code Remote nas configurações de conectores",not_in_manifest:"permissão do conector recusada nesta página",tool_error:"a tarefa recusou o disparo: "+(e.message||""),cancelled:"disparo cancelado"}[c]||((c||"erro")+": "+(e&&e.message||""));
+    S.disparo={ok:false,erro:msg,dispositivo:pedido.dispositivo};
+  }
+  try{await S.db.doc("poc/disparo").set({...S.disparo,pedido_id:pedido.pedido_id});}catch(e){}
+  render();
+}
+
+(async()=>{
+  render();
+  try{S.db=await claude.use("db");}catch(e){S.db=null;}
+  try{S.mcp=await claude.use("mcp");}catch(e){S.mcp=null;}
+  render();
+  if(!S.db)return;
+  S.db.doc("poc/config").onSnapshot(s=>{S.cfg=s.exists?s.data():null;render();},()=>{});
+  S.db.doc("poc/pedido").onSnapshot(s=>{S.pedido=s.exists?s.data():null;render();},()=>{});
+  S.db.doc("poc/disparo").onSnapshot(s=>{if(s.exists)S.disparo=s.data();render();},()=>{});
+  S.db.doc("poc/resultado").onSnapshot(s=>{S.res=s.exists?s.data():null;render();},()=>{});
+  $("go").onclick=disparar;
+})();
+})();
+</script>

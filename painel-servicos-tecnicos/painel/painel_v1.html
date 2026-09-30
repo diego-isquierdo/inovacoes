@@ -1,0 +1,819 @@
+<title>Painel Serviços Técnicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: barra de abas fixa + visão ativa em grade de cartões; tokens do design system Projuris (tema Empresas) */
+:root{
+  --background:#FFFFFF;--foreground:#030712;--card:#FFFFFF;--card-foreground:#09090B;
+  --muted:#F4F4F5;--muted-foreground:#64748B;--border:#E5E7EB;--accent:#F4F4F5;
+  --primary:#2563EB;--primary-foreground:#FAFAFA;--ring:#D1D5DB;
+  --destructive:#B91C1C;--success:#15803D;--warning:#C2410C;
+  --tag-gray:#F4F4F5;--tag-gray-fg:#4B5563;--tag-blue:#DBEAFE;--tag-blue-fg:#1D4ED8;
+  --tag-green:#DCFCE7;--tag-green-fg:#15803D;--tag-orange:#FFEDD5;--tag-orange-fg:#C2410C;
+  --tag-red:#FEE2E2;--tag-red-fg:#B91C1C;--tag-yellow:#FEF9C3;--tag-yellow-fg:#A16207;
+  --serie-dados:#2563EB;--serie-ativ:#94A3B8;--serie-saida:#0369A1;
+  --font:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --background:#09090B;--foreground:#FAFAFA;--card:#18181B;--card-foreground:#FAFAFA;
+  --muted:#27272A;--muted-foreground:#9CA3AF;--border:rgba(255,255,255,.10);--accent:#27272A;
+  --primary:#3B82F6;--primary-foreground:#FAFAFA;--ring:#3F3F46;
+  --destructive:#EF4444;--success:#22C55E;--warning:#FB923C;
+  --tag-gray:#27272A;--tag-gray-fg:#9CA3AF;--tag-blue:#172554;--tag-blue-fg:#93C5FD;
+  --tag-green:#052E16;--tag-green-fg:#86EFAC;--tag-orange:#431407;--tag-orange-fg:#FDBA74;
+  --tag-red:#450A0A;--tag-red-fg:#FCA5A5;--tag-yellow:#422006;--tag-yellow-fg:#FDE047;
+  --serie-dados:#3B82F6;--serie-ativ:#64748B;--serie-saida:#7DD3FC;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --background:#09090B;--foreground:#FAFAFA;--card:#18181B;--card-foreground:#FAFAFA;
+  --muted:#27272A;--muted-foreground:#9CA3AF;--border:rgba(255,255,255,.10);--accent:#27272A;
+  --primary:#3B82F6;--primary-foreground:#FAFAFA;--ring:#3F3F46;
+  --destructive:#EF4444;--success:#22C55E;--warning:#FB923C;
+  --tag-gray:#27272A;--tag-gray-fg:#9CA3AF;--tag-blue:#172554;--tag-blue-fg:#93C5FD;
+  --tag-green:#052E16;--tag-green-fg:#86EFAC;--tag-orange:#431407;--tag-orange-fg:#FDBA74;
+  --tag-red:#450A0A;--tag-red-fg:#FCA5A5;--tag-yellow:#422006;--tag-yellow-fg:#FDE047;
+  --serie-dados:#3B82F6;--serie-ativ:#64748B;--serie-saida:#7DD3FC;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--background);color:var(--foreground);font:14px/20px var(--font);margin:0}
+.wrap{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:20px 48px}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border)}
+h1{font-size:24px;line-height:28px;font-weight:600;margin:0;text-wrap:balance}
+.sub{color:var(--muted-foreground);font-size:14px;margin:4px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;font-size:12px;line-height:16px;font-weight:500;background:var(--tag-gray);color:var(--tag-gray-fg);white-space:nowrap}
+.chip.ok{background:var(--tag-green);color:var(--tag-green-fg)}.chip.warn{background:var(--tag-orange);color:var(--tag-orange-fg)}
+.chip.bad{background:var(--tag-red);color:var(--tag-red-fg)}.chip.info{background:var(--tag-blue);color:var(--tag-blue-fg)}
+.chip.y{background:var(--tag-yellow);color:var(--tag-yellow-fg)}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--border);margin-bottom:20px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--background);z-index:5}
+nav.tabs button{font:500 14px/20px var(--font);color:var(--muted-foreground);background:none;border:0;border-bottom:2px solid transparent;padding:12px 14px;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+nav.tabs button:hover{color:var(--foreground)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--card);display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .lab{font-size:12px;line-height:16px;font-weight:500;color:var(--muted-foreground)}
+.kpi .val{font-size:26px;line-height:30px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .det{font-size:12px;line-height:16px;color:var(--muted-foreground)}
+.kpi.bad .val{color:var(--destructive)}.kpi.good .val{color:var(--success)}
+.card{border:1px solid var(--border);border-radius:16px;background:var(--card);padding:20px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.card h2{font-size:16px;line-height:24px;font-weight:500;margin:0}
+.card .hint{font-size:12px;line-height:16px;color:var(--muted-foreground);margin:-8px 0 0}
+section.view{display:flex;flex-direction:column;gap:16px}
+.note{border:1px solid var(--border);border-radius:12px;padding:12px 16px;background:var(--muted);color:var(--foreground);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted-foreground)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+svg text{fill:var(--muted-foreground);font:11px var(--font)}
+svg .v{fill:var(--foreground);font-weight:500}
+.tblw{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th{background:var(--muted);color:var(--muted-foreground);font-weight:500;text-align:left;padding:8px 12px;white-space:nowrap;position:sticky;top:0}
+td{padding:8px 12px;border-top:1px solid var(--border);vertical-align:top}
+td.n,th.n{text-align:right}
+tr:hover td{background:var(--accent)}
+a{color:var(--primary)}
+.bar{display:grid;grid-template-columns:170px minmax(0,1fr) 64px;gap:10px;align-items:center;font-size:13px}
+.bar .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{height:14px;background:var(--muted);border-radius:4px;overflow:hidden;display:flex}
+.track span{display:block;height:100%}
+.bar .num{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:500;color:var(--muted-foreground)}
+select,input[type=text],input[type=number],input[type=search]{font:14px var(--font);color:var(--foreground);background:var(--background);border:1px solid var(--border);border-radius:8px;height:36px;padding:0 10px}
+input[type=number]{width:96px;text-align:right}
+.btn{font:500 14px/20px var(--font);border-radius:8px;height:36px;padding:0 14px;border:1px solid var(--border);background:var(--card);color:var(--foreground);cursor:pointer}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:var(--primary-foreground)}
+.btn:hover{opacity:.9}.btn[disabled]{opacity:.5;cursor:not-allowed}
+.find{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--border)}
+.find:first-of-type{border-top:0}
+.find b{font-weight:500}.find p{margin:2px 0 0;color:var(--muted-foreground);font-size:13px}
+.verdict{border-radius:16px;padding:20px;border:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.verdict.bad{background:var(--tag-red)}.verdict.good{background:var(--tag-green)}.verdict.warn{background:var(--tag-orange)}
+.verdict .big{font-size:20px;line-height:26px;font-weight:600}
+.rules{margin:0;padding-left:18px;color:var(--muted-foreground);font-size:13px;display:flex;flex-direction:column;gap:4px}
+.rules b{color:var(--foreground);font-weight:500}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--foreground);color:var(--background);padding:10px 16px;border-radius:8px;font-size:13px;z-index:20;max-width:90vw}
+.mono{font-family:var(--mono)}
+@media (max-width:900px){.g2,.g3{grid-template-columns:minmax(0,1fr)}.bar{grid-template-columns:120px minmax(0,1fr) 56px}.wrap{padding-inline:16px}}
+.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:0}
+.upd{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+.upd .btn{height:32px;padding:0 12px;font-size:13px}
+.upd .btn:disabled{opacity:.55;cursor:not-allowed}
+.upd .det{font-size:12px;line-height:16px;color:var(--muted-foreground)}
+@media (max-width:900px){.hdr-r{align-items:flex-start}.upd{justify-content:flex-start}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Serviços Técnicos · Painel de Gestão</h1>
+      <p class="sub">Fila, saúde do time, horas apontadas e S&amp;OP · grupo SRV TECNICO sem Projuris ADV</p>
+    </div>
+    <div class="hdr-r">
+      <div class="upd" id="upd" aria-live="polite"></div>
+      <div class="chips" id="fresh"><span class="chip">Carregando bases…</span></div>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Seções do painel"></nav>
+  <main id="main"><section class="view"><p class="note">Carregando dados…</p></section></main>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+// ---------------- estado ----------------
+const TEAM_DEFAULT=["Matheus Estrogildo Torres Soares","Rodrigo Meireles da Silva","Marcelo Augusto Barbosa Batista Marta","Giovanni Teixeira Ferreira"];
+const SHORT={"Matheus Estrogildo Torres Soares":"Matheus Soares","Rodrigo Meireles da Silva":"Rodrigo Meireles","Marcelo Augusto Barbosa Batista Marta":"Marcelo Marta","Giovanni Teixeira Ferreira":"Giovanni Ferreira","Andrei Luis Luis Rhoden":"Andrei Rhoden","Andrei Luis Rhoden":"Andrei Rhoden"};
+const DEFAULT_PARAMS={esforco:{"Ativação":1,"Dados":10},fator_produtivo:0.85,meta_ocupacao:0.8,horizonte:3,cenario:"total",time:TEAM_DEFAULT.slice(),horas_mes_padrao:147,squads:{"Dados":["Marcelo Augusto Barbosa Batista Marta","Giovanni Teixeira Ferreira"],"Ativação":["Matheus Estrogildo Torres Soares","Rodrigo Meireles da Silva"]}};
+const S={db:null,assets:null,mcp:null,atu:null,mens:null,user:null,canEdit:false,bases:null,params:JSON.parse(JSON.stringify(DEFAULT_PARAMS)),T:null,H:null,C:null,view:"geral",loadErr:null,blFilter:{tipo:"",dono:"",status:"",q:"",limite:200},loaded:{}};
+const TABS=[["geral","Visão geral"],["diag","Diagnóstico da operação"],["backlog","Backlog"],["time","Time"],["horas","Horas"],["sop","S&OP geral"],["squad","S&OP por squad"],["acao","Plano de Ação"],["cfg","Configuração"]];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf=(n,d)=>(n==null||!isFinite(n))?"–":Number(n).toLocaleString("pt-BR",{maximumFractionDigits:d||0,minimumFractionDigits:d||0});
+const pct=(n,d)=>(n==null||!isFinite(n))?"–":nf(n*100,d||0)+"%";
+const MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const mlab=m=>MES[+m.slice(5,7)-1]+"/"+m.slice(2,4);
+const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const short=n=>SHORT[n]||n||"";
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,4000);}
+const TODAY=new Date();const curMonth=TODAY.toISOString().slice(0,7);
+const days=(a,b)=>Math.floor(((b||TODAY)-new Date(a))/864e5);
+function median(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+function quant(a,q){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(q*(s.length-1)))];}
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
+function addMonths(m,k){const d=new Date(Date.UTC(+m.slice(0,4),+m.slice(5,7)-1+k,1));return d.toISOString().slice(0,7);}
+
+// ---------------- classificação Dados × Ativação ----------------
+// 1) Subtipo ou Tags falam de importação, migração, scripts ou anexos -> Dados
+// 2) Subtipo preenchido com outro serviço -> Ativação
+// 3) Sem subtipo: Assunto (menos preciso, fica por último)
+const KW=/import|migra|script|anexo/;
+const KW_ASSUNTO=/import|migra|script|anexo|carga de dados|extracao de dados/;
+function classifica(t){
+  const st=norm(t.subtipo),tg=norm(t.tags);
+  if(KW.test(st))return["Dados","Subtipo"];
+  if(KW.test(tg))return["Dados","Tags"];
+  if(st.trim())return["Ativação","Subtipo"];
+  return KW_ASSUNTO.test(norm(t.assunto))?["Dados","Assunto"]:["Ativação","Assunto"];
+}
+
+// Subcategoria de Dados: mesma ordem de precisão (subtipo -> tags -> assunto); script > migração > anexos > dados
+// "Importação de Dados e Documentos" conta como Importação de anexos (decisão 29/09)
+const SUBS_D=["Importação de dados","Importação de anexos","Scripts","Migrações","Dados (outros)"];
+const JANELA_REAL=60,MIN_ESF=1,MIN_AMOSTRA=3;
+function subDados(t){
+  for(const f of [norm(t.subtipo),norm(t.tags),norm(t.assunto)]){
+    if(/script/.test(f))return "Scripts";if(/migra/.test(f))return "Migrações";
+    if(/dados e documentos/.test(f)||(/documento|arquivo|anexo/.test(f)&&/import|anexo/.test(f)))return "Importação de anexos";
+    if(/import|carga de dados/.test(f))return "Importação de dados";
+  }
+  return "Dados (outros)";
+}
+// Análise real: tickets concluídos (resolvidos ou fechados) nos últimos N dias, horas apontadas por grupo
+function analiseReal(dias){
+  const C=S.C,lim=new Date(TODAY-dias*864e5).toISOString().slice(0,10);
+  const G=["Ativação",...SUBS_D],o={};
+  for(const g of G)o[g]={conc:0,v:[]};
+  for(const t of C.T){if(!t.saida||t.saida.slice(0,10)<lim)continue;const g=t.tipo==="Dados"?t.sub:"Ativação";o[g].conc++;if(t.horas>0)o[g].v.push(t.horas);}
+  const row=(g,x)=>({g,conc:x.conc,n:x.v.length,tot:x.v.reduce((s,y)=>s+y,0),media:mean(x.v),mediana:median(x.v),p75:quant(x.v,.75),max:x.v.length?Math.max(...x.v):null});
+  const rows=G.map(g=>row(g,o[g])).filter(r=>r.conc>0||r.g!=="Dados (outros)");
+  const dv=[].concat(...G.slice(1).map(g=>o[g].v));const dados=row("Dados (total)",{conc:G.slice(1).reduce((s,g)=>s+o[g].conc,0),v:dv});
+  return {lim,rows,dados};
+}
+
+// ---------------- carga ----------------
+function rowsOf(tb){const c=tb.colunas;return tb.linhas.map(r=>{const o={};for(let i=0;i<c.length;i++)o[c[i]]=r[i];return o;});}
+async function fetchAsset(id){const r=await fetch("/_blob/"+id);if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}
+async function loadBases(){
+  const b=S.bases||{};
+  try{
+    if(b.tickets&&b.tickets.asset&&S.loaded.tickets!==b.tickets.asset){const j=await fetchAsset(b.tickets.asset);S.Tmeta=j.meta;S.T=rowsOf(j);S.loaded.tickets=b.tickets.asset;}
+    if(b.horas&&b.horas.asset&&S.loaded.horas!==b.horas.asset){const j=await fetchAsset(b.horas.asset);S.Hmeta=j.meta;S.H={};for(const k in j.tabelas)S.H[k]=rowsOf(j.tabelas[k]);S.loaded.horas=b.horas.asset;}
+    S.loadErr=null;
+  }catch(e){S.loadErr="Não foi possível ler uma das bases ("+e.message+"). Carregue o arquivo de novo em Configuração.";}
+  compute();render();
+}
+
+// ---------------- cálculo ----------------
+function compute(){
+  if(!S.T){S.C=null;return;}
+  const P=S.params,team=new Set(P.time||TEAM_DEFAULT);
+  const T=S.T.map(t=>{const [tipo,regra]=classifica(t);
+    const saida=t.data_resolucao||t.data_fechamento||"";
+    return {...t,tipo,regra,sub:tipo==="Dados"?subDados(t):null,dono:team.has(t.agente)?short(t.agente):"Sem responsável ativo",donoFull:t.agente,
+      idade:days(t.criado_em),parado:days(t.atualizado_em),noStatus:t.status_desde?days(t.status_desde):null,
+      st:String(t.status||"").split(" / ")[0],saida,mesEnt:(t.criado_em||"").slice(0,7),mesSai:saida.slice(0,7)};});
+  const byId=new Map(T.map(t=>[String(t.id),t]));
+  const BL=T.filter(t=>t.backlog);
+  // Horas
+  let A=[],hTk=new Map(),months=[],teamH={},capM={},fech=[],ref=[];
+  if(S.H){
+    A=S.H["Apontamentos"]||[];
+    for(const a of A){const k=String(a.ticket_id||"").trim();if(k&&byId.has(k)){hTk.set(k,(hTk.get(k)||0)+(a.horas||0));}}
+    for(const a of A){if(!team.has(a.analyst_name))continue;(teamH[a.mes]=teamH[a.mes]||{})[a.analyst_name]=((teamH[a.mes]||{})[a.analyst_name]||0)+(a.horas||0);}
+    for(const c of (S.H["Capacidade"]||[])){if(!team.has(c.analyst_name))continue;(capM[c.year_month]=capM[c.year_month]||{})[c.analyst_name]=(c.capacity_seconds||0)/3600;}
+    months=[...new Set(A.map(a=>a.mes))].sort();
+    fech=(S.H["Fechamento - Analistas"]||[]).filter(f=>team.has(f.analyst_name));
+    // meses de referência: meses com apontamento >= 50% da capacidade do time (mês corrente costuma estar atrasado)
+    for(const m of months){const h=Object.values(teamH[m]||{}).reduce((s,x)=>s+x,0);const c=Object.values(capM[m]||{}).reduce((s,x)=>s+x,0)||team.size*P.horas_mes_padrao;if(h>=0.5*c&&m<curMonth)ref.push(m);}
+    ref=ref.slice(-3);
+  }
+  for(const t of T)t.horas=hTk.get(String(t.id))||0;
+  // esforço real por tipo (tickets que saíram, com horas, criados a partir do 1º mês com apontamento)
+  const h0=months[0]||"9999";
+  const real={};for(const tp of ["Ativação","Dados"]){const v=T.filter(t=>t.tipo===tp&&t.saida&&t.horas>0&&t.mesEnt>=h0).map(t=>t.horas);real[tp]={n:v.length,media:mean(v),mediana:median(v),p75:quant(v,.75)};}
+  // fluxo mensal
+  const ano=curMonth.slice(0,4);const fm=[];for(let i=1;i<=+curMonth.slice(5,7);i++)fm.push(ano+"-"+String(i).padStart(2,"0"));
+  const fluxo=fm.map(m=>({m,entA:T.filter(t=>t.novo_no_ano&&t.mesEnt===m&&t.tipo==="Ativação").length,entD:T.filter(t=>t.novo_no_ano&&t.mesEnt===m&&t.tipo==="Dados").length,sai:T.filter(t=>t.mesSai===m).length}));
+  const fechados=fm.filter(m=>m<curMonth).slice(-3);
+  const entMed={};for(const tp of ["Ativação","Dados"]){entMed[tp]=mean(fechados.map(m=>T.filter(t=>t.novo_no_ano&&t.mesEnt===m&&t.tipo===tp).length))||0;}
+  const saiMed=mean(fechados.map(m=>T.filter(t=>t.mesSai===m).length))||0;
+  // entradas por subcategoria de Dados (tickets/mês, mesmos meses fechados)
+  const entSub={};for(const k of SUBS_D)entSub[k]=mean(fechados.map(m=>T.filter(t=>t.novo_no_ano&&t.mesEnt===m&&t.sub===k).length))||0;
+  S.C={T,BL,byId,A,hTk,months,teamH,capM,fech,ref,real,fluxo,fechados,entMed,saiMed,team,entSub};
+  // esforço de Dados = média real dos concluídos nos últimos 60 dias por subcategoria, recalculada a cada carga; mínimo 1 h
+  const AR=analiseReal(JANELA_REAL);S.C.AR=AR;const fb=+P.esforco["Dados"]||10;const effD={},effSrc={};
+  for(const r of AR.rows){if(r.g==="Ativação")continue;const ok=r.n>=MIN_AMOSTRA&&r.media!=null;
+    effD[r.g]=Math.max(MIN_ESF,ok?r.media:(r.g==="Dados (outros)"&&AR.dados.media!=null?AR.dados.media:fb));effSrc[r.g]=ok?"real":(r.g==="Dados (outros)"&&AR.dados.media!=null?"média de Dados":"sem amostra");}
+  for(const k of SUBS_D)if(effD[k]==null){effD[k]=Math.max(MIN_ESF,k==="Dados (outros)"&&AR.dados.media!=null?AR.dados.media:fb);effSrc[k]=k==="Dados (outros)"&&AR.dados.media!=null?"média de Dados":"sem amostra";}
+  S.C.effD=effD;S.C.effSrc=effSrc;
+  S.C.sop=sop();
+}
+// Esforço padrão (Configuração): Ativação 1 h e Dados 10 h por ticket. Os cenários mudam o backlog, não o esforço.
+function esforco(tp){return tp==="Dados"?edMedio():(+S.params.esforco[tp]||0);}
+// esforço do ticket: Ativação = padrão (1 h); Dados = média real da subcategoria
+function esforcoT(t){return t.tipo==="Dados"?S.C.effD[t.sub||"Dados (outros)"]:(+S.params.esforco["Ativação"]||0);}
+// horas/mês de entradas do tipo
+function entHTipo(tp){const C=S.C;return tp==="Dados"?SUBS_D.reduce((s,k)=>s+C.entSub[k]*C.effD[k],0):C.entMed[tp]*(+S.params.esforco[tp]||0);}
+// esforço médio de Dados ponderado pelas entradas
+function edMedio(){const C=S.C,n=SUBS_D.reduce((s,k)=>s+C.entSub[k],0);return n?entHTipo("Dados")/n:C.effD["Importação de dados"];}
+// Backlog fora da mão do time: depende do cliente, suspenso, com fornecedor ou cancelado
+const FORA_RE=/aguardando cliente|validacao do cliente|suspenso|fornecedor|cancelado/;
+const isAtivo=t=>!FORA_RE.test(norm(t.st));
+const CEN={total:"backlog total",ativo:"backlog ativo"};
+const cenKey=()=>S.params.cenario==="ativo"?"ativo":"total";
+// S&OP genérico: capacidade de um conjunto de analistas × demanda de um conjunto de tipos
+function sopCalc(members,tipos,cen){
+  const C=S.C,P=S.params,H=Math.max(1,+P.horizonte||3);const mem=[...members];
+  const meses=[];for(let k=0;k<H;k++)meses.push(addMonths(curMonth,k));
+  const capMes=meses.map(m=>mem.reduce((s,n)=>s+(((C.capM[m]||{})[n])||P.horas_mes_padrao),0)*(+P.fator_produtivo||0.85));
+  const BLall=C.BL.filter(t=>tipos.includes(t.tipo));const BLt=cen==="ativo"?BLall.filter(isAtivo):BLall;
+  const blH=BLt.reduce((s,t)=>s+Math.max(0,esforcoT(t)-t.horas),0);
+  const entH=tipos.reduce((s,tp)=>s+entHTipo(tp),0);
+  const demMes=meses.map(()=>blH/H+entH);
+  const cap=capMes.reduce((s,x)=>s+x,0),dem=demMes.reduce((s,x)=>s+x,0);
+  const capFTE=mem.length?(cap/H)/mem.length:(P.horas_mes_padrao*(+P.fator_produtivo||0.85));
+  const fteNec=(dem/H)/capFTE;const livre=cap/H-entH;
+  return {meses,capMes,demMes,blH,entH,cap,dem,saldo:cap-dem,ocup:cap?dem/cap:null,fteNec,fteAtual:mem.length,mesesZerar:livre>0?blH/livre:null,capFTE,
+    ea:esforco("Ativação"),ed:esforco("Dados"),nBL:BLt.length,nFora:BLall.length-BLt.length,tipos,membros:mem,cen};
+}
+function sop(){const out={};for(const cen of ["total","ativo"])out[cen]=sopCalc(S.C.team,["Ativação","Dados"],cen);return out;}
+function squads(){const P=S.params,sq=P.squads||DEFAULT_PARAMS.squads,team=S.C.team;const r={};for(const tp of ["Dados","Ativação"])r[tp]=(sq[tp]||[]).filter(n=>team.has(n));return r;}
+
+// ---------------- gráficos (SVG em escala) ----------------
+function colChart(data,series,o){o=o||{};const W=o.w||640,Hh=o.h||220,pl=36,pr=8,pt=18,pb=26;const n=data.length;const mx=Math.max(1,...data.map(d=>o.stack?series.reduce((s,se)=>s+(d[se.k]||0),0):Math.max(...series.map(se=>d[se.k]||0))),...(o.line?data.map(d=>d[o.line.k]||0):[0]));
+  const nice=niceMax(mx);const y=v=>pt+(Hh-pt-pb)*(1-v/nice);const bw=(W-pl-pr)/n;let g="";
+  for(let i=0;i<=4;i++){const v=nice*i/4;g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border)"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end">${nf(v)}</text>`;}
+  data.forEach((d,i)=>{const x0=pl+i*bw;
+    if(o.stack){let acc=0;series.forEach(se=>{const v=d[se.k]||0;if(v>0){g+=`<rect x="${x0+bw*.18}" y="${y(acc+v)}" width="${bw*.64}" height="${y(acc)-y(acc+v)}" fill="${se.c}"><title>${esc(se.l)}: ${nf(v,o.dec)}</title></rect>`;}acc+=v;});
+      g+=`<text class="v" x="${x0+bw/2}" y="${y(acc)-4}" text-anchor="middle">${nf(acc,o.dec)}</text>`;}
+    else{const sw=bw*.72/series.length;series.forEach((se,j)=>{const v=d[se.k]||0;g+=`<rect x="${x0+bw*.14+j*sw}" y="${y(v)}" width="${sw-2}" height="${y(0)-y(v)}" rx="2" fill="${se.c}"><title>${esc(se.l)}: ${nf(v,o.dec)}</title></rect>`;if(o.labels!==false)g+=`<text class="v" x="${x0+bw*.14+j*sw+(sw-2)/2}" y="${y(v)-4}" text-anchor="middle">${nf(v,o.dec)}</text>`;});}
+    g+=`<text x="${x0+bw/2}" y="${Hh-8}" text-anchor="middle">${esc(d.lab)}</text>`;});
+  if(o.line){const pts=data.map((d,i)=>`${pl+i*bw+bw/2},${y(d[o.line.k]||0)}`).join(" ");g+=`<polyline points="${pts}" fill="none" stroke="${o.line.c}" stroke-width="2" stroke-dasharray="5 4"/>`;data.forEach((d,i)=>{g+=`<circle cx="${pl+i*bw+bw/2}" cy="${y(d[o.line.k]||0)}" r="3" fill="${o.line.c}"><title>${esc(o.line.l)}: ${nf(d[o.line.k],o.dec)}</title></circle>`;});}
+  return `<svg viewBox="0 0 ${W} ${Hh}" width="100%" role="img" aria-label="${esc(o.aria||"gráfico")}">${g}</svg>`;}
+function niceMax(v){const p=Math.pow(10,Math.floor(Math.log10(v)));const f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p;}
+function legend(items){return `<div class="legend">${items.map(([c,l])=>`<span><i style="background:${c}"></i>${esc(l)}</span>`).join("")}</div>`;}
+function hbars(rows,o){o=o||{};const mx=Math.max(1,...rows.map(r=>r.parts?r.parts.reduce((s,p)=>s+p.v,0):r.v));
+  return rows.map(r=>{const tot=r.parts?r.parts.reduce((s,p)=>s+p.v,0):r.v;const segs=(r.parts||[{v:r.v,c:o.c||"var(--primary)"}]).map(p=>`<span style="width:${p.v/mx*100}%;background:${p.c}" title="${esc(p.l||"")}: ${nf(p.v,o.dec)}"></span>`).join("");
+    return `<div class="bar"><span class="t" title="${esc(r.l)}">${esc(r.l)}</span><span class="track">${segs}</span><span class="num">${nf(tot,o.dec)}${o.suf||""}</span></div>`;}).join("");}
+const kpi=(l,v,d,cls)=>`<div class="kpi ${cls||""}"><span class="lab">${l}</span><span class="val">${v}</span><span class="det">${d||""}</span></div>`;
+const CD="var(--serie-dados)",CA="var(--serie-ativ)",CS="var(--serie-saida)";
+
+// ---------------- visões ----------------
+function vGeral(){
+  const C=S.C,BL=C.BL,sp=C.sop[cenKey()];
+  const d=BL.filter(t=>t.tipo==="Dados").length,a=BL.length-d;
+  const f=C.fluxo;const ult=f.filter(x=>x.m<curMonth).slice(-1)[0]||{};const ent3=mean(C.fechados.map(m=>{const x=f.find(y=>y.m===m);return x.entA+x.entD;}))||0;
+  const refH=C.ref.map(m=>Object.values(C.teamH[m]||{}).reduce((s,x)=>s+x,0));const refC=C.ref.map(m=>Object.values(C.capM[m]||{}).reduce((s,x)=>s+x,0));
+  const ocup=refC.length?refH.reduce((s,x)=>s+x,0)/refC.reduce((s,x)=>s+x,0):null;
+  const fluxoData=f.map(x=>({lab:mlab(x.m),entA:x.entA,entD:x.entD,sai:x.sai}));
+  const donos={};BL.forEach(t=>{const o=donos[t.dono]=donos[t.dono]||{A:0,D:0};o[t.tipo==="Dados"?"D":"A"]++;});
+  const donoRows=Object.entries(donos).sort((x,y)=>(y[1].A+y[1].D)-(x[1].A+x[1].D)).map(([l,o])=>({l,parts:[{v:o.D,c:CD,l:"Dados"},{v:o.A,c:CA,l:"Ativação"}]}));
+  const AG=[["até 30 d",0,30],["31–90 d",31,90],["91–180 d",91,180],["+180 d",181,1e9]];
+  const ag=AG.map(([l,x,y])=>({lab:l,A:BL.filter(t=>t.tipo==="Ativação"&&t.idade>=x&&t.idade<=y).length,D:BL.filter(t=>t.tipo==="Dados"&&t.idade>=x&&t.idade<=y).length}));
+  return `<section class="view">
+  <div class="kpis">
+   ${kpi("Backlog",nf(BL.length),`${nf(d)} dados · ${nf(a)} ativação`)}
+   ${kpi("Entradas / mês",nf(ent3),`média de ${C.fechados.map(mlab).join(", ")}`)}
+   ${kpi("Saídas / mês",nf(C.saiMed),`resolvidos ou fechados · mesma janela`,C.saiMed<ent3?"bad":"")}
+   ${kpi("Saldo do fluxo / mês",(C.saiMed-ent3>=0?"+":"")+nf(C.saiMed-ent3),C.saiMed<ent3?"backlog crescendo":"backlog diminuindo",C.saiMed<ent3?"bad":"good")}
+   ${kpi("Ocupação do time",pct(ocup),`horas apontadas ÷ capacidade · ${C.ref.map(mlab).join(", ")||"sem mês completo"}`)}
+   ${kpi("S&OP · saldo "+S.params.horizonte+" meses",(sp.saldo>=0?"+":"")+nf(sp.saldo)+" h",`${nf(sp.fteNec,1)} pessoas necessárias · ${sp.fteAtual} no time`,sp.saldo<0?"bad":"good")}
+  </div>
+  <div class="grid g2">
+   <div class="card"><h2>Entradas × saídas por mês</h2><p class="hint">Entradas empilhadas por tipo; saídas = tickets que foram resolvidos ou fechados no mês</p>
+    ${legend([[CD,"Entradas · Dados"],[CA,"Entradas · Ativação"],[CS,"Saídas"]])}
+    ${colChart(fluxoData,[{k:"entD",c:CD,l:"Dados"},{k:"entA",c:CA,l:"Ativação"}],{stack:true,line:{k:"sai",c:CS,l:"Saídas"},aria:"Entradas e saídas por mês"})}
+    <p class="hint">Fechamentos antigos somem da API do Freshdesk (arquivamento); saídas de jan–mar estão subcontadas.</p></div>
+   <div class="card"><h2>Backlog por responsável</h2><p class="hint">Tickets fora do time atual contam como “Sem responsável ativo”</p>
+    ${legend([[CD,"Dados"],[CA,"Ativação"]])}${hbars(donoRows)}</div>
+   <div class="card"><h2>Idade do backlog</h2><p class="hint">Dias desde a abertura</p>${legend([[CD,"Dados"],[CA,"Ativação"]])}
+    ${colChart(ag,[{k:"D",c:CD,l:"Dados"},{k:"A",c:CA,l:"Ativação"}],{stack:true,h:200,aria:"Idade do backlog"})}</div>
+   <div class="card"><h2>Horas apontadas do time por mês</h2><p class="hint">Barras: horas confirmadas no Painel de Serviços · linha: capacidade do Painel</p>
+    ${legend([["var(--primary)","Apontado"],[CS,"Capacidade"]])}
+    ${colChart(C.months.map(m=>({lab:mlab(m),h:Object.values(C.teamH[m]||{}).reduce((s,x)=>s+x,0),c:Object.values(C.capM[m]||{}).reduce((s,x)=>s+x,0)})),[{k:"h",c:"var(--primary)",l:"Apontado"}],{line:{k:"c",c:CS,l:"Capacidade"},h:200,aria:"Horas por mês"})}</div>
+  </div></section>`;
+}
+
+function diagnostico(){
+  const C=S.C,BL=C.BL,P=S.params,F=[];
+  const push=(sev,t,d)=>F.push({sev,t,d});
+  const ent3=C.entMed["Ativação"]+C.entMed["Dados"];
+  if(C.saiMed<ent3)push("bad",`O backlog cresce cerca de ${nf(ent3-C.saiMed)} tickets por mês`,`Entram ${nf(ent3)} e saem ${nf(C.saiMed)} por mês (${C.fechados.map(mlab).join(", ")}).`);
+  else push("ok",`Na média dos últimos 3 meses o fluxo está equilibrado`,`Saem ${nf(C.saiMed)} e entram ${nf(ent3)} tickets por mês (${C.fechados.map(mlab).join(", ")}).`);
+  const lm=C.fluxo.filter(x=>x.m<curMonth).slice(-1)[0];if(lm){const e=lm.entA+lm.entD;push(lm.sai<e?"bad":"ok",`Em ${mlab(lm.m)} entraram ${nf(e)} e saíram ${nf(lm.sai)} tickets`,lm.sai<e?`O backlog cresceu ${nf(e-lm.sai)} tickets no último mês fechado.`:`O backlog diminuiu ${nf(lm.sai-e)} tickets no último mês fechado.`);}
+  const sp=C.sop.total,sr=C.sop.ativo;
+  push(sp.saldo<0?"bad":"ok",`Backlog total (${nf(sp.nBL)} tickets): ${sp.saldo<0?"faltam":"sobram"} ${nf(Math.abs(sp.saldo))} h em ${P.horizonte} meses`,`Com ${nf(sp.ea,1)} h por ativação e ${nf(sp.ed,1)} h por ticket de dados (média real por subcategoria) seriam necessárias ${nf(sp.fteNec,1)} pessoas; o time tem ${sp.fteAtual}. Demanda ${nf(sp.dem)} h × capacidade produtiva ${nf(sp.cap)} h.`);
+  push(sr.saldo<0?"bad":"ok",`Backlog ativo (${nf(sr.nBL)} tickets, sem os ${nf(sr.nFora)} que dependem do cliente ou de terceiros): ${sr.saldo<0?"faltam":"sobram"} ${nf(Math.abs(sr.saldo))} h`,`Pessoas necessárias: ${nf(sr.fteNec,1)}. As entradas do mês (${nf(sp.entH)} h) pesam mais que o backlog: sozinhas pedem ${nf(sp.entH/sp.capFTE,1)} pessoas.`);
+  push("info",`Esforço de Dados pela média real dos últimos ${JANELA_REAL} dias`,SUBS_D.filter(k=>C.entSub[k]||C.BL.some(t=>t.sub===k)).map(k=>`${k}: ${nf(C.effD[k],1)} h`).join(" · ")+` (mínimo de ${MIN_ESF} h por ticket; recalculado a cada carga).`);
+  const dD=C.real["Dados"];if(false)push("info",`O esforço real de Dados (${nf(dD.media,1)} h por ticket) está longe do padrão (${nf(P.esforco["Dados"],0)} h)`,`Base: ${dD.n} tickets de dados concluídos com horas apontadas. Mediana ${nf(dD.mediana,1)} h, 75% até ${nf(dD.p75,1)} h. Projetos longos ainda abertos não entram nessa média.`);
+  const donos={};BL.forEach(t=>donos[t.dono]=(donos[t.dono]||0)+1);const top=Object.entries(donos).filter(x=>x[0]!=="Sem responsável ativo").sort((a,b)=>b[1]-a[1]);
+  if(top.length){const s2=(top[0][1]+(top[1]?top[1][1]:0))/BL.length;push(s2>0.6?"warn":"ok",`${top[0][0]}${top[1]?" e "+top[1][0]:""} concentram ${pct(s2)} do backlog`,top.map(([n,v])=>`${n}: ${v}`).join(" · "));}
+  const semDono=BL.filter(t=>t.dono==="Sem responsável ativo");if(semDono.length)push("warn",`${semDono.length} tickets no backlog sem responsável ativo`,`Sem agente, com agente desativado ou fora do time (ex.: Andrei). Redistribuir.`);
+  const ag=BL.filter(t=>/aguardando cliente|validacao do cliente/.test(norm(t.st)));const ag90=ag.filter(t=>t.idade>90);
+  push(ag.length/BL.length>0.4?"warn":"ok",`${pct(ag.length/BL.length)} do backlog depende do cliente (${ag.length} tickets)`,`${ag90.length} deles têm mais de 90 dias. Uma régua de cobrança e encerramento por inatividade reduziria a fila sem consumir capacidade.`);
+  const par=BL.filter(t=>t.parado>30);push(par.length/BL.length>0.3?"warn":"ok",`${par.length} tickets sem movimentação há mais de 30 dias`,`${pct(par.length/BL.length)} do backlog.`);
+  const semSub=C.T.filter(t=>!String(t.subtipo||"").trim());push(semSub.length>200?"warn":"ok",`${semSub.length} tickets sem subtipo`,`Nesses a classificação Dados × Ativação vem do assunto, que é menos preciso (${C.T.filter(t=>t.regra==="Assunto").length} tickets classificados pelo assunto).`);
+  if(S.H){const last=C.months[C.months.length-1];if(last===curMonth){const h=Object.values(C.teamH[last]||{}).reduce((s,x)=>s+x,0);const c=Object.values(C.capM[last]||{}).reduce((s,x)=>s+x,0);if(c&&h<0.3*c)push("warn",`Apontamento de ${mlab(last)} atrasado: ${nf(h)} h de ${nf(c)} h de capacidade`,`O S&OP e a ocupação usam os meses completos (${C.ref.map(mlab).join(", ")}).`);}
+    const semTk=C.A.filter(a=>C.team.has(a.analyst_name)&&!String(a.ticket_id||"").trim()).reduce((s,a)=>s+(a.horas||0),0);const totT=C.A.filter(a=>C.team.has(a.analyst_name)).reduce((s,a)=>s+(a.horas||0),0);
+    push("info",`${pct(semTk/totT)} das horas do time não estão ligadas a um ticket`,`${nf(semTk)} h de ${nf(totT)} h (atividades internas, reuniões, apoio).`);
+    const fora=[...new Set(C.A.filter(a=>C.team.has(a.analyst_name)&&String(a.ticket_id||"").trim()&&!C.byId.has(String(a.ticket_id).trim())).map(a=>String(a.ticket_id).trim()))];
+    push("info",`${fora.length} tickets com horas do time não estão na base de Serviços Técnicos`,`São de outros grupos ou já foram arquivados pelo Freshdesk.`);
+    push("info","Horas apontadas começam em "+(C.months[0]?mlab(C.months[0]):"–"),"Antes disso não há registro no Painel de Serviços; o esforço real usa só tickets criados a partir dessa data.");
+  }
+  push("info","Fechamentos antigos arquivados pelo Freshdesk","Tickets Closed antigos somem da API. Concluídos e entradas de jan–mar estão subcontados; daqui para frente a base preserva o histórico.");
+  return F;
+}
+function vDiag(){
+  const C=S.C,sp=C.sop[cenKey()],F=diagnostico();
+  const cls=sp.saldo<0?(sp.fteNec-sp.fteAtual>0.5?"bad":"warn"):"good";
+  const falta=sp.fteNec-sp.fteAtual;
+  const msg=sp.saldo>=0?`Sim. Com ${sp.fteAtual} pessoas, a capacidade cobre a demanda dos próximos ${S.params.horizonte} meses, com folga de ${nf(sp.saldo)} h.`:
+    `Não. Faltam ${nf(-sp.saldo)} h nos próximos ${S.params.horizonte} meses, o equivalente a ${nf(Math.max(0,falta),1)} pessoa(s) a mais.`;
+  const icon={bad:["bad","Crítico"],warn:["warn","Atenção"],ok:["ok","Ok"],info:["info","Contexto"]};
+  return `<section class="view">
+   <div class="verdict ${cls}"><span class="lab" style="font-size:12px;font-weight:500">O time atual dá conta da demanda?</span><span class="big">${msg}</span>
+    <span style="font-size:13px">Cenário: ${CEN[sp.cen]} (${nf(sp.nBL)} tickets) · ${nf(sp.ea,1)} h por ativação · ${nf(sp.ed,1)} h por ticket de dados (média real por subcategoria). Troque o cenário em Configuração ou compare os dois no S&amp;OP.</span></div>
+   <div class="grid g2">
+    <div class="card"><h2>Achados das extrações</h2><p class="hint">Calculados automaticamente a cada carga das bases</p>
+     ${F.map(f=>`<div class="find"><span class="chip ${icon[f.sev][0]}">${icon[f.sev][1]}</span><div><b>${esc(f.t)}</b><p>${esc(f.d)}</p></div></div>`).join("")}</div>
+    <div class="card"><h2>Fila por status</h2><p class="hint">Onde o backlog está parado</p>
+     ${hbars(Object.entries(C.BL.reduce((o,t)=>(o[t.st]=(o[t.st]||0)+1,o),{})).sort((a,b)=>b[1]-a[1]).map(([l,v])=>({l,v})))}
+     <h2 style="margin-top:12px">Backlog por subtipo</h2>
+     ${legend([[CD,"Dados"],[CA,"Ativação"]])}
+     ${hbars(Object.entries(C.BL.reduce((o,t)=>{const k=t.subtipo||"(sem subtipo)";o[k]=o[k]||{A:0,D:0};o[k][t.tipo==="Dados"?"D":"A"]++;return o;},{})).sort((a,b)=>(b[1].A+b[1].D)-(a[1].A+a[1].D)).slice(0,12).map(([l,o])=>({l,parts:[{v:o.D,c:CD,l:"Dados"},{v:o.A,c:CA,l:"Ativação"}]})))}</div>
+   </div></section>`;
+}
+
+function blFiltered(){const f=S.blFilter,q=norm(f.q);return S.C.BL.filter(t=>(!f.tipo||t.tipo===f.tipo)&&(!f.dono||t.dono===f.dono)&&(!f.status||t.st===f.status)&&(!q||norm(t.assunto).includes(q)||String(t.id).includes(q)||norm(t.solicitante).includes(q))).sort((a,b)=>b.idade-a.idade);}
+function vBacklog(){
+  const C=S.C,L=blFiltered(),f=S.blFilter;
+  const opts=(arr,v)=>`<option value="">Todos</option>`+arr.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("");
+  const donos=[...new Set(C.BL.map(t=>t.dono))].sort(),sts=[...new Set(C.BL.map(t=>t.st))].sort();
+  const reg=(r)=>({Subtipo:"info",Tags:"info",Assunto:"y"}[r]);
+  return `<section class="view">
+   <div class="filters">
+    <label class="f" for="f_tipo">Tipo<select id="f_tipo">${opts(["Dados","Ativação"],f.tipo)}</select></label>
+    <label class="f" for="f_dono">Responsável<select id="f_dono">${opts(donos,f.dono)}</select></label>
+    <label class="f" for="f_status">Status<select id="f_status">${opts(sts,f.status)}</select></label>
+    <label class="f" for="f_q" style="flex:1;min-width:200px">Buscar (assunto, nº, solicitante)<input type="search" id="f_q" value="${esc(f.q)}"></label>
+    <button class="btn" id="f_csv">Exportar CSV</button>
+   </div>
+   <div class="kpis">
+    ${kpi("Tickets no filtro",nf(L.length),`${nf(L.filter(t=>t.tipo==="Dados").length)} dados`)}
+    ${kpi("Idade mediana",nf(median(L.map(t=>t.idade)))+" d","desde a abertura")}
+    ${kpi("Parados +30 d",nf(L.filter(t=>t.parado>30).length),"sem atualização")}
+    ${kpi("Horas já apontadas",nf(L.reduce((s,t)=>s+t.horas,0))+" h","nos tickets do filtro")}
+   </div>
+   <div class="tblw"><table><thead><tr><th>Ticket</th><th>Assunto</th><th>Tipo</th><th>Status</th><th>Responsável</th><th>Subtipo</th><th class="n">Idade</th><th class="n">Parado</th><th class="n">Horas</th></tr></thead><tbody>
+   ${L.slice(0,f.limite).map(t=>`<tr><td><a href="https://projuris-helpdesk.freshdesk.com/a/tickets/${t.id}" target="_blank" rel="noopener">${t.id}</a></td><td style="min-width:260px">${esc(t.assunto)}</td>
+    <td><span class="chip ${t.tipo==="Dados"?"info":""}" title="Classificado pelo ${esc(t.regra)}">${t.tipo}</span> <span class="chip ${reg(t.regra)}" title="Coluna que definiu o tipo">${t.regra}</span></td>
+    <td>${esc(t.st)}</td><td>${esc(t.dono)}</td><td>${esc(t.subtipo||"–")}</td><td class="n">${t.idade} d</td><td class="n">${t.parado} d</td><td class="n">${t.horas?nf(t.horas,1):"–"}</td></tr>`).join("")}
+   </tbody></table></div>
+   ${L.length>f.limite?`<button class="btn" id="f_more">Mostrar mais (${nf(L.length-f.limite)} restantes)</button>`:""}
+  </section>`;
+}
+
+function vTime(){
+  const C=S.C,team=[...C.team];
+  const ult=C.ref[C.ref.length-1];
+  const rows=team.map(n=>{const bl=C.BL.filter(t=>t.donoFull===n);const hRef=C.ref.map(m=>(C.teamH[m]||{})[n]||0);const cRef=C.ref.map(m=>(C.capM[m]||{})[n]||0);
+    const fr=C.fech.find(f=>f.analyst_name===n&&f.month===ult)||{};
+    return {n:short(n),bl:bl.length,d:bl.filter(t=>t.tipo==="Dados").length,a:bl.filter(t=>t.tipo==="Ativação").length,ag:bl.filter(t=>/aguardando cliente|validacao do cliente/.test(norm(t.st))).length,
+      idade:median(bl.map(t=>t.idade)),par:bl.filter(t=>t.parado>30).length,hMed:mean(hRef),cMed:mean(cRef),ocup:cRef.reduce((s,x)=>s+x,0)?hRef.reduce((s,x)=>s+x,0)/cRef.reduce((s,x)=>s+x,0):null,prod:fr.produtividade_pct,
+      cargaMeses:(bl.reduce((s,t)=>s+Math.max(0,esforcoT(t)-t.horas),0))/((mean(cRef)||S.params.horas_mes_padrao)*S.params.fator_produtivo)};});
+  const hm=C.months.map(m=>{const o={lab:mlab(m)};team.forEach((n,i)=>o["a"+i]=(C.teamH[m]||{})[n]||0);return o;});
+  const cols=["var(--primary)","var(--serie-saida)","#0EA5E9","var(--serie-ativ)"];
+  return `<section class="view">
+   <div class="tblw"><table><thead><tr><th>Analista</th><th class="n">Backlog</th><th class="n">Dados</th><th class="n">Ativação</th><th class="n">Aguard. cliente</th><th class="n">Idade med.</th><th class="n">Parados +30 d</th><th class="n">Horas/mês</th><th class="n">Capacidade/mês</th><th class="n">Ocupação</th><th class="n">Produtividade ${ult?mlab(ult):""}</th><th class="n">Carga (meses)</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr><td><b style="font-weight:500">${esc(r.n)}</b></td><td class="n">${r.bl}</td><td class="n">${r.d}</td><td class="n">${r.a}</td><td class="n">${r.ag}</td><td class="n">${nf(r.idade)} d</td><td class="n">${r.par}</td><td class="n">${nf(r.hMed)} h</td><td class="n">${nf(r.cMed)} h</td><td class="n">${pct(r.ocup)}</td><td class="n">${r.prod!=null?nf(r.prod)+"%":"–"}</td><td class="n">${nf(r.cargaMeses,1)}</td></tr>`).join("")}
+   </tbody></table></div>
+   <p class="hint" style="margin:0;font-size:12px;color:var(--muted-foreground)">Horas, capacidade e ocupação: média dos meses completos de apontamento (${C.ref.map(mlab).join(", ")||"–"}). Produtividade: fechamento do Painel de Serviços. Carga: horas estimadas do backlog de cada analista ÷ capacidade produtiva mensal dele.</p>
+   <div class="card"><h2>Horas apontadas por analista e mês</h2>${legend(team.map((n,i)=>[cols[i%4],short(n)]))}
+    ${colChart(hm,team.map((n,i)=>({k:"a"+i,c:cols[i%4],l:short(n)})),{h:240,labels:false,aria:"Horas por analista"})}</div>
+  </section>`;
+}
+
+function vHoras(){
+  const C=S.C;if(!S.H)return `<section class="view"><p class="note">A base de horas ainda não foi carregada. Carregue o arquivo em Configuração.</p></section>`;
+  const TA=C.A.filter(a=>C.team.has(a.analyst_name));const tot=TA.reduce((s,a)=>s+(a.horas||0),0);
+  const byTipo=Object.entries(TA.reduce((o,a)=>(o[a.tipo||"(sem tipo)"]=(o[a.tipo||"(sem tipo)"]||0)+(a.horas||0),o),{})).sort((a,b)=>b[1]-a[1]);
+  const byAtv=Object.entries(TA.reduce((o,a)=>(o[a.atividade||"(sem)"]=(o[a.atividade||"(sem)"]||0)+(a.horas||0),o),{})).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const inSrv=TA.filter(a=>C.byId.has(String(a.ticket_id||"").trim())).reduce((s,a)=>s+(a.horas||0),0);
+  const semTk=TA.filter(a=>!String(a.ticket_id||"").trim()).reduce((s,a)=>s+(a.horas||0),0);
+  const outros=C.A.filter(a=>!C.team.has(a.analyst_name)&&C.byId.has(String(a.ticket_id||"").trim())).reduce((s,a)=>s+(a.horas||0),0);
+  const R=C.real,P=S.params;const topT=[...C.T].filter(t=>t.horas>0).sort((a,b)=>b.horas-a.horas).slice(0,12);
+  return `<section class="view">
+   <div class="kpis">
+    ${kpi("Horas do time",nf(tot)+" h",`${C.months.map(mlab).join(", ")}`)}
+    ${kpi("Em tickets de Serviços Técnicos",pct(inSrv/tot),nf(inSrv)+" h")}
+    ${kpi("Sem ticket",pct(semTk/tot),nf(semTk)+" h · internas e apoio")}
+    ${kpi("Outros analistas nos nossos tickets",nf(outros)+" h","apoio de fora do time")}
+   </div>
+   <div class="grid g2">
+    <div class="card"><h2>Esforço real por ticket concluído</h2><p class="hint">Horas apontadas por ticket, tickets criados desde ${C.months[0]?mlab(C.months[0]):"–"} e já resolvidos ou fechados</p>
+     <div class="tblw"><table><thead><tr><th>Tipo</th><th class="n">Tickets</th><th class="n">Média</th><th class="n">Mediana</th><th class="n">75% até</th><th class="n">Padrão</th></tr></thead><tbody>
+     ${["Ativação","Dados"].map(tp=>`<tr><td>${tp}</td><td class="n">${R[tp].n}</td><td class="n">${nf(R[tp].media,2)} h</td><td class="n">${nf(R[tp].mediana,2)} h</td><td class="n">${nf(R[tp].p75,2)} h</td><td class="n">${nf(P.esforco[tp],1)} h</td></tr>`).join("")}
+     </tbody></table></div><p class="hint" style="margin:0">Use esta tabela para calibrar o esforço padrão em Configuração. Projetos de dados longos que ainda estão abertos puxam a média real para cima quando fecharem.</p></div>
+    <div class="card"><h2>Horas por tipo de apontamento</h2>${hbars(byTipo.map(([l,v])=>({l,v})),{suf:" h"})}
+     <h2 style="margin-top:8px">Principais atividades</h2>${hbars(byAtv.map(([l,v])=>({l,v})),{suf:" h",c:CS})}</div>
+   </div>
+   <div class="card"><h2>Tickets com mais horas apontadas</h2>
+    <div class="tblw"><table><thead><tr><th>Ticket</th><th>Assunto</th><th>Tipo</th><th>Status</th><th class="n">Horas</th></tr></thead><tbody>
+    ${topT.map(t=>`<tr><td><a href="https://projuris-helpdesk.freshdesk.com/a/tickets/${t.id}" target="_blank" rel="noopener">${t.id}</a></td><td>${esc(t.assunto)}</td><td>${t.tipo}</td><td>${esc(t.st)}</td><td class="n">${nf(t.horas,1)}</td></tr>`).join("")}
+    </tbody></table></div></div>
+  </section>`;
+}
+
+function sopCard(x,t,sub){const P=S.params;return `<div class="card"><h2>${t}</h2><p class="hint">${sub||""}</p>
+   <div class="kpis" style="margin:0">${kpi("Capacidade produtiva",nf(x.cap)+" h",`${P.horizonte} meses · ${x.fteAtual} pessoa(s) · ${pct(P.fator_produtivo)} produtivo`)}${kpi("Demanda",nf(x.dem)+" h",`backlog ${nf(x.blH)} h (${nf(x.nBL)} tickets) + entradas ${nf(x.entH)} h/mês`)}
+   ${kpi("Saldo",(x.saldo>=0?"+":"")+nf(x.saldo)+" h",x.saldo>=0?"sobra":"falta",x.saldo<0?"bad":"good")}${kpi("Pessoas necessárias",nf(x.fteNec,1),`no squad/time: ${x.fteAtual}`,x.fteNec>x.fteAtual?"bad":"good")}</div>
+   ${legend([["var(--primary)","Capacidade"],["var(--serie-saida)","Demanda"]])}
+   ${colChart(x.meses.map((m,i)=>({lab:mlab(m),c:x.capMes[i],d:x.demMes[i]})),[{k:"c",c:"var(--primary)",l:"Capacidade"},{k:"d",c:"var(--serie-saida)",l:"Demanda"}],{h:200,aria:"Capacidade e demanda"})}
+   <p class="hint" style="margin:0">${x.mesesZerar!=null?`Com as entradas atuais, a folga zera o backlog em ~${nf(x.mesesZerar,1)} meses.`:"As entradas mensais já consomem toda a capacidade: o backlog não diminui."}</p></div>`;}
+// ---------------- Plano de Ação ----------------
+const AUTO_ATIV=["Ativação de Serviços (Projuris e Fornecedores)","Criação de Tenant","Alteração de licença","Legal Intelligence - Standard","Legal Intelligence - Alteração de Licença","Cancelamento Parcial (Cancelamento)","Cancelamento Total","Ativação de Módulos"];
+const KIT_DADOS=["Importação de Dados","Importação de Documentos (Arquivos)","Importação de Dados e Documentos"];
+const PLANO_DEF={red_ativ:0.6,red_dados:0.3,red_interno:0.25,dias_inatividade:30};
+function plano(){
+  const C=S.C,P=S.params,Q={...PLANO_DEF,...(P.plano||{})},H=Math.max(1,+P.horizonte||3),nRef=Math.max(1,C.ref.length);
+  const cen=cenKey();const sp=C.sop[cen];const deficitMes=Math.max(0,-sp.saldo/H);
+  const refSet=new Set(C.ref);
+  // horas reais por subtipo do ticket nos meses de referência (todos os analistas, tickets da base)
+  const hSub={},nSub={},hMed={};
+  for(const a of C.A){if(!refSet.has(a.mes))continue;const t=C.byId.get(String(a.ticket_id||"").trim());if(!t)continue;const k=t.subtipo||"(sem subtipo)";hSub[k]=(hSub[k]||0)+(a.horas||0);}
+  const janela=C.fechados;const jSet=new Set(janela);
+  for(const t of C.T){if(!(t.novo_no_ano&&jSet.has(t.mesEnt)))continue;const k=t.subtipo||"(sem subtipo)";nSub[k]=(nSub[k]||0)+1;}
+  const h0=C.months[0]||"9999";const conc={};for(const t of C.T){if(t.saida&&t.horas>0&&t.mesEnt>=h0){const k=t.subtipo||"(sem subtipo)";(conc[k]=conc[k]||[]).push(t.horas);}}
+  const subs=[...new Set([...Object.keys(hSub),...Object.keys(nSub)])].map(k=>{const v=conc[k]||[];const tipo=classifica({subtipo:k==="(sem subtipo)"?"":k,tags:"",assunto:""})[0];
+    return {k,tipo,entMes:(nSub[k]||0)/Math.max(1,janela.length),hMes:(hSub[k]||0)/nRef,n:v.length,media:mean(v),mediana:median(v),bl:C.BL.filter(t=>(t.subtipo||"(sem subtipo)")===k).length,auto:AUTO_ATIV.includes(k),kit:KIT_DADOS.includes(k)};});
+  const totHmes=subs.reduce((s,x)=>s+x.hMes,0);
+  // time: horas internas / sem ticket
+  const TA=C.A.filter(a=>C.team.has(a.analyst_name)&&refSet.has(a.mes));
+  const hTeam=TA.reduce((s,a)=>s+(a.horas||0),0)/nRef;
+  const hInt=TA.filter(a=>!String(a.ticket_id||"").trim()||/intern/i.test(a.atividade||"")||/intern/i.test(a.tipo||"")).reduce((s,a)=>s+(a.horas||0),0)/nRef;
+  const frag={};for(const a of TA){const k=a.atividade||"(sem)";frag[k]=frag[k]||{h:0,n:0};frag[k].h+=a.horas||0;frag[k].n++;}
+  // fila parada aguardando cliente
+  const esperaRe=/aguardando cliente|validacao do cliente/;
+  const espera=C.BL.filter(t=>esperaRe.test(norm(t.st))&&t.parado>Q.dias_inatividade);
+  const esperaH=espera.reduce((s,t)=>s+Math.max(0,esforcoT(t)-t.horas),0);
+  // alavancas (h/mês)
+  const hAuto=subs.filter(x=>x.auto).reduce((s,x)=>s+x.hMes,0),hKit=subs.filter(x=>x.kit).reduce((s,x)=>s+x.hMes,0);
+  const L=[
+   {id:"fila",t:`Encerrar por inatividade os tickets aguardando o cliente há mais de ${Q.dias_inatividade} dias`,inv:"Baixo",prazo:"2 semanas",ganho:cen==="ativo"?0:esperaH/H,
+    d:`${espera.length} tickets saem da fila. Régua: lembrete automático aos 7 e 15 dias e encerramento com aviso aos ${Q.dias_inatividade}, reabrindo se o cliente responder. Libera ${nf(esperaH)} h de backlog estimado${cen==="ativo"?" (no cenário backlog ativo esses tickets já estão fora da demanda, por isso o ganho aparece zerado)":""}.`},
+   {id:"interno",t:`Reduzir em ${pct(Q.red_interno)} as horas internas e sem ticket`,inv:"Baixo",prazo:"1 mês",ganho:hInt*Q.red_interno,
+    d:`Hoje ${nf(hInt)} h/mês (${pct(hInt/Math.max(1,hTeam))} das horas do time) vão para atividades internas ou sem ticket. Revisar reuniões, apoio informal e rotinas manuais.`},
+   {id:"auto",t:`Automatizar as ativações padronizáveis (−${pct(Q.red_ativ)} do esforço)`,inv:"Médio",prazo:"1–3 meses",ganho:hAuto*Q.red_ativ,
+    d:`Ativação de serviços, criação de tenant, licenças, LI Standard e cancelamentos somam ${nf(subs.filter(x=>x.auto).reduce((s,x)=>s+x.entMes,0))} tickets/mês e ${nf(hAuto)} h/mês. São repetitivos e de baixo esforço unitário: candidatos a formulário + script ou autoatendimento.`},
+   {id:"kit",t:`Kit de importação de dados (−${pct(Q.red_dados)} do esforço)`,inv:"Médio",prazo:"2–3 meses",ganho:hKit*Q.red_dados,
+    d:`Importações de dados e documentos consomem ${nf(hKit)} h/mês e são o que mais pesa por ticket. Planilhas-modelo, validador automático antes da carga e scripts reaproveitáveis.`},
+  ];
+  const capFTE=sp.capFTE;
+  L.forEach(l=>l.cobre=deficitMes?l.ganho/deficitMes:null);
+  // caminho de menor investimento: ordena por investimento e ganho
+  const ordem={"Baixo":0,"Médio":1,"Alto":2};const cam=[...L].sort((a,b)=>ordem[a.inv]-ordem[b.inv]||b.ganho-a.ganho);
+  let acc=0;const passos=[];for(const l of cam){if(acc>=deficitMes)break;if(l.ganho<=0)continue;acc+=l.ganho;passos.push(l);}
+  const resid=Math.max(0,deficitMes-acc);const contratar=resid>0?Math.ceil(resid/capFTE*10)/10:0;
+  // balanceamento
+  const sq=squads();const TAt={};for(const a of TA){const t=C.byId.get(String(a.ticket_id||"").trim());if(!t)continue;TAt[a.analyst_name]=TAt[a.analyst_name]||{Dados:0,"Ativação":0};TAt[a.analyst_name][t.tipo]+=(a.horas||0)/nRef;}
+  const nec={};for(const tp of ["Dados","Ativação"]){nec[tp]=sopCalc(new Set(sq[tp]),[tp],cen).fteNec;}
+  const totNec=nec["Dados"]+nec["Ativação"];const split={Dados:C.team.size*nec["Dados"]/totNec,"Ativação":C.team.size*nec["Ativação"]/totNec};
+  return {Q,cen,sp,deficitMes,subs,totHmes,hTeam,hInt,frag,espera,esperaH,L,passos,resid,contratar,capFTE,TAt,nec,split,sq};
+}
+function vAcao(){
+  const C=S.C,X=plano(),P=S.params;if(!S.H)return `<section class="view"><p class="note">O Plano de Ação precisa da base de horas. Carregue-a em Configuração.</p></section>`;
+  const invC={"Baixo":"ok","Médio":"y","Alto":"bad"};
+  const vol=[...X.subs].sort((a,b)=>b.entMes-a.entMes).slice(0,12);
+  const peso=[...X.subs].filter(x=>x.n>=5).sort((a,b)=>(b.media||0)-(a.media||0)).slice(0,10);
+  const horasTop=[...X.subs].sort((a,b)=>b.hMes-a.hMes).slice(0,10);
+  const fr=Object.entries(X.frag).map(([k,o])=>({k,h:o.h/Math.max(1,C.ref.length),n:o.n/Math.max(1,C.ref.length),min:o.n?o.h*60/o.n:0})).sort((a,b)=>b.n-a.n).slice(0,6);
+  const team=[...C.team];
+  const reab=C.T.filter(t=>t.reaberto_em).length;const fr1=median(C.T.filter(t=>t.novo_no_ano&&t.primeira_resposta_h!==""&&t.primeira_resposta_h!=null).map(t=>+t.primeira_resposta_h));
+  const cobreTotal=X.deficitMes?X.passos.reduce((s,l)=>s+l.ganho,0)/X.deficitMes:null;
+  return `<section class="view">
+   <div class="verdict ${X.deficitMes>0?(X.contratar>0?"bad":"warn"):"good"}">
+    <span style="font-size:12px;font-weight:500">Como estabilizar a operação com o menor investimento</span>
+    <span class="big">${X.deficitMes<=0?`A capacidade já cobre a demanda no cenário ${CEN[X.cen]}; o foco é ganhar folga e reduzir a fila parada.`:
+      X.contratar>0?`As ações de baixo e médio investimento cobrem ${pct(cobreTotal)} do déficit de ${nf(X.deficitMes)} h/mês; o restante pede ~${nf(X.contratar,1)} pessoa(s).`:
+      `${X.passos.length} ação(ões) cobrem o déficit de ${nf(X.deficitMes)} h/mês sem contratar: ${X.passos.map(l=>l.t.split(" (")[0].toLowerCase()).join("; ")}.`}</span>
+    <span style="font-size:13px">Cenário ${CEN[X.cen]} · ${nf(X.sp.ea,1)} h por ativação e ${nf(X.sp.ed,1)} h por ticket de dados (média real por subcategoria) · horizonte ${P.horizonte} meses · capacidade de ${nf(X.capFTE)} h/mês por pessoa. Premissas das ações editáveis no fim desta aba.</span></div>
+   ${quadroReal()}
+   <div class="card"><h2>Alavancas de eficiência</h2><p class="hint">Ganho estimado em horas por mês e quanto do déficit cada uma cobre, da menor para a maior necessidade de investimento</p>
+    <div class="tblw"><table><thead><tr><th>Ação</th><th>Investimento</th><th>Prazo</th><th class="n">Ganho/mês</th><th class="n">Cobre do déficit</th></tr></thead><tbody>
+    ${[...X.L].sort((a,b)=>({"Baixo":0,"Médio":1,"Alto":2}[a.inv]-{"Baixo":0,"Médio":1,"Alto":2}[b.inv])||b.ganho-a.ganho).map(l=>`<tr><td style="min-width:280px"><b style="font-weight:500">${esc(l.t)}</b><div style="color:var(--muted-foreground);font-size:12px;line-height:16px;margin-top:2px">${esc(l.d)}</div></td><td><span class="chip ${invC[l.inv]}">${l.inv}</span></td><td>${l.prazo}</td><td class="n">${nf(l.ganho)} h</td><td class="n">${X.deficitMes?pct(l.cobre):"–"}</td></tr>`).join("")}
+    <tr><td><b style="font-weight:500">Contratar</b><div style="color:var(--muted-foreground);font-size:12px">Só para o déficit que sobrar depois das ações acima.</div></td><td><span class="chip bad">Alto</span></td><td>2–3 meses</td><td class="n">${nf(X.capFTE)} h/pessoa</td><td class="n">${X.contratar>0?nf(X.contratar,1)+" pessoa(s)":"não necessário"}</td></tr>
+    </tbody></table></div></div>
+   <div class="grid g2">
+    <div class="card"><h2>Maior volume: candidatos a automação</h2><p class="hint">Entradas por mês (${C.fechados.map(mlab).join(", ")}) por subtipo · marcados os padronizáveis</p>
+     ${hbars(vol.map(x=>({l:(x.auto?"⚙ ":"")+x.k,v:x.entMes})),{c:"var(--primary)"})}
+     <p class="hint" style="margin:0">⚙ = demanda repetitiva e de baixo esforço unitário (≤ ~1 h), com fluxo padronizável. "(sem subtipo)" precisa ser classificado antes de automatizar.</p></div>
+    <div class="card"><h2>O que mais onera por demanda</h2><p class="hint">Horas apontadas por ticket concluído, subtipos com 5 ou mais tickets</p>
+     <div class="tblw"><table><thead><tr><th>Subtipo</th><th>Tipo</th><th class="n">Tickets</th><th class="n">Média</th><th class="n">Mediana</th><th class="n">Horas/mês</th></tr></thead><tbody>
+     ${peso.map(x=>`<tr><td>${esc(x.k)}</td><td>${x.tipo}</td><td class="n">${x.n}</td><td class="n">${nf(x.media,1)} h</td><td class="n">${nf(x.mediana,1)} h</td><td class="n">${nf(x.hMes)} h</td></tr>`).join("")}
+     </tbody></table></div></div>
+    <div class="card"><h2>Onde vão as horas</h2><p class="hint">Horas por mês nos tickets de cada subtipo (média de ${C.ref.map(mlab).join(", ")}), todos os analistas</p>
+     ${hbars(horasTop.map(x=>({l:x.k,v:x.hMes})),{suf:" h",c:CS})}</div>
+    <div class="card"><h2>Balanceamento do time</h2><p class="hint">Horas por mês em tickets de cada tipo (meses de referência) e divisão ideal pela demanda</p>
+     ${legend([[CD,"Dados"],[CA,"Ativação"]])}
+     ${hbars(team.map(n=>{const o=X.TAt[n]||{Dados:0,"Ativação":0};return {l:short(n),parts:[{v:o.Dados,c:CD,l:"Dados"},{v:o["Ativação"],c:CA,l:"Ativação"}]};}),{suf:" h"})}
+     <ul class="rules">
+      <li>Pela demanda do cenário ${CEN[X.cen]}, o time de ${C.team.size} pessoas deveria se dividir em <b>${nf(X.split["Dados"],1)} em Dados</b> e <b>${nf(X.split["Ativação"],1)} em Ativação</b>${Math.abs(X.split["Dados"]-2)>0.3?` (hoje: 2 e 2): ${X.split["Dados"]<2?"um analista do squad Dados pode dedicar parte do tempo a Ativação":"um analista do squad Ativação pode dedicar parte do tempo a Dados"}`:" — próximo do 2 + 2 atual"}.</li>
+      <li>${short(team.find(n=>X.TAt[n]&&X.TAt[n].Dados>30&&X.TAt[n]["Ativação"]>30)||"")?`${short(team.find(n=>X.TAt[n]&&X.TAt[n].Dados>30&&X.TAt[n]["Ativação"]>30))} atua nos dois tipos: vale definir se é o analista híbrido do time, com percentual fixo por squad.`:"Cada analista está concentrado em um tipo."}</li>
+      <li>${nf(C.BL.filter(t=>t.dono==="Sem responsável ativo").length)} tickets sem responsável ativo e os tickets de um tipo que estão no outro squad devem ir para o squad certo (ver S&amp;OP por squad).</li></ul></div>
+   </div>
+   <div class="card"><h2>Outras análises</h2>
+    <div class="find"><span class="chip warn">Fila</span><div><b>${nf(X.espera.length)} tickets aguardam o cliente há mais de ${X.Q.dias_inatividade} dias</b><p>Não consomem horas hoje, mas ocupam a fila, distorcem a idade do backlog e o S&amp;OP. Encerramento por inatividade com reabertura automática resolve sem custo.</p></div></div>
+    <div class="find"><span class="chip warn">Fragmentação</span><div><b>${esc(fr[0]?fr[0].k:"–")}: ${nf(fr[0]?fr[0].n:0)} apontamentos por mês de ~${nf(fr[0]?fr[0].min:0)} min cada</b><p>Muitos toques curtos no mesmo tipo de tarefa indicam trabalho manual repetitivo (checagens, respostas-padrão) — é onde automação e respostas prontas rendem mais.</p></div></div>
+    <div class="find"><span class="chip info">Resposta</span><div><b>1ª resposta mediana de ${nf(fr1)} h nos tickets do ano</b><p>Uma triagem com resposta automática e checklist de pré-requisitos por tipo reduz idas e vindas com o cliente.</p></div></div>
+    <div class="find"><span class="chip info">Retrabalho</span><div><b>${nf(reab)} tickets foram reabertos</b><p>Checklist de encerramento e validação com o cliente antes de fechar reduzem retorno à fila.</p></div></div>
+    <div class="find"><span class="chip y">Dados</span><div><b>${nf(C.T.filter(t=>!String(t.subtipo||"").trim()&&t.novo_no_ano&&C.fechados.includes(t.mesEnt)).length/Math.max(1,C.fechados.length))} tickets por mês entram sem subtipo</b><p>Tornar o subtipo obrigatório na abertura melhora a classificação Dados × Ativação e o planejamento.</p></div></div>
+   </div>
+   <div class="card"><h2>Premissas das ações</h2><p class="hint">Ajuste para simular cenários${S.canEdit?"":" (somente leitura)"}</p>
+    <div class="filters">
+     <label class="f" for="a_ra">Redução com automação de ativações (%)<input type="number" id="a_ra" min="0" max="100" step="5" value="${Math.round(X.Q.red_ativ*100)}" ${S.canEdit?"":"disabled"}></label>
+     <label class="f" for="a_rd">Redução com kit de dados (%)<input type="number" id="a_rd" min="0" max="100" step="5" value="${Math.round(X.Q.red_dados*100)}" ${S.canEdit?"":"disabled"}></label>
+     <label class="f" for="a_ri">Redução de horas internas (%)<input type="number" id="a_ri" min="0" max="100" step="5" value="${Math.round(X.Q.red_interno*100)}" ${S.canEdit?"":"disabled"}></label>
+     <label class="f" for="a_di">Dias aguardando cliente para encerrar<input type="number" id="a_di" min="7" max="180" step="1" value="${X.Q.dias_inatividade}" ${S.canEdit?"":"disabled"}></label>
+     ${S.canEdit?`<button class="btn pri" id="a_save">Salvar premissas</button>`:""}
+    </div></div>
+  </section>`;
+}
+function quadroReal(){
+  const P=S.params,R=S.C.AR,fd=d=>d.split("-").reverse().join("/");
+  const C=S.C,pad=g=>g==="Ativação"?+P.esforco["Ativação"]:g==="Dados (total)"?edMedio():C.effD[g];
+  const tr=(r,sub)=>{const pd=pad(r.g);
+    return `<tr${sub?"":' style="font-weight:500"'}><td>${sub?"<span style=\"color:var(--muted-foreground)\">↳</span> ":""}${esc(r.g)}</td><td class="n">${nf(r.conc)}</td><td class="n">${nf(r.n)}${r.conc?` <span style="color:var(--muted-foreground)">(${pct(r.n/r.conc)})</span>`:""}</td><td class="n">${r.n?nf(r.media,2)+" h":"–"}</td><td class="n">${r.n?nf(r.mediana,2)+" h":"–"}</td><td class="n">${r.n?nf(r.p75,2)+" h":"–"}</td><td class="n">${r.n?nf(r.tot)+" h":"–"}</td><td class="n"><b style="font-weight:500">${nf(pd,1)} h</b>${r.g==="Ativação"?` <span style="color:var(--muted-foreground)">padrão</span>`:r.g==="Dados (total)"?` <span style="color:var(--muted-foreground)">ponderado</span>`:C.effSrc[r.g]!=="real"?` <span style="color:var(--muted-foreground)">${C.effSrc[r.g]}</span>`:r.media<MIN_ESF?` <span style="color:var(--muted-foreground)">mínimo</span>`:""}</td></tr>`;};
+  const at=R.rows.find(r=>r.g==="Ativação"),subs=R.rows.filter(r=>r.g!=="Ativação");
+  const bars=R.rows.filter(r=>r.n&&r.g!=="Dados (outros)").map(r=>({l:r.g,v:r.media}));
+  return `<div class="card"><h2>Análise real: esforço médio por tipo de demanda</h2>
+   <p class="hint">Tickets concluídos (resolvidos ou fechados) de ${fd(R.lim)} a ${fd(TODAY.toISOString().slice(0,10))} (últimos 2 meses) · horas apontadas no Painel de Serviços por ticket, todos os analistas · a última coluna é o esforço que o S&amp;OP usa: Ativação no padrão de ${nf(P.esforco["Ativação"],1)} h; Dados pela média real de cada subcategoria, com mínimo de ${MIN_ESF} h</p>
+   <div class="grid g2" style="align-items:start">
+    <div class="tblw"><table><thead><tr><th>Demanda</th><th class="n">Concluídos</th><th class="n">Com horas</th><th class="n">Média</th><th class="n">Mediana</th><th class="n">75% até</th><th class="n">Horas</th><th class="n">Usado no S&amp;OP</th></tr></thead><tbody>
+     ${at?tr(at,false):""}${tr(R.dados,false)}${subs.map(r=>tr(r,true)).join("")}
+    </tbody></table></div>
+    <div>${hbars(bars,{suf:" h",c:"var(--primary)",dec:1})}</div>
+   </div>
+   <ul class="rules">
+    <li>A média considera só os tickets concluídos com horas apontadas; a coluna "Com horas" mostra a cobertura. Tickets sem apontamento ficam fora para não puxar a média para baixo.</li>
+    <li>Subdivisão de Dados pela mesma regra da classificação (subtipo, depois tags, depois assunto): "script" → Scripts; "migra" → Migrações; importação de documentos, arquivos ou anexos (inclusive "Importação de Dados e Documentos") → Importação de anexos; demais importações e "carga de dados" → Importação de dados.</li>
+    <li>O esforço de Dados é recalculado a cada carga das bases. Subcategoria com menos de ${MIN_AMOSTRA} tickets na janela usa o valor de Configuração (${nf(P.esforco["Dados"],1)} h).</li>
+    <li>Horas contadas desde o início dos apontamentos (jun/2026): um projeto longo iniciado antes disso aparece com menos horas do que consumiu.</li>
+   </ul></div>`;
+}
+async function saveAcao(){if(!S.db)return;const g=id=>+document.getElementById(id).value;
+  const p={...S.params,plano:{red_ativ:g("a_ra")/100,red_dados:g("a_rd")/100,red_interno:g("a_ri")/100,dias_inatividade:g("a_di")},atualizado_em:new Date().toISOString()};
+  try{await S.db.doc("cfg/params").set(p);toast("Premissas salvas");}catch(e){toast("Não foi possível salvar.");}}
+
+function tabSubDados(){
+  const C=S.C,H=Math.max(1,+S.params.horizonte||3);
+  const rows=SUBS_D.map(k=>{const bl=C.BL.filter(t=>t.sub===k),ba=bl.filter(isAtivo),e=C.effD[k];
+    return {k,e,src:C.effSrc[k],nT:bl.length,nA:ba.length,hT:bl.reduce((s,t)=>s+Math.max(0,e-t.horas),0),hA:ba.reduce((s,t)=>s+Math.max(0,e-t.horas),0),ent:C.entSub[k],hE:C.entSub[k]*e};}).filter(r=>r.nT||r.ent);
+  const T=rows.reduce((o,r)=>{for(const f of ["nT","nA","hT","hA","ent","hE"])o[f]=(o[f]||0)+r[f];return o;},{});
+  const td=(v,d)=>`<td class="n">${v}</td>`;
+  return `<div><h2>Saldo de horas por subcategoria</h2><p class="hint" style="margin:4px 0 8px">Cada ticket do backlog soma o esforço da sua subcategoria menos as horas já apontadas nele · esforço = média real dos concluídos nos últimos ${JANELA_REAL} dias (mínimo ${MIN_ESF} h)</p>
+   <div class="tblw"><table><thead><tr><th>Subcategoria</th><th class="n">Esforço</th><th class="n">Backlog total</th><th class="n">Saldo total</th><th class="n">Backlog ativo</th><th class="n">Saldo ativo</th><th class="n">Entradas/mês</th><th class="n">Horas/mês de entrada</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr><td>${esc(r.k)}${r.src!=="real"?` <span style="color:var(--muted-foreground);font-size:12px">(${r.src})</span>`:""}</td>${td(nf(r.e,1)+" h")}${td(nf(r.nT))}${td(nf(r.hT)+" h")}${td(nf(r.nA))}${td(nf(r.hA)+" h")}${td(nf(r.ent,1))}${td(nf(r.hE)+" h")}</tr>`).join("")}
+   <tr style="font-weight:500"><td>Total Dados</td>${td("~"+nf(edMedio(),1)+" h")}${td(nf(T.nT))}${td(nf(T.hT)+" h")}${td(nf(T.nA))}${td(nf(T.hA)+" h")}${td(nf(T.ent,1))}${td(nf(T.hE)+" h")}</tr>
+   </tbody></table></div></div>`;
+}
+function vSquad(){
+  const C=S.C,P=S.params,sq=squads();const cen=cenKey();
+  const bloco=tp=>{const mem=new Set(sq[tp]);const outro=tp==="Dados"?"Ativação":"Dados";
+    const a=sopCalc(mem,[tp],"total"),b=sopCalc(mem,[tp],"ativo");
+    const BLt=C.BL.filter(t=>t.tipo===tp);
+    const noSquad=BLt.filter(t=>mem.has(t.donoFull)).length,outroSq=BLt.filter(t=>(sq[outro]||[]).includes(t.donoFull)).length,semDono=BLt.length-noSquad-outroSq;
+    const hRef=C.ref.map(m=>C.A.filter(x=>mem.has(x.analyst_name)&&x.mes===m));
+    const hTot=hRef.flat().reduce((s,x)=>s+(x.horas||0),0);const hTipo=hRef.flat().filter(x=>{const t=C.byId.get(String(x.ticket_id||"").trim());return t&&t.tipo===tp;}).reduce((s,x)=>s+(x.horas||0),0);
+    const hOutro=hRef.flat().filter(x=>{const t=C.byId.get(String(x.ticket_id||"").trim());return t&&t.tipo===outro;}).reduce((s,x)=>s+(x.horas||0),0);
+    return `<div class="card" style="gap:16px"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:flex-start">
+      <div><h2 style="font-size:20px;line-height:24px;font-weight:600">Squad ${tp}</h2><p class="hint" style="margin:4px 0 0">${mem.size?[...mem].map(short).join(" · "):"sem analistas definidos (Configuração)"}</p></div>
+      <span class="chip ${(cen==="ativo"?b:a).saldo<0?"bad":"ok"}">${(cen==="ativo"?b:a).saldo<0?"Falta capacidade":"Capacidade suficiente"} · ${CEN[cen]}</span></div>
+     <div class="kpis" style="margin:0">
+      ${kpi("Backlog "+tp,nf(BLt.length),`${nf(noSquad)} com o squad · ${nf(outroSq)} com o outro squad · ${nf(semDono)} sem responsável ativo`,outroSq+semDono>0?"":"good")}
+      ${kpi("Entradas / mês",nf(C.entMed[tp]),`média de ${C.fechados.map(mlab).join(", ")}`)}
+      ${kpi("Foco do squad",hTot?pct(hTipo/hTot):"–",`das horas em tickets de ${tp.toLowerCase()} · ${nf(hOutro)} h em ${outro.toLowerCase()} (${C.ref.map(mlab).join(", ")})`)}
+     </div>
+     ${tp==="Dados"?tabSubDados():""}
+     <div class="grid g2">${sopCard(a,"Backlog total",`${nf(a.nBL)} tickets · ${tp==="Dados"?"~"+nf(a.ed,1)+" h por ticket (média real por subcategoria)":nf(a.ea,1)+" h por ticket"}`)}${sopCard(b,"Backlog ativo",`${nf(b.nBL)} tickets (sem ${nf(b.nFora)} que dependem do cliente ou de terceiros) · ${tp==="Dados"?"~"+nf(b.ed,1)+" h por ticket (média real por subcategoria)":nf(b.ea,1)+" h por ticket"}`)}</div></div>`;};
+  const tot=["total","ativo"].map(c=>["Dados","Ativação"].reduce((s,tp)=>s+sopCalc(new Set(sq[tp]),[tp],c).saldo,0));
+  return `<section class="view">
+   <p class="note">Planejamento por tipo de demanda: cada squad atende só o seu tipo com a capacidade dos seus analistas. Quem compõe cada squad é definido em Configuração. Saldo somado dos dois squads: ${(tot[0]>=0?"+":"")+nf(tot[0])} h com o backlog total e ${(tot[1]>=0?"+":"")+nf(tot[1])} h com o backlog ativo, usando ${nf(P.esforco["Ativação"],1)} h por ativação e ${nf(P.esforco["Dados"],1)} h por ticket de dados (o S&amp;OP geral junta toda a demanda e todo o time).</p>
+   ${bloco("Dados")}${bloco("Ativação")}
+   <div class="card"><h2>Como o S&amp;OP por squad é calculado</h2><ul class="rules">
+    <li><b>Capacidade</b> do squad: capacidade do Painel de Serviços dos seus analistas × ${pct(P.fator_produtivo)} de tempo produtivo.</li>
+    <li><b>Demanda</b>: o backlog do tipo (esforço do ticket menos as horas já apontadas nele: Ativação ${nf(P.esforco["Ativação"],1)} h; Dados pela média real da subcategoria — importação de dados, importação de anexos, scripts ou migrações), qualquer que seja o responsável atual — inteiro no backlog total; sem os tickets aguardando cliente, suspensos, com fornecedor ou cancelados no backlog ativo — distribuído nos ${P.horizonte} meses, mais a média mensal de entradas do tipo × esforço.</li>
+    <li><b>Backlog com o outro squad</b> ou sem responsável ativo indica tickets a redistribuir para o squad certo.</li>
+    <li><b>Foco do squad</b>: parcela das horas apontadas pelos analistas do squad em tickets do próprio tipo, nos meses de referência.</li>
+   </ul></div></section>`;
+}
+function capLeitura(A,B){
+  const C=S.C,P=S.params,H=Math.max(1,+P.horizonte||3),cap=A.cap/H;
+  const eA=entHTipo("Ativação"),eD=entHTipo("Dados");
+  const L=[["Capacidade produtiva do time",cap,`${A.fteAtual} pessoas · ${nf(A.capFTE)} h por pessoa`,""],
+    ["Entradas de Ativação",eA,`${nf(C.entMed["Ativação"])} tickets/mês × ${nf(A.ea,1)} h`,"d"],
+    ["Entradas de Dados",eD,SUBS_D.filter(k=>C.entSub[k]).map(k=>`${k.replace("Importação de ","Imp. ")} ${nf(C.entSub[k],1)} × ${nf(C.effD[k],1)} h`).join(" · "),"d"],
+    ["Backlog total ÷ horizonte",A.blH/H,`${nf(A.blH)} h em ${H} meses`,"d"],
+    ["Backlog ativo ÷ horizonte",B.blH/H,`${nf(B.blH)} h em ${H} meses`,"d"]];
+  const sobra=cap-eA-eD;
+  return `<div class="card"><h2>Leitura da capacidade (por mês)</h2><p class="hint">O que cabe na capacidade antes de olhar o backlog · entradas = média de ${C.fechados.map(mlab).join(", ")}</p>
+   <div class="grid g2" style="align-items:start">
+    <div class="tblw"><table><thead><tr><th>Item</th><th class="n">h/mês</th><th class="n">Pessoas</th><th>Base</th></tr></thead><tbody>
+     ${L.map(([l,v,b])=>`<tr><td>${l}</td><td class="n">${nf(v)} h</td><td class="n">${nf(v/A.capFTE,1)}</td><td style="color:var(--muted-foreground);font-size:12px">${b}</td></tr>`).join("")}
+     <tr style="font-weight:500"><td>Capacidade − entradas</td><td class="n">${(sobra>=0?"+":"")+nf(sobra)} h</td><td class="n">${nf(sobra/A.capFTE,1)}</td><td style="color:var(--muted-foreground);font-size:12px">${sobra>=0?"folga para reduzir o backlog":"as entradas já superam a capacidade: o backlog cresce"}</td></tr>
+    </tbody></table></div>
+    <div>${hbars([{l:"Capacidade",v:cap},{l:"Entradas Ativação",v:eA},{l:"Entradas Dados",v:eD},{l:"Backlog total/mês",v:A.blH/H},{l:"Backlog ativo/mês",v:B.blH/H}],{suf:" h"})}</div>
+   </div></div>`;
+}
+function vSop(){
+  const C=S.C,P=S.params,A=C.sop.total,B=C.sop.ativo;
+  const col=(x,t)=>`<div class="card"><h2>${t}</h2><p class="hint">${nf(x.nBL)} tickets no backlog${x.nFora?` (sem ${nf(x.nFora)} que dependem do cliente ou de terceiros)`:""} · ${nf(x.ea,1)} h por ativação · ${nf(x.ed,1)} h por ticket de dados (média real por subcategoria)</p>
+   <div class="kpis" style="margin:0">${kpi("Capacidade produtiva",nf(x.cap)+" h",`${P.horizonte} meses · ${pct(P.fator_produtivo)} da capacidade do Painel`)}${kpi("Demanda",nf(x.dem)+" h",`backlog ${nf(x.blH)} h + entradas ${nf(x.entH)} h/mês`)}
+   ${kpi("Saldo",(x.saldo>=0?"+":"")+nf(x.saldo)+" h",x.saldo>=0?"sobra":"falta",x.saldo<0?"bad":"good")}${kpi("Pessoas necessárias",nf(x.fteNec,1),`time atual: ${x.fteAtual}`,x.fteNec>x.fteAtual?"bad":"good")}</div>
+   ${legend([["var(--primary)","Capacidade"],[CD,"Demanda"]])}
+   ${colChart(x.meses.map((m,i)=>({lab:mlab(m),c:x.capMes[i],d:x.demMes[i]})),[{k:"c",c:"var(--primary)",l:"Capacidade"},{k:"d",c:"var(--serie-saida)",l:"Demanda"}],{h:200,aria:"Capacidade e demanda"})}
+   <p class="hint" style="margin:0">${x.mesesZerar!=null?`Com as entradas atuais, a folga zera o backlog em ~${nf(x.mesesZerar,1)} meses.`:"As entradas mensais já consomem toda a capacidade: o backlog não diminui."}</p></div>`;
+  return `<section class="view">
+   <p class="note">S&amp;OP geral: todos os tickets de Serviços Técnicos × todos os analistas do time (${[...C.team].map(short).join(", ")}). A visão por tipo de demanda está em “S&amp;OP por squad”.</p>
+   <div class="grid g2">${col(A,"Cenário 1 · backlog total")}${col(B,"Cenário 2 · backlog ativo")}</div>
+   ${capLeitura(A,B)}
+   <div class="card"><h2>Como o S&amp;OP é calculado</h2><ul class="rules">
+    <li><b>Capacidade</b>: capacidade mensal de cada analista do time no Painel de Serviços (já considera dias úteis e férias) × ${pct(P.fator_produtivo)} de tempo produtivo. Sem capacidade cadastrada no mês, usa ${P.horas_mes_padrao} h por pessoa.</li>
+    <li><b>Backlog</b>: para cada ticket aberto, o esforço do ticket (${nf(P.esforco["Ativação"],1)} h por ativação, editável em Configuração; Dados pela média real dos últimos ${JANELA_REAL} dias da subcategoria: ${SUBS_D.filter(k=>C.entSub[k]||C.BL.some(t=>t.sub===k)).map(k=>`${k.toLowerCase()} ${nf(C.effD[k],1)} h`).join(", ")}, mínimo ${MIN_ESF} h) menos as horas já apontadas nele; o total é distribuído igualmente nos ${P.horizonte} meses.</li>
+    <li><b>Cenários</b>: o <b>backlog total</b> conta todos os tickets abertos; o <b>backlog ativo</b> tira os que estão aguardando o cliente (ou a validação dele), suspensos, com fornecedor ou cancelados — mede o trabalho que o time consegue tocar agora.</li>
+    <li><b>Entradas previstas</b>: média mensal de tickets novos nos meses fechados (${C.fechados.map(mlab).join(", ")}): ${nf(C.entMed["Ativação"])} de ativação e ${nf(C.entMed["Dados"])} de dados, cada subcategoria × o seu esforço.</li>
+    <li>O esforço real apontado (abas Horas e Plano de Ação) fica como referência de calibração; não entra no S&amp;OP.</li>
+    <li><b>Pessoas necessárias</b> = demanda média mensal ÷ capacidade produtiva média por pessoa (${nf(A.capFTE)} h/mês).</li>
+   </ul></div></section>`;
+}
+
+function vCfg(){
+  const P=S.params,ro=!S.canEdit,dis=ro?"disabled":"";const b=S.bases||{};
+  const pessoas=[...new Set([...(S.T||[]).map(t=>t.agente).filter(Boolean),...((S.H&&S.H["Analistas"])||[]).map(a=>a.name).filter(Boolean)])].filter(n=>!/Agente Padr/.test(n)).sort();
+  const st=(k,lab)=>{const x=b[k];return x?`<span class="chip ok">${lab}: ${esc((x.gerado_em||"").replace("T"," ").slice(0,16))} · ${nf(x.linhas)} linhas</span>`:`<span class="chip warn">${lab}: não carregada</span>`;};
+  return `<section class="view">
+   ${ro?`<p class="note">Somente leitura. Parâmetros, time e cargas são mantidos por quem pode editar o painel.</p>`:""}
+   <div class="grid g2">
+    <div class="card"><h2>Parâmetros do S&amp;OP</h2>
+     <div class="filters">
+      <label class="f" for="p_ea">Esforço por ativação (h)<input type="number" id="p_ea" step="0.25" min="0" value="${P.esforco["Ativação"]}" ${dis}></label>
+      <label class="f" for="p_ed">Dados sem amostra real (h)<input type="number" id="p_ed" step="0.5" min="0" value="${P.esforco["Dados"]}" ${dis}></label>
+      <label class="f" for="p_fp">Tempo produtivo (%)<input type="number" id="p_fp" step="5" min="10" max="100" value="${Math.round(P.fator_produtivo*100)}" ${dis}></label>
+      <label class="f" for="p_hz">Horizonte (meses)<input type="number" id="p_hz" step="1" min="1" max="12" value="${P.horizonte}" ${dis}></label>
+      <label class="f" for="p_hp">Horas/mês sem capacidade no Painel<input type="number" id="p_hp" step="1" min="40" max="220" value="${P.horas_mes_padrao}" ${dis}></label>
+      <label class="f" for="p_cen">Cenário do diagnóstico<select id="p_cen" ${dis}><option value="total" ${cenKey()==="total"?"selected":""}>Backlog total</option><option value="ativo" ${cenKey()==="ativo"?"selected":""}>Backlog ativo</option></select></label>
+     </div>
+     <h2 style="margin-top:8px">Time</h2><p class="hint">Quem entra na capacidade e na fila. Quem sai do time tem os tickets contados como “Sem responsável ativo”.</p>
+     <div style="display:flex;flex-wrap:wrap;gap:8px 16px">${pessoas.map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" id="tm_${i}" data-n="${esc(n)}" ${(P.time||[]).includes(n)?"checked":""} ${dis}>${esc(short(n))}</label>`).join("")}</div>
+     <h2 style="margin-top:8px">Squads</h2><p class="hint">Dois analistas por squad no planejamento por tipo de demanda (aba S&amp;OP por squad).</p>
+     <div class="filters">${(P.time||[]).map((n,i)=>{const sq=P.squads||{};const v=(sq["Dados"]||[]).includes(n)?"Dados":(sq["Ativação"]||[]).includes(n)?"Ativação":"";return `<label class="f" for="sq_${i}">${esc(short(n))}<select id="sq_${i}" data-n="${esc(n)}" ${dis}><option value="" ${!v?"selected":""}>Nenhum</option><option ${v==="Dados"?"selected":""}>Dados</option><option ${v==="Ativação"?"selected":""}>Ativação</option></select></label>`;}).join("")}</div>
+     ${ro?"":`<div><button class="btn pri" id="p_save">Salvar parâmetros</button></div>`}
+    </div>
+    <div class="card"><h2>Bases de dados</h2><div class="chips">${st("tickets","Tickets")} ${st("horas","Horas")}</div>
+     <p class="hint" style="margin:0">As bases são geradas no computador do Diego pela automação (dias úteis às 07:30 e 12:30) e carregadas aqui. Arquivos: <span class="mono">base_servicos_tecnicos.json</span> e <span class="mono">horas_apontadas_&lt;ano&gt;_painel.json</span>.</p>
+     ${S.assets?`<label class="f" for="up_file">Carregar arquivo de base (JSON)<input type="file" id="up_file" accept=".json,application/json"></label>`:`<p class="note">A carga de arquivos está disponível só para quem pode editar o painel.</p>`}
+     <h2 style="margin-top:8px">Regras de classificação</h2><ul class="rules">
+      <li><b>Dados</b> quando o Subtipo ou as Tags falam de importação (dados, anexos/documentos), migração ou scripts.</li>
+      <li><b>Ativação</b> quando o Subtipo está preenchido com outro serviço.</li>
+      <li>Sem subtipo, o <b>Assunto</b> decide (menos preciso). A coluna que decidiu aparece em cada ticket no Backlog.</li>
+      <li>Saídas = tickets resolvidos ou fechados no mês. Backlog = status diferente de Resolved e Closed.</li></ul>
+    </div>
+   </div></section>`;
+}
+
+// ---------------- render / eventos ----------------
+function drawTabs(){$("#tabs").innerHTML=TABS.map(([v,l])=>`<button role="tab" data-v="${v}" aria-selected="${S.view===v}">${esc(l)}</button>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{S.view=b.dataset.v;try{localStorage.setItem("st_view",S.view);}catch(e){}render();});}
+function drawFresh(){const b=S.bases||{},el=$("#fresh");if(!b.tickets&&!b.horas){el.innerHTML=`<span class="chip warn">Bases não carregadas</span>`;return;}
+  const age=x=>x&&x.gerado_em?Math.floor((Date.now()-new Date(x.gerado_em))/36e5):null;
+  const c=(x,l)=>{if(!x)return `<span class="chip warn">${l}: sem carga</span>`;const h=age(x);return `<span class="chip ${h>30?"warn":"ok"}">${l}: ${esc((x.gerado_em||"").slice(8,10)+"/"+(x.gerado_em||"").slice(5,7)+" "+(x.gerado_em||"").slice(11,16))} UTC</span>`;};
+  el.innerHTML=c(b.tickets,"Tickets")+c(b.horas,"Horas")+(S.C?`<span class="chip">Time: ${[...S.C.team].map(short).join(", ")}</span>`:"");}
+// ---------------- botão Atualizar (Fase 5) ----------------
+// Clique -> grava o pedido em cfg/atualizacao e agenda a tarefa "Mensageiro do painel" para o minuto seguinte.
+// O mensageiro (tarefa agendada do Claude, ligada ao computador do Diego) entrega o pedido ao vigia do Windows,
+// acompanha a extração e carrega as bases novas aqui (cfg/bases). Hibernação: 5 h após sucesso, 15 min após falha.
+const OCUPADO=["na_fila","aguardando_computador","atualizando","carregando"];
+const hm=iso=>{const d=new Date(iso);return isNaN(d)?"–":d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});};
+const dhm=iso=>{const d=new Date(iso);if(isNaN(d))return "–";const hoje=new Date().toDateString()===d.toDateString();return hoje?hm(iso):d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});};
+function horaSP(){const p=new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date());const g=t=>+(p.find(x=>x.type===t)||{}).value;return g("hour")*60+g("minute");}
+function estadoAtu(){
+  const A=S.atu||{},agora=Date.now();
+  const recente=A.atualizado_em&&agora-new Date(A.atualizado_em)<25*60e3;
+  if(OCUPADO.includes(A.status)&&recente){
+    const txt={na_fila:`Na fila · começa às ${hm(A.agendado_para)}`,aguardando_computador:"Pedido entregue ao computador · aguardando o vigia (até 5 min)",atualizando:`Atualizando no computador · ${A.etapa||"extração"}`,carregando:"Carregando as bases no painel"}[A.status];
+    return {cls:"info",txt,pode:false};}
+  const lib=A.proximo_liberado_em?new Date(A.proximo_liberado_em):null;
+  if(lib&&agora<lib){
+    if(A.status==="erro")return {cls:"bad",txt:`Falhou: ${A.detalhe||"ver log"} · nova tentativa às ${hm(A.proximo_liberado_em)}`,pode:false};
+    return {cls:"",txt:`Hibernando até ${dhm(A.proximo_liberado_em)}`,pode:false};}
+  const m=horaSP();if(m<7*60||m>21*60+40)return {cls:"",txt:"Disponível das 07:00 às 21:40 (o computador atende nesse horário)",pode:false};
+  if(A.status==="erro")return {cls:"warn",txt:`Última tentativa falhou: ${A.detalhe||"ver log"}`,pode:true};
+  return {cls:"ok",txt:"Disponível",pode:true};}
+function drawUpd(){const el=$("#upd");if(!el)return;const A=S.atu||{},E=estadoAtu();
+  const podeUsar=S.canEdit&&S.mcp&&S.mens&&S.mens.trigger_id;
+  const ult=A.ultimo_sucesso?`Última atualização: ${dhm(A.ultimo_sucesso)}${A.origem?" ("+(A.origem==="botao"?"botão":"agendada")+")":""}`:"";
+  el.innerHTML=(podeUsar?`<button class="btn pri" id="btnAtu" ${E.pode?"":"disabled"} title="Roda as extrações no computador do Diego e carrega as bases novas (leva de 10 a 15 min)">Atualizar</button>`:"")+
+    `<span class="chip ${E.cls}">${esc(E.txt)}</span>`+(ult?`<span class="det">${esc(ult)}</span>`:"");
+  const b=$("#btnAtu");if(b)b.onclick=atualizar;}
+async function atualizar(){const b=$("#btnAtu");if(b)b.disabled=true;
+  const E=estadoAtu();if(!E.pode){drawUpd();return;}
+  const t=new Date(Date.now()+60e3);t.setUTCSeconds(0,0);t.setUTCMinutes(t.getUTCMinutes()+1);
+  const quando=t.toISOString().replace(".000Z","Z");const agora=new Date().toISOString();
+  const pedido={...(S.atu||{}),status:"na_fila",etapa:"aguardando o mensageiro",origem:"botao",pedido_id:"btn-"+Date.now().toString(36),pedido_em:agora,agendado_para:quando,detalhe:"",atualizado_em:agora};
+  try{await S.db.doc("cfg/atualizacao").set(pedido);}catch(e){toast("Não foi possível registrar o pedido.");drawUpd();return;}
+  try{await S.mcp.callTool("Claude Code Remote","update_trigger",{trigger_id:S.mens.trigger_id,run_once_at:quando,enabled:true},{cache:false});
+    toast("Atualização pedida. Começa às "+hm(quando)+" e leva de 10 a 15 min.");}
+  catch(e){const c=e&&e.code;
+    const msg={server_not_connected:"conector Claude Code Remote não conectado",needs_reauth:"reconecte o Claude Code Remote",not_in_manifest:"permissão do conector recusada",cancelled:"pedido cancelado",tool_error:"a tarefa recusou o agendamento"}[c]||("erro ao agendar"+(c?" ("+c+")":""));
+    try{await S.db.doc("cfg/atualizacao").set({...pedido,status:"erro",etapa:"agendamento",detalhe:msg,atualizado_em:new Date().toISOString(),proximo_liberado_em:(S.atu||{}).proximo_liberado_em||null});}catch(_){}
+    toast("Não foi possível pedir a atualização: "+msg+".");}}
+setInterval(()=>{if(S.atu)drawUpd();},30e3);
+
+function render(){drawTabs();drawFresh();drawUpd();const m=$("#main");
+  if(S.loadErr){m.innerHTML=`<section class="view"><p class="note">${esc(S.loadErr)}</p></section>`+(S.view==="cfg"?vCfg():"");bind();return;}
+  if(!S.db&&S.ready){m.innerHTML=`<section class="view"><p class="note">Este painel lê as bases do banco do artefato. Abra-o no Claude, com sua conta da organização.</p></section>`;return;}
+  if(!S.C){m.innerHTML=S.ready?`<section class="view"><p class="note">Nenhuma base carregada ainda. Em Configuração, carregue <span class="mono">base_servicos_tecnicos.json</span> e <span class="mono">horas_apontadas_&lt;ano&gt;_painel.json</span>.</p></section>`+(S.view==="cfg"?vCfg():""):`<section class="view"><p class="note">Carregando dados…</p></section>`;bind();return;}
+  m.innerHTML=({geral:vGeral,diag:vDiag,backlog:vBacklog,time:vTime,horas:vHoras,sop:vSop,squad:vSquad,acao:vAcao,cfg:vCfg}[S.view]||vGeral)();bind();}
+function bind(){
+  const on=(id,ev,fn)=>{const e=document.getElementById(id);if(e)e[ev]=fn;};
+  ["tipo","dono","status"].forEach(k=>on("f_"+k,"onchange",e=>{S.blFilter[k]=e.target.value;S.blFilter.limite=200;render();}));
+  on("f_q","oninput",e=>{clearTimeout(bind._q);const v=e.target.value;bind._q=setTimeout(()=>{S.blFilter.q=v;render();const n=$("#f_q");if(n){n.focus();n.setSelectionRange(v.length,v.length);}},300);});
+  on("f_more","onclick",()=>{S.blFilter.limite+=300;render();});
+  on("f_csv","onclick",exportCsv);
+  on("p_save","onclick",saveParams);
+  on("a_save","onclick",saveAcao);
+  on("up_file","onchange",e=>upload(e.target.files[0]));
+}
+async function exportCsv(){const dl=await window.claude?.use?.("downloads");if(!dl){toast("Download indisponível nesta visualização.");return;}
+  const L=blFiltered();const head=["Ticket","Assunto","Tipo","Regra","Status","Responsável","Subtipo","Idade (dias)","Parado (dias)","Horas apontadas"];
+  const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  const csv="﻿"+[head.join(";")].concat(L.map(t=>[t.id,t.assunto,t.tipo,t.regra,t.st,t.dono,t.subtipo,t.idade,t.parado,String(t.horas.toFixed(2)).replace(".",",")].map(q).join(";"))).join("\r\n");
+  try{await dl.save({filename:"backlog_servicos_tecnicos.csv",data:new Blob([csv],{type:"text/csv"})});}catch(e){toast("Download não concluído.");}}
+async function saveParams(){if(!S.db)return;const g=id=>+document.getElementById(id).value;
+  const time=[...document.querySelectorAll("input[id^=tm_]")].filter(i=>i.checked).map(i=>i.dataset.n);
+  const p={...S.params,esforco:{"Ativação":g("p_ea"),"Dados":g("p_ed")},fator_produtivo:g("p_fp")/100,horizonte:g("p_hz"),horas_mes_padrao:g("p_hp"),cenario:document.getElementById("p_cen").value,time,atualizado_em:new Date().toISOString()};
+  const squads={"Dados":[],"Ativação":[]};document.querySelectorAll("select[id^=sq_]").forEach(e=>{if(e.value&&squads[e.value]&&time.includes(e.dataset.n))squads[e.value].push(e.dataset.n);});p.squads=squads;
+  if(!time.length){toast("Selecione ao menos uma pessoa no time.");return;}
+  try{await S.db.doc("cfg/params").set(p);toast("Parâmetros salvos");}catch(e){toast(e&&e.code==="invalid_argument"?"Você não tem permissão para alterar os parâmetros.":"Não foi possível salvar. Tente de novo.");}}
+async function upload(file){if(!file||!S.assets||!S.db)return;
+  let j;try{j=JSON.parse(await file.text());}catch(e){toast("O arquivo não é um JSON válido.");return;}
+  const kind=j.tabelas&&j.tabelas["Apontamentos"]?"horas":(j.colunas&&j.linhas?"tickets":null);
+  if(!kind){toast("Arquivo não reconhecido. Use base_servicos_tecnicos.json ou horas_apontadas_<ano>_painel.json.");return;}
+  toast("Enviando "+(kind==="horas"?"base de horas":"base de tickets")+"…");
+  try{const r=await S.assets.upload(file,{type:"application/json"});const old=(S.bases||{})[kind];
+    const meta=j.meta||{};const linhas=kind==="horas"?(j.tabelas["Apontamentos"].linhas||[]).length:j.linhas.length;
+    const doc={...(S.bases||{}),[kind]:{asset:r.id,gerado_em:meta.gerado_em||"",linhas,enviado_em:new Date().toISOString(),arquivo:file.name}};
+    await S.db.doc("cfg/bases").set(doc);
+    if(old&&old.asset&&old.asset!==r.id){try{await S.assets.delete(old.asset);}catch(e){}}
+    toast("Base carregada");}
+  catch(e){toast({too_large:"Arquivo acima de 20 MB.",rate_limited:"Muitas tentativas; aguarde um pouco.",not_granted:"Sem permissão para carregar arquivos."}[e&&e.code]||"Não foi possível carregar o arquivo.");}}
+
+// ---------------- boot ----------------
+try{const v=localStorage.getItem("st_view");if(v&&TABS.some(t=>t[0]===v))S.view=v;}catch(e){}
+if(/^#[a-z]+$/.test(location.hash)&&TABS.some(t=>"#"+t[0]===location.hash))S.view=location.hash.slice(1);
+render();
+(async function boot(){const c=window.claude;
+  const [db,user]=await Promise.all([c?.use?.("db")??null,c?.use?.("user")??null]);
+  S.db=db;S.user=user;S.ready=true;
+  if(user){try{S.canEdit=await user.canEdit();}catch(e){}}
+  if(S.canEdit){c?.use?.("assets").then(a=>{S.assets=a;if(S.view==="cfg")render();}).catch(()=>{});
+    c?.use?.("mcp").then(m=>{S.mcp=m;drawUpd();}).catch(()=>{});}
+  if(!db){render();return;}
+  db.doc("cfg/params").onSnapshot(s=>{S.params=s.exists?{...JSON.parse(JSON.stringify(DEFAULT_PARAMS)),...s.data()}:JSON.parse(JSON.stringify(DEFAULT_PARAMS));if(S.T){compute();}render();},()=>{});
+  db.doc("cfg/atualizacao").onSnapshot(s=>{S.atu=s.exists?s.data():null;drawUpd();},()=>{});
+  db.doc("cfg/mensageiro").onSnapshot(s=>{S.mens=s.exists?s.data():null;drawUpd();},()=>{});
+  db.doc("cfg/bases").onSnapshot(s=>{S.bases=s.exists?s.data():null;loadBases();},()=>{S.loadErr="Não foi possível ler o banco do painel.";render();});
+})();
+})();
+</script>

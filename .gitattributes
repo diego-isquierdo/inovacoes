@@ -1,0 +1,8 @@
+# Scripts do Windows ficam byte a byte como rodam no computador (CRLF + BOM do PowerShell 5.1)
+*.ps1 -text
+*.vbs -text
+# Demais textos: LF no repositório
+*.md text eol=lf
+*.py text eol=lf
+*.html text eol=lf
+*.txt text eol=lf

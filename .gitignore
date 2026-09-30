@@ -1,0 +1,35 @@
+# ---- Segredos: nunca versionar ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- Dados de clientes e saídas das extrações ----
+**/output/
+**/cache/
+*.xlsx
+*.xls
+*.csv
+**/base_servicos_tecnicos*.json
+**/horas_apontadas_*.json
+
+# ---- Estado e histórico de execução (gerados no computador) ----
+**/logs/
+*.log
+**/registry.jsonl
+**/automacao/ultima_atualizacao.json
+**/automacao/estado_botao.json
+**/automacao/manifesto.json
+**/automacao/pedido_atualizacao.json
+**/automacao/.executando
+**/automacao/pedidos/
+**/automacao/poc/*.json
+
+# ---- Ambiente ----
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+desktop.ini

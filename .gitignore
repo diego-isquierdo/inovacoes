@@ -26,6 +26,9 @@
 **/automacao/pedidos/
 **/automacao/poc/*.json
 
+# ---- Pacotes git (entrega) ----
+*.bundle
+
 # ---- Ambiente ----
 .venv/
 __pycache__/

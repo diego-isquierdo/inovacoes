@@ -21,7 +21,16 @@
 | `extracao/scripts/tickets/extracao_servicos_tecnicos.py` | `MCP - Fresk\freshdesk_mcp\scripts\` |
 | `extracao/scripts/tickets/README_scripts_freshdesk.md` | `MCP - Fresk\freshdesk_mcp\scripts\README.md` |
 | `extracao/scripts/horas/*` | `MCP Painel de Serviços\scripts\extracao_horas_apontadas.py`, `requirements.txt`, `.env.example` |
-| `README.md`, `VERSIONAMENTO.md`, `tarefas/`, `ferramentas/` | só no repositório |
+| `README.md`, `VERSIONAMENTO.md`, `tarefas/`, `ferramentas/` | `Painel de Gestão\Serviços Técnicos\` (mesmos nomes) |
+
+## Primeiro envio (30/09/2026)
+
+Esta sessão do Claude não tinha o repositório autorizado. Por isso o histórico foi entregue como pacote: `ferramentas\inovacoes_painel-st-v0.5.0.bundle` (arquivo `git bundle`, não versionado). Para enviar ao GitHub pelo computador:
+
+```powershell
+cd "$env:USERPROFILE\OneDrive - Starian\Projuris\Diego\Inovações\Painel de Gestão\Serviços Técnicos\ferramentas"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\enviar_github.ps1            # cria o clone em C:\git\inovacoes e envia main + etiquetas
+```
 
 ## Rotina para uma nova versão
 

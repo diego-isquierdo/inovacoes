@@ -1,0 +1,1148 @@
+<title>Painel Serviços ADV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: barra de abas fixa + visão ativa em grade de cartões; tokens do design system Projuris (tema Empresas) */
+:root{
+  --background:#FFFFFF;--foreground:#030712;--card:#FFFFFF;--card-foreground:#09090B;
+  --muted:#F4F4F5;--muted-foreground:#64748B;--border:#E5E7EB;--accent:#F4F4F5;
+  --primary:#2563EB;--primary-foreground:#FAFAFA;--ring:#D1D5DB;
+  --destructive:#B91C1C;--success:#15803D;--warning:#C2410C;
+  --tag-gray:#F4F4F5;--tag-gray-fg:#4B5563;--tag-blue:#DBEAFE;--tag-blue-fg:#1D4ED8;
+  --tag-green:#DCFCE7;--tag-green-fg:#15803D;--tag-orange:#FFEDD5;--tag-orange-fg:#C2410C;
+  --tag-red:#FEE2E2;--tag-red-fg:#B91C1C;--tag-yellow:#FEF9C3;--tag-yellow-fg:#A16207;
+  --serie-1:#CA8A04;--serie-2:#2563EB;--serie-3:#0D9488;--serie-4:#94A3B8;--serie-5:#1D4ED8;--serie-6:#9333EA;--serie-saida:#0369A1;
+  --font:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --background:#09090B;--foreground:#FAFAFA;--card:#18181B;--card-foreground:#FAFAFA;
+  --muted:#27272A;--muted-foreground:#9CA3AF;--border:rgba(255,255,255,.10);--accent:#27272A;
+  --primary:#3B82F6;--primary-foreground:#FAFAFA;--ring:#3F3F46;
+  --destructive:#EF4444;--success:#22C55E;--warning:#FB923C;
+  --tag-gray:#27272A;--tag-gray-fg:#9CA3AF;--tag-blue:#172554;--tag-blue-fg:#93C5FD;
+  --tag-green:#052E16;--tag-green-fg:#86EFAC;--tag-orange:#431407;--tag-orange-fg:#FDBA74;
+  --tag-red:#450A0A;--tag-red-fg:#FCA5A5;--tag-yellow:#422006;--tag-yellow-fg:#FDE047;
+  --serie-1:#EAB308;--serie-2:#3B82F6;--serie-3:#2DD4BF;--serie-4:#64748B;--serie-5:#60A5FA;--serie-6:#C084FC;--serie-saida:#7DD3FC;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --background:#09090B;--foreground:#FAFAFA;--card:#18181B;--card-foreground:#FAFAFA;
+  --muted:#27272A;--muted-foreground:#9CA3AF;--border:rgba(255,255,255,.10);--accent:#27272A;
+  --primary:#3B82F6;--primary-foreground:#FAFAFA;--ring:#3F3F46;
+  --destructive:#EF4444;--success:#22C55E;--warning:#FB923C;
+  --tag-gray:#27272A;--tag-gray-fg:#9CA3AF;--tag-blue:#172554;--tag-blue-fg:#93C5FD;
+  --tag-green:#052E16;--tag-green-fg:#86EFAC;--tag-orange:#431407;--tag-orange-fg:#FDBA74;
+  --tag-red:#450A0A;--tag-red-fg:#FCA5A5;--tag-yellow:#422006;--tag-yellow-fg:#FDE047;
+  --serie-1:#EAB308;--serie-2:#3B82F6;--serie-3:#2DD4BF;--serie-4:#64748B;--serie-5:#60A5FA;--serie-6:#C084FC;--serie-saida:#7DD3FC;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--background);color:var(--foreground);font:14px/20px var(--font);margin:0}
+.wrap{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:20px 48px}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border)}
+h1{font-size:24px;line-height:28px;font-weight:600;margin:0;text-wrap:balance}
+.sub{color:var(--muted-foreground);font-size:14px;margin:4px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;font-size:12px;line-height:16px;font-weight:500;background:var(--tag-gray);color:var(--tag-gray-fg);white-space:nowrap}
+.chip.ok{background:var(--tag-green);color:var(--tag-green-fg)}.chip.warn{background:var(--tag-orange);color:var(--tag-orange-fg)}
+.chip.bad{background:var(--tag-red);color:var(--tag-red-fg)}.chip.info{background:var(--tag-blue);color:var(--tag-blue-fg)}
+.chip.y{background:var(--tag-yellow);color:var(--tag-yellow-fg)}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--border);margin-bottom:20px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--background);z-index:5}
+nav.tabs button{font:500 14px/20px var(--font);color:var(--muted-foreground);background:none;border:0;border-bottom:2px solid transparent;padding:12px 14px;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+nav.tabs button:hover{color:var(--foreground)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--card);display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .lab{font-size:12px;line-height:16px;font-weight:500;color:var(--muted-foreground)}
+.kpi .val{font-size:26px;line-height:30px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .det{font-size:12px;line-height:16px;color:var(--muted-foreground)}
+.kpi.bad .val{color:var(--destructive)}.kpi.good .val{color:var(--success)}
+.card{border:1px solid var(--border);border-radius:16px;background:var(--card);padding:20px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.card h2{font-size:16px;line-height:24px;font-weight:500;margin:0}
+.card .hint{font-size:12px;line-height:16px;color:var(--muted-foreground);margin:-8px 0 0}
+section.view{display:flex;flex-direction:column;gap:16px}
+.note{border:1px solid var(--border);border-radius:12px;padding:12px 16px;background:var(--muted);color:var(--foreground);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted-foreground)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+svg text{fill:var(--muted-foreground);font:11px var(--font)}
+svg .v{fill:var(--foreground);font-weight:500}
+.tblw{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th{background:var(--muted);color:var(--muted-foreground);font-weight:500;text-align:left;padding:8px 12px;white-space:nowrap;position:sticky;top:0}
+td{padding:8px 12px;border-top:1px solid var(--border);vertical-align:top}
+td.n,th.n{text-align:right}td.n{white-space:nowrap}
+tr:hover td{background:var(--accent)}
+a{color:var(--primary)}
+.bar{display:grid;grid-template-columns:170px minmax(0,1fr) 64px;gap:10px;align-items:center;font-size:13px}
+.bar .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{height:14px;background:var(--muted);border-radius:4px;overflow:hidden;display:flex}
+.track span{display:block;height:100%}
+.bar .num{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:500;color:var(--muted-foreground)}
+select,input[type=text],input[type=number],input[type=search]{font:14px var(--font);color:var(--foreground);background:var(--background);border:1px solid var(--border);border-radius:8px;height:36px;padding:0 10px}
+input[type=number]{width:96px;text-align:right}
+.btn{font:500 14px/20px var(--font);border-radius:8px;height:36px;padding:0 14px;border:1px solid var(--border);background:var(--card);color:var(--foreground);cursor:pointer}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:var(--primary-foreground)}
+.btn:hover{opacity:.9}.btn[disabled]{opacity:.5;cursor:not-allowed}
+.find{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--border)}
+.find:first-of-type{border-top:0}
+.find b{font-weight:500}.find p{margin:2px 0 0;color:var(--muted-foreground);font-size:13px}
+.verdict{border-radius:16px;padding:20px;border:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.verdict.bad{background:var(--tag-red)}.verdict.good{background:var(--tag-green)}.verdict.warn{background:var(--tag-orange)}
+.verdict .big{font-size:20px;line-height:26px;font-weight:600}
+.rules{margin:0;padding-left:18px;color:var(--muted-foreground);font-size:13px;display:flex;flex-direction:column;gap:4px}
+.rules b{color:var(--foreground);font-weight:500}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--foreground);color:var(--background);padding:10px 16px;border-radius:8px;font-size:13px;z-index:20;max-width:90vw}
+.mono{font-family:var(--mono)}
+@media (max-width:900px){.g2,.g3{grid-template-columns:minmax(0,1fr)}.bar{grid-template-columns:120px minmax(0,1fr) 56px}.wrap{padding-inline:16px}}
+.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:0}
+.upd{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+.upd .det{font-size:12px;line-height:16px;color:var(--muted-foreground)}
+@media (max-width:900px){.hdr-r{align-items:flex-start}.upd{justify-content:flex-start}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Serviços ADV · Painel de Gestão</h1>
+      <p class="sub">Fila, saúde do time, horas apontadas e S&amp;OP · grupo SRV TECNICO, produto Projuris ADV</p>
+    </div>
+    <div class="hdr-r">
+      <div class="upd" id="upd" aria-live="polite"></div>
+      <div class="chips" id="fresh"><span class="chip">Carregando bases…</span></div>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Seções do painel"></nav>
+  <main id="main"><section class="view"><p class="note">Carregando dados…</p></section></main>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+// ---------------- estado ----------------
+const TEAM_DEFAULT=["Renan Miguel Thomas","Marina Cristina Soares Esteves","Lucas Schwartz dos Santos","Wallef Igor Franco Amorim"];
+const SHORT={"Renan Miguel Thomas":"Renan Thomas","Marina Cristina Soares Esteves":"Marina Esteves","Lucas Schwartz dos Santos":"Lucas Santos","Wallef Igor Franco Amorim":"Wallef Amorim","Andrei Luis Rhoden":"Andrei Rhoden","Livia Diniz Fernandes":"Livia Fernandes"};
+// Categorias de demanda do time de Serviços ADV (confirmadas com o Diego em 01-02/10/2026).
+// Migração (mapeados/não mapeados) tem esforço por anexo: "sem anexos" ou "com anexos" (tag do Freshdesk).
+const CATS=[
+  {k:"orcamento",lab:"Viabilidade/Orçamento",esf:2,sla:3},
+  {k:"imp_dados",lab:"Importação de Dados",esf:29,sla:3},
+  {k:"imp_doc",lab:"Importação de Documentos",esf:29,sla:3},
+  {k:"lote_script",lab:"Ações em Lote / Scripts",esf:10,sla:10},
+  {k:"migr_mapeado",lab:"Migração · Sistemas Mapeados",esfSem:29,esfCom:55,sla:40},
+  {k:"migr_nmapeado",lab:"Migração · Sistemas Não Mapeados",esfSem:29,esfCom:55,sla:60},
+];
+const CAT_KEYS=CATS.map(c=>c.k);
+const CAT_LAB=Object.fromEntries(CATS.map(c=>[c.k,c.lab]));
+CAT_LAB.interno="Atividades Internas";
+const CAT_BY_K=Object.fromEntries(CATS.map(c=>[c.k,c]));
+const CAT_COL={orcamento:"var(--serie-1)",imp_dados:"var(--serie-2)",imp_doc:"var(--serie-3)",lote_script:"var(--serie-4)",migr_mapeado:"var(--serie-5)",migr_nmapeado:"var(--serie-6)",interno:"var(--muted-foreground)"};
+const ESF_DEF={};for(const c of CATS)ESF_DEF[c.k]=c.esf!=null?c.esf:{sem:c.esfSem,com:c.esfCom};
+const SLA_DIAS_DEF={};for(const c of CATS)SLA_DIAS_DEF[c.k]=c.sla;
+const DEFAULT_PARAMS={esforco:JSON.parse(JSON.stringify(ESF_DEF)),fator_produtivo:0.85,meta_ocupacao:0.8,cenario:"total",time:TEAM_DEFAULT.slice(),horas_mes_padrao:147};
+const S={db:null,assets:null,user:null,canEdit:false,bases:null,params:JSON.parse(JSON.stringify(DEFAULT_PARAMS)),T:null,H:null,C:null,view:"geral",loadErr:null,blFilter:{cat:"",sla:"",dono:"",status:"",q:"",limite:200},sa:{cen:"total",modo:"squad",atual:"prev"},loaded:{}};
+const TABS=[["geral","Visão geral"],["diag","Diagnóstico da operação"],["sla","SLA"],["backlog","Backlog"],["time","Time"],["horas","Horas"],["sop","S&OP geral"],["sopa","S&OP por Analista"],["acao","Plano de Ação"],["cfg","Configuração"]];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf=(n,d)=>(n==null||!isFinite(n))?"–":Number(n).toLocaleString("pt-BR",{maximumFractionDigits:d||0,minimumFractionDigits:d||0});
+const pct=(n,d)=>(n==null||!isFinite(n))?"–":nf(n*100,d||0)+"%";
+const MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const mlab=m=>MES[+m.slice(5,7)-1]+"/"+m.slice(2,4);
+const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const short=n=>SHORT[n]||n||"";
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,4000);}
+const TODAY=new Date();const curMonth=TODAY.toISOString().slice(0,7);
+const days=(a,b)=>Math.floor(((b||TODAY)-new Date(a))/864e5);
+function median(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+function quant(a,q){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(q*(s.length-1)))];}
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
+function addMonths(m,k){const d=new Date(Date.UTC(+m.slice(0,4),+m.slice(5,7)-1+k,1));return d.toISOString().slice(0,7);}
+const fdia=ms=>{if(ms==null)return "–";const d=new Date(ms);return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"});};
+
+// ---------------- classificação em 6 categorias (+ interno, fora do SLA) ----------------
+// Ordem de precisão: 1) Subtipo  2) Tags  3) Assunto/Tipo  4) Padrão (ambíguo, fica marcado p/ revisão)
+// Migração (mapeado/não mapeado) herda também o Subtipo "Ajustes de inconsistências" e "Migração" (genérico),
+// que não trazem a palavra mapeado/não mapeado — nesses, tags e depois assunto decidem; sem nenhuma pista,
+// cai em "Não Mapeados" (SLA mais longo, leitura conservadora) e fica marcado como "Padrão" no Backlog/Diagnóstico.
+function anexoDe(tg){if(/com anexos/.test(tg))return true;if(/sem anexos/.test(tg))return false;return null;}
+function mapeadoDe(s){if(/nao mapead|não mapead/.test(s))return false;if(/mapead/.test(s))return true;return null;}
+function classifica(t){
+  const st=norm(t.subtipo),tg=norm(t.tags),as=norm(t.assunto),tp=norm(t.tipo);
+  const anexo=anexoDe(tg);
+  if(/nao mapead|não mapead/.test(st))return{cat:"migr_nmapeado",regra:"Subtipo",anexo};
+  if(/mapead/.test(st))return{cat:"migr_mapeado",regra:"Subtipo",anexo};
+  if(/script|acao em lote|ação em lote/.test(st))return{cat:"lote_script",regra:"Subtipo",anexo};
+  if(/documento|arquivo/.test(st))return{cat:"imp_doc",regra:"Subtipo",anexo};
+  if(/importacao de dados|importação de dados/.test(st))return{cat:"imp_dados",regra:"Subtipo",anexo};
+  if(/atividade.*interna/.test(st))return{cat:"interno",regra:"Subtipo",anexo};
+  if(/ajuste.*inconsist|^migra|migracao|migração/.test(st)){
+    const m=mapeadoDe(tg);if(m!=null)return{cat:m?"migr_mapeado":"migr_nmapeado",regra:"Tags",anexo};
+    const ma=mapeadoDe(as);if(ma!=null)return{cat:ma?"migr_mapeado":"migr_nmapeado",regra:"Assunto",anexo};
+    return{cat:"migr_nmapeado",regra:"Padrão",anexo};
+  }
+  if(!st.trim()){
+    if(/orcamento|orçamento|duvida|dúvida/.test(tp))return{cat:"orcamento",regra:"Tipo",anexo};
+    const m=mapeadoDe(tg);if(m!=null)return{cat:m?"migr_mapeado":"migr_nmapeado",regra:"Tags",anexo};
+    if(/script/.test(as))return{cat:"lote_script",regra:"Assunto",anexo};
+    if(/migra/.test(as)){const ma=mapeadoDe(as);return{cat:ma===false?"migr_nmapeado":"migr_mapeado",regra:"Assunto",anexo};}
+    if(/import/.test(as))return{cat:"imp_dados",regra:"Assunto",anexo};
+    return{cat:"orcamento",regra:"Padrão",anexo};
+  }
+  return{cat:"orcamento",regra:"Padrão",anexo};
+}
+const JANELA_REAL=60;
+// Fase 7.1 — SLA em dias corridos desde a abertura, sem pausa
+function slaCfg(){const s=(S.params&&S.params.sla)||{};return {dias:{...SLA_DIAS_DEF,...(s.dias||{})},proximo:s.proximo!=null?+s.proximo:0.25};}
+const SLA_LAB={dentro:"Dentro do SLA",proximo:"Próximo do vencimento",vencido:"SLA vencido",no_prazo:"Concluído no prazo",fora_prazo:"Concluído fora do prazo"};
+const SLA_CLS={dentro:"ok",proximo:"warn",vencido:"bad",no_prazo:"ok",fora_prazo:"bad"};
+function slaResumo(L){const r={n:L.length,dentro:0,proximo:0,vencido:0,vencAtivo:0,vencTerc:0,saldo:0,atrasos:[]};
+  for(const t of L){if(r[t.sla]!=null)r[t.sla]++;r.saldo+=t.saldo||0;if(t.sla==="vencido"){r.atrasos.push(t.atraso);if(t.ativo)r.vencAtivo++;else r.vencTerc++;}}
+  r.atrasoMed=median(r.atrasos);r.pVenc=r.n?r.vencido/r.n:null;r.pDentro=r.n?r.dentro/r.n:null;return r;}
+
+// ---------------- carga ----------------
+function rowsOf(tb){const c=tb.colunas;return tb.linhas.map(r=>{const o={};for(let i=0;i<c.length;i++)o[c[i]]=r[i];return o;});}
+async function fetchAsset(id){const r=await fetch("/_blob/"+id);if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}
+async function loadBases(){
+  const b=S.bases||{};
+  try{
+    if(b.tickets&&b.tickets.asset&&S.loaded.tickets!==b.tickets.asset){const j=await fetchAsset(b.tickets.asset);S.Tmeta=j.meta;S.T=rowsOf(j);S.loaded.tickets=b.tickets.asset;}
+    if(b.horas&&b.horas.asset&&S.loaded.horas!==b.horas.asset){const j=await fetchAsset(b.horas.asset);S.Hmeta=j.meta;S.H={};for(const k in j.tabelas)S.H[k]=rowsOf(j.tabelas[k]);S.loaded.horas=b.horas.asset;}
+    S.loadErr=null;
+  }catch(e){S.loadErr="Não foi possível ler uma das bases ("+e.message+"). Carregue o arquivo de novo em Configuração.";}
+  compute();render();
+}
+
+// ---------------- esforço padrão e mistura histórica de anexos (migração) ----------------
+function esforcoPadrao(cat){const e=S.params.esforco[cat];return typeof e==="object"?e:{sem:e,com:e};}
+// esforço de um ticket já classificado (anexo true/com, false/sem, null -> trata como sem, a leitura mais comum)
+function esforcoT(t){const e=esforcoPadrao(t.cat);return t.anexo===true?e.com:e.sem;}
+// para prever entradas futuras (ainda sem anexo conhecido), usa a mistura real histórica da categoria
+function mixAnexo(cat){const C=S.C,v=C.T.filter(t=>t.cat===cat&&t.anexo!=null);if(!v.length)return 0;return v.filter(t=>t.anexo).length/v.length;}
+function esforcoMedioCat(cat){const e=esforcoPadrao(cat);if(e.sem===e.com)return e.sem;const p=S.C.mixAnexo[cat]||0;return e.sem+(e.com-e.sem)*p;}
+function esforco(cat){return esforcoMedioCat(cat);}
+function entHTipo(cat){return (S.C.entMed[cat]||0)*esforcoMedioCat(cat);}
+// Backlog fora da mão do time: depende do cliente, suspenso, com fornecedor ou cancelado
+const FORA_RE=/aguardando cliente|validacao do cliente|suspenso|fornecedor|cancelado/;
+const isAtivo=t=>!FORA_RE.test(norm(t.st));
+const CEN={total:"backlog total",ativo:"backlog ativo"};
+const cenKey=()=>S.params.cenario==="ativo"?"ativo":"total";
+
+// ---------------- cálculo ----------------
+function compute(){
+  if(!S.T){S.C=null;return;}
+  const P=S.params,team=new Set(P.time||TEAM_DEFAULT);
+  const T=S.T.map(t=>{const{cat,regra,anexo}=classifica(t);
+    const saida=t.data_resolucao||t.data_fechamento||"";
+    return {...t,cat,regra,anexo,dono:team.has(t.agente)?short(t.agente):"Sem responsável ativo",donoFull:t.agente,
+      idade:days(t.criado_em),parado:days(t.atualizado_em),st:String(t.status||"").split(" / ")[0],
+      saida,mesEnt:(t.criado_em||"").slice(0,7),mesSai:saida.slice(0,7)};});
+  const byId=new Map(T.map(t=>[String(t.id),t]));
+  const BL=T.filter(t=>t.backlog);
+  let A=[],months=[],teamH={},capM={},fech=[],ref=[];
+  if(S.H){
+    A=S.H["Apontamentos"]||[];
+    for(const a of A){if(!team.has(a.analyst_name))continue;(teamH[a.mes]=teamH[a.mes]||{})[a.analyst_name]=((teamH[a.mes]||{})[a.analyst_name]||0)+(a.horas||0);}
+    for(const c of (S.H["Capacidade"]||[])){if(!team.has(c.analyst_name))continue;(capM[c.year_month]=capM[c.year_month]||{})[c.analyst_name]=(c.capacity_seconds||0)/3600;}
+    months=[...new Set(A.map(a=>a.mes))].sort();
+    fech=(S.H["Fechamento - Analistas"]||[]).filter(f=>team.has(f.analyst_name));
+    for(const m of months){const h=Object.values(teamH[m]||{}).reduce((s,x)=>s+x,0);const c=Object.values(capM[m]||{}).reduce((s,x)=>s+x,0)||team.size*P.horas_mes_padrao;if(h>=0.5*c&&m<curMonth)ref.push(m);}
+    ref=ref.slice(-3);
+  }
+  const hTk=new Map();for(const a of A){const k=String(a.ticket_id||"").trim();if(k&&byId.has(k))hTk.set(k,(hTk.get(k)||0)+(a.horas||0));}
+  for(const t of T)t.horas=hTk.get(String(t.id))||0;
+  const ano=curMonth.slice(0,4);const fm=[];for(let i=1;i<=+curMonth.slice(5,7);i++)fm.push(ano+"-"+String(i).padStart(2,"0"));
+  const fluxo=fm.map(m=>{const o={m,sai:T.filter(t=>t.mesSai===m).length};for(const k of CAT_KEYS)o[k]=T.filter(t=>t.novo_no_ano&&t.mesEnt===m&&t.cat===k).length;return o;});
+  const fechados=fm.filter(m=>m<curMonth).slice(-3);
+  const entMed={};for(const k of CAT_KEYS)entMed[k]=mean(fechados.map(m=>T.filter(t=>t.novo_no_ano&&t.mesEnt===m&&t.cat===k).length))||0;
+  const saiMed=mean(fechados.map(m=>T.filter(t=>t.mesSai===m).length))||0;
+  const mixAnexo={};for(const k of CAT_KEYS)mixAnexo[k]=(function(){const v=T.filter(t=>t.cat===k&&t.anexo!=null);return v.length?v.filter(t=>t.anexo).length/v.length:0;})();
+  S.C={T,BL,byId,A,hTk,months,teamH,capM,fech,ref,fluxo,fechados,entMed,saiMed,team,mixAnexo};
+  const SC=slaCfg(),agora=Date.now();
+  for(const t of T){
+    t.ativo=t.backlog?isAtivo(t):false;
+    t.esf=t.cat==="interno"?0:esforcoT(t);t.saldo=Math.max(0,t.esf-t.horas);
+    if(t.cat==="interno"){t.sla="sem_data";continue;}
+    t.slaDias=SC.dias[t.cat];const ab=new Date(t.criado_em).getTime();
+    t.limite=isNaN(ab)?null:ab+t.slaDias*864e5;t.atraso=0;
+    if(t.limite==null)t.sla="sem_data";
+    else if(t.backlog){const falta=t.limite-agora;t.atraso=Math.max(0,-falta/864e5);t.sla=falta<0?"vencido":(falta<=t.slaDias*SC.proximo*864e5?"proximo":"dentro");}
+    else if(t.saida){const sd=new Date(t.saida).getTime();t.atraso=Math.max(0,(sd-t.limite)/864e5);t.sla=sd<=t.limite?"no_prazo":"fora_prazo";}
+    else t.sla="sem_data";
+  }
+  S.C.slaCfg=SC;
+  S.C.sop=sop();
+}
+const SAFETY_MESES=6;
+// S&OP: simulação mês a mês até o backlog zerar (ou até SAFETY_MESES, por segurança).
+// Cada mês paga ao backlog no máximo 90% da capacidade do mês; o que sobra do backlog
+// vai para o mês seguinte. O Forecast (entradas previstas) fica fora dessa conta — é só
+// contexto, porque pode passar da capacidade: não há garantia de que essas entradas se confirmem.
+function burndown(members,cats,cen){
+  const C=S.C,P=S.params;const mem=[...members];
+  const BLall=C.BL.filter(t=>cats.includes(t.cat));const BLt=cen==="ativo"?BLall.filter(isAtivo):BLall;
+  let restante=BLt.reduce((s,t)=>s+Math.max(0,t.esf-t.horas),0);
+  const blH0=restante;
+  const entH=cats.reduce((s,k)=>s+entHTipo(k),0);
+  const meses=[];let zerou=null;
+  for(let i=0;i<SAFETY_MESES;i++){
+    const m=addMonths(curMonth,i);
+    const cap=mem.reduce((s,n)=>s+(((C.capM[m]||{})[n])||P.horas_mes_padrao),0)*(+P.fator_produtivo||0.85);
+    const capBL=cap*0.9;
+    const pago=Math.min(capBL,restante);
+    restante-=pago;
+    meses.push({m,cap,capBL,pago,restante,forecast:entH});
+    if(restante<=0.01){zerou=i;break;}
+  }
+  const capMedio=meses.length?mean(meses.map(x=>x.cap)):(P.horas_mes_padrao*(+P.fator_produtivo||0.85));
+  const capFTE=mem.length?capMedio/mem.length:capMedio;
+  const extraFTE=(zerou==null&&meses.length)?(meses[meses.length-1].restante/SAFETY_MESES)/capFTE:0;
+  return {meses,blH0,entH,zerou,capMedio,capFTE,fteAtual:mem.length,extraFTE,
+    nBL:BLt.length,nFora:BLall.length-BLt.length,cats,membros:mem,cen};
+}
+function sop(){const out={};for(const cen of ["total","ativo"])out[cen]=burndown(S.C.team,CAT_KEYS,cen);return out;}
+
+// ---------------- S&OP · projeção viva (realista) ----------------
+// Diferença para a simulação acima: aqui pelo menos metade do Forecast de cada mês
+// entra de fato na fila (vira backlog), em vez de ficar só como contexto. A régua de
+// parada também muda: não é "zerar o backlog", é "o backlog cair para metade da
+// capacidade mensal" — uma fila saudável, não uma fila vazia. Horizonte de até 12 meses.
+const MAX_MESES_VIVO=12,FORECAST_MIN=0.5;
+function burndownVivo(members,cats,cen){
+  const C=S.C,P=S.params;const mem=[...members];
+  const BLall=C.BL.filter(t=>cats.includes(t.cat));const BLt=cen==="ativo"?BLall.filter(isAtivo):BLall;
+  let restante=BLt.reduce((s,t)=>s+Math.max(0,t.esf-t.horas),0);
+  const blH0=restante;
+  const entH=cats.reduce((s,k)=>s+entHTipo(k),0);
+  const meses=[];let atingiu=null;
+  for(let i=0;i<MAX_MESES_VIVO;i++){
+    const m=addMonths(curMonth,i);
+    const cap=mem.reduce((s,n)=>s+(((C.capM[m]||{})[n])||P.horas_mes_padrao),0)*(+P.fator_produtivo||0.85);
+    const capBL=cap*0.9,meta=cap*0.5;
+    const entra=entH*FORECAST_MIN;
+    const restanteAntes=restante;
+    const fila=restanteAntes+entra;
+    const pago=Math.min(capBL,fila);
+    // prioridade: paga o backlog antigo primeiro; a sobra de capacidade, se houver, ataca a demanda nova do mês
+    const pagoAntigo=Math.min(pago,restanteAntes);
+    const pagoNovo=pago-pagoAntigo;
+    const restanteAntigo=restanteAntes-pagoAntigo;
+    const restanteNovo=entra-pagoNovo;
+    restante=restanteAntigo+restanteNovo;
+    meses.push({m,cap,capBL,meta,entra,fila,pago,restante,restanteAntigo,restanteNovo});
+    if(restante<=meta){atingiu=i;break;}
+  }
+  const capMedio=meses.length?mean(meses.map(x=>x.cap)):(P.horas_mes_padrao*(+P.fator_produtivo||0.85));
+  const capFTE=mem.length?capMedio/mem.length:capMedio;
+  return {meses,blH0,entH,atingiu,capMedio,capFTE,fteAtual:mem.length,nBL:BLt.length,nFora:BLall.length-BLt.length,cen};
+}
+function sopVivo(){const out={};for(const cen of ["total","ativo"])out[cen]=burndownVivo(S.C.team,CAT_KEYS,cen);return out;}
+function cardVivo(x,t){
+  const chartData=x.meses.map(mm=>({lab:mlab(mm.m),pago:mm.pago,novo:mm.restanteNovo,antigo:mm.restanteAntigo,cap:mm.cap,meta:mm.meta}));
+  const ult=x.meses[x.meses.length-1];
+  return `<div class="card"><h2>${t}</h2><p class="hint">${nf(x.nBL)} tickets no backlog hoje (${nf(x.blH0)} h)${x.nFora?` (sem ${nf(x.nFora)} que dependem do cliente ou de terceiros)`:""} · a cada mês, pelo menos metade do Forecast (${nf(x.entH*FORECAST_MIN)} h de ${nf(x.entH)} h) entra de fato na fila</p>
+   <div class="kpis" style="margin:0">
+    ${kpi("Backlog cai para metade da capacidade em",x.atingiu!=null?nf(x.atingiu+1)+" meses":`+${MAX_MESES_VIVO} meses`,x.atingiu!=null?`meta: ${nf(ult.meta)} h (50% da capacidade do mês)`:`ainda em ${nf(ult.restante)} h no mês ${MAX_MESES_VIVO} (meta ${nf(ult.meta)} h)`,x.atingiu==null?"bad":"good")}
+    ${kpi("Fila no fim da janela",nf(ult.restante)+" h",`capacidade do mês: ${nf(ult.cap)} h · 90% reservado: ${nf(ult.capBL)} h`)}
+    ${kpi("Entra na fila por mês",nf(x.entH*FORECAST_MIN)+" h",`metade do Forecast de ${nf(x.entH)} h/mês`)}
+    ${kpi("Pessoas no time",nf(x.fteAtual),`${nf(x.capFTE,1)} h/mês por pessoa`)}
+   </div>
+   ${legend([["var(--primary)","Pago ao backlog (até 90%)"],["var(--serie-3)","Metade do Forecast ainda na fila"],["var(--serie-6)","Backlog antigo ainda na fila"],["var(--destructive)","Capacidade do mês"],["var(--warning)","Meta: 50% da capacidade"]])}
+   ${colChart(chartData,[{k:"pago",c:"var(--primary)",l:"Pago ao backlog"},{k:"novo",c:"var(--serie-3)",l:"Metade do Forecast ainda na fila"},{k:"antigo",c:"var(--serie-6)",l:"Backlog antigo ainda na fila"}],{stack:true,lines:[{k:"cap",c:"var(--destructive)",l:"Capacidade"},{k:"meta",c:"var(--warning)",l:"Meta (50%)"}],h:220,aria:"Pago ao backlog, forecast ainda na fila e backlog antigo ainda na fila, por mês, com capacidade e meta de referência"})}
+   <p class="hint" style="margin:0">Só a fatia do Forecast (laranja-azulado) pode fazer a barra passar da linha de capacidade — o restante é sempre limitado a 90% da capacidade do mês.</p>
+   <div class="tblw"><table><thead><tr><th>Mês</th><th class="n">Capacidade</th><th class="n">Entra (½ Forecast)</th><th class="n">Fila do mês</th><th class="n">Pago</th><th class="n">Forecast na fila</th><th class="n">Backlog antigo na fila</th><th class="n">Fila restante</th><th class="n">Meta (50%)</th></tr></thead><tbody>
+    ${x.meses.map(mm=>`<tr${mm.restante<=mm.meta?' style="background:color-mix(in srgb,var(--tag-green) 35%,transparent)"':""}><td>${mlab(mm.m)}</td><td class="n">${nf(mm.cap)} h</td><td class="n">${nf(mm.entra)} h</td><td class="n">${nf(mm.fila)} h</td><td class="n">${nf(mm.pago)} h</td><td class="n">${nf(mm.restanteNovo)} h</td><td class="n">${nf(mm.restanteAntigo)} h</td><td class="n">${nf(mm.restante)} h</td><td class="n">${nf(mm.meta)} h</td></tr>`).join("")}
+   </tbody></table></div>
+  </div>`;
+}
+
+// ---------------- gráficos (SVG em escala) ----------------
+function colChart(data,series,o){o=o||{};const W=o.w||640,Hh=o.h||220,pl=36,pr=8,pt=18,pb=26;const n=data.length;
+  const lines=[...(o.line?[o.line]:[]),...(o.lines||[])];
+  const mx=Math.max(1,...data.map(d=>o.stack?series.reduce((s,se)=>s+(d[se.k]||0),0):Math.max(...series.map(se=>d[se.k]||0))),...lines.map(ln=>Math.max(...data.map(d=>d[ln.k]||0))));
+  const nice=niceMax(mx);const y=v=>pt+(Hh-pt-pb)*(1-v/nice);const bw=(W-pl-pr)/n;let g="";
+  for(let i=0;i<=4;i++){const v=nice*i/4;g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border)"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end">${nf(v)}</text>`;}
+  data.forEach((d,i)=>{const x0=pl+i*bw;
+    if(o.stack){let acc=0;series.forEach(se=>{const v=d[se.k]||0;if(v>0){g+=`<rect x="${x0+bw*.18}" y="${y(acc+v)}" width="${bw*.64}" height="${y(acc)-y(acc+v)}" fill="${se.c}"><title>${esc(se.l)}: ${nf(v,o.dec)}</title></rect>`;}acc+=v;});
+      if(acc>0||!o.hideZero)g+=`<text class="v" x="${x0+bw/2}" y="${y(acc)-4}" text-anchor="middle">${nf(acc,o.dec)}</text>`;}
+    else{const sw=bw*.72/series.length;series.forEach((se,j)=>{const v=d[se.k]||0;g+=`<rect x="${x0+bw*.14+j*sw}" y="${y(v)}" width="${sw-2}" height="${y(0)-y(v)}" rx="2" fill="${se.c}"><title>${esc(se.l)}: ${nf(v,o.dec)}</title></rect>`;if(o.labels!==false)g+=`<text class="v" x="${x0+bw*.14+j*sw+(sw-2)/2}" y="${y(v)-4}" text-anchor="middle">${nf(v,o.dec)}</text>`;});}
+    g+=`<text x="${x0+bw/2}" y="${Hh-8}" text-anchor="middle">${esc(d.lab)}</text>`;});
+  lines.forEach(ln=>{const pts=data.map((d,i)=>`${pl+i*bw+bw/2},${y(d[ln.k]||0)}`).join(" ");g+=`<polyline points="${pts}" fill="none" stroke="${ln.c}" stroke-width="2" stroke-dasharray="5 4"/>`;data.forEach((d,i)=>{g+=`<circle cx="${pl+i*bw+bw/2}" cy="${y(d[ln.k]||0)}" r="3" fill="${ln.c}"><title>${esc(ln.l)}: ${nf(d[ln.k],o.dec)}</title></circle>`;});});
+  return `<svg viewBox="0 0 ${W} ${Hh}" width="100%" role="img" aria-label="${esc(o.aria||"gráfico")}">${g}</svg>`;}
+function niceMax(v){const p=Math.pow(10,Math.floor(Math.log10(v)));const f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p;}
+function legend(items){return `<div class="legend">${items.map(([c,l])=>`<span><i style="background:${c}"></i>${esc(l)}</span>`).join("")}</div>`;}
+function hbars(rows,o){o=o||{};const mx=Math.max(1,...rows.map(r=>r.parts?r.parts.reduce((s,p)=>s+p.v,0):r.v));
+  return rows.map(r=>{const tot=r.parts?r.parts.reduce((s,p)=>s+p.v,0):r.v;const segs=(r.parts||[{v:r.v,c:o.c||"var(--primary)"}]).map(p=>`<span style="width:${p.v/mx*100}%;background:${p.c}" title="${esc(p.l||"")}: ${nf(p.v,o.dec)}"></span>`).join("");
+    return `<div class="bar"><span class="t" title="${esc(r.l)}">${esc(r.l)}</span><span class="track">${segs}</span><span class="num">${nf(tot,o.dec)}${o.suf||""}</span></div>`;}).join("");}
+const kpi=(l,v,d,cls)=>`<div class="kpi ${cls||""}"><span class="lab">${l}</span><span class="val">${v}</span><span class="det">${d||""}</span></div>`;
+const CS="var(--serie-saida)";
+const CAT_SERIES=CATS.map(c=>({k:c.k,c:CAT_COL[c.k],l:c.lab}));
+
+// ---------------- visões ----------------
+function vGeral(){
+  const C=S.C,BL=C.BL,sp=C.sop[cenKey()];
+  const f=C.fluxo;const ent3=mean(C.fechados.map(m=>{const x=f.find(y=>y.m===m);return CAT_KEYS.reduce((s,k)=>s+(x?x[k]:0),0);}))||0;
+  const refH=C.ref.map(m=>Object.values(C.teamH[m]||{}).reduce((s,x)=>s+x,0));const refC=C.ref.map(m=>Object.values(C.capM[m]||{}).reduce((s,x)=>s+x,0));
+  const ocup=refC.length?refH.reduce((s,x)=>s+x,0)/refC.reduce((s,x)=>s+x,0):null;
+  const fluxoData=f.map(x=>({lab:mlab(x.m),...Object.fromEntries(CAT_KEYS.map(k=>[k,x[k]])),sai:x.sai}));
+  const donos={};BL.forEach(t=>{const o=donos[t.dono]=donos[t.dono]||{};o[t.cat]=(o[t.cat]||0)+1;});
+  const donoRows=Object.entries(donos).sort((x,y)=>Object.values(y[1]).reduce((a,b)=>a+b,0)-Object.values(x[1]).reduce((a,b)=>a+b,0))
+    .map(([l,o])=>({l,parts:CAT_KEYS.filter(k=>o[k]).map(k=>({v:o[k],c:CAT_COL[k],l:CAT_LAB[k]}))}));
+  const AG=[["até 30 d",0,30],["31–90 d",31,90],["91–180 d",91,180],["+180 d",181,1e9]];
+  const ag=AG.map(([l,x,y])=>{const o={lab:l};for(const k of CAT_KEYS)o[k]=BL.filter(t=>t.cat===k&&t.idade>=x&&t.idade<=y).length;return o;});
+  return `<section class="view">
+  <div class="kpis">
+   ${kpi("Backlog",nf(BL.length),`${nf(BL.filter(t=>t.cat.startsWith("migr")).length)} em migração`)}
+   ${kpi("Entradas / mês",nf(ent3),`média de ${C.fechados.map(mlab).join(", ")}`)}
+   ${kpi("Saídas / mês",nf(C.saiMed),`resolvidos ou fechados · mesma janela`,C.saiMed<ent3?"bad":"")}
+   ${kpi("Saldo do fluxo / mês",(C.saiMed-ent3>=0?"+":"")+nf(C.saiMed-ent3),C.saiMed<ent3?"backlog crescendo":"backlog diminuindo",C.saiMed<ent3?"bad":"good")}
+   ${kpi("Ocupação do time",pct(ocup),`horas apontadas ÷ capacidade · ${C.ref.map(mlab).join(", ")||"sem mês completo"}`)}
+   ${kpi("Backlog zera em",sp.zerou!=null?nf(sp.zerou+1)+" meses":`+${SAFETY_MESES} meses`,sp.zerou!=null?`pagando até 90% da capacidade do mês ao backlog`:`faltariam ~${nf(sp.extraFTE,1)} pessoa(s) a mais em ${SAFETY_MESES} meses`,sp.zerou==null?"bad":"good")}
+  </div>
+  <div class="grid g2">
+   <div class="card"><h2>Entradas × saídas por mês</h2><p class="hint">Entradas empilhadas por categoria; saídas = tickets resolvidos ou fechados no mês</p>
+    ${legend([...CAT_SERIES.map(s=>[s.c,s.l]),[CS,"Saídas"]])}
+    ${colChart(fluxoData,CAT_SERIES,{stack:true,line:{k:"sai",c:CS,l:"Saídas"},aria:"Entradas e saídas por mês"})}</div>
+   <div class="card"><h2>Backlog por responsável</h2><p class="hint">Tickets fora do time atual contam como "Sem responsável ativo"</p>
+    ${legend(CAT_SERIES.map(s=>[s.c,s.l]))}${hbars(donoRows)}</div>
+   <div class="card"><h2>Idade do backlog</h2><p class="hint">Dias desde a abertura, por categoria</p>${legend(CAT_SERIES.map(s=>[s.c,s.l]))}
+    ${colChart(ag,CAT_SERIES,{stack:true,h:200,aria:"Idade do backlog"})}</div>
+   <div class="card"><h2>Horas apontadas do time por mês</h2><p class="hint">Barras: horas confirmadas no Painel de Serviços · linha: capacidade do Painel</p>
+    ${legend([["var(--primary)","Apontado"],[CS,"Capacidade"]])}
+    ${colChart(C.months.map(m=>({lab:mlab(m),h:Object.values(C.teamH[m]||{}).reduce((s,x)=>s+x,0),c:Object.values(C.capM[m]||{}).reduce((s,x)=>s+x,0)})),[{k:"h",c:"var(--primary)",l:"Apontado"}],{line:{k:"c",c:CS,l:"Capacidade"},h:200,aria:"Horas por mês"})}</div>
+  </div></section>`;
+}
+
+function diagnostico(){
+  const C=S.C,BL=C.BL,P=S.params,F=[];
+  const push=(sev,t,d)=>F.push({sev,t,d});
+  const ent3=CAT_KEYS.reduce((s,k)=>s+C.entMed[k],0);
+  if(C.saiMed<ent3)push("bad",`O backlog cresce cerca de ${nf(ent3-C.saiMed)} tickets por mês`,`Entram ${nf(ent3)} e saem ${nf(C.saiMed)} por mês (${C.fechados.map(mlab).join(", ")}).`);
+  else push("ok",`Na média dos últimos 3 meses o fluxo está equilibrado`,`Saem ${nf(C.saiMed)} e entram ${nf(ent3)} tickets por mês (${C.fechados.map(mlab).join(", ")}).`);
+  const lm=C.fluxo.filter(x=>x.m<curMonth).slice(-1)[0];if(lm){const e=CAT_KEYS.reduce((s,k)=>s+lm[k],0);push(lm.sai<e?"bad":"ok",`Em ${mlab(lm.m)} entraram ${nf(e)} e saíram ${nf(lm.sai)} tickets`,lm.sai<e?`O backlog cresceu ${nf(e-lm.sai)} tickets no último mês fechado.`:`O backlog diminuiu ${nf(lm.sai-e)} tickets no último mês fechado.`);}
+  const sp=C.sop.total,sr=C.sop.ativo;
+  push(sp.zerou==null?"bad":"ok",`Backlog total (${nf(sp.nBL)} tickets): ${sp.zerou!=null?`zera em ${nf(sp.zerou+1)} meses`:`não zera em ${SAFETY_MESES} meses`}`,`Pagando até 90% da capacidade do mês ao backlog (${sp.fteAtual} pessoas, ${nf(sp.capFTE,1)} h/mês cada)${sp.zerou==null?`; faltariam ~${nf(sp.extraFTE,1)} pessoa(s) a mais para zerar em ${SAFETY_MESES} meses`:""}.`);
+  push(sr.zerou==null?"bad":"ok",`Backlog ativo (${nf(sr.nBL)} tickets, sem os ${nf(sr.nFora)} que dependem do cliente ou de terceiros): ${sr.zerou!=null?`zera em ${nf(sr.zerou+1)} meses`:`não zera em ${SAFETY_MESES} meses`}`,sr.zerou==null?`Faltariam ~${nf(sr.extraFTE,1)} pessoa(s) a mais.`:"");
+  const donos={};BL.forEach(t=>donos[t.dono]=(donos[t.dono]||0)+1);const top=Object.entries(donos).filter(x=>x[0]!=="Sem responsável ativo").sort((a,b)=>b[1]-a[1]);
+  if(top.length){const s2=(top[0][1]+(top[1]?top[1][1]:0))/BL.length;push(s2>0.6?"warn":"ok",`${top[0][0]}${top[1]?" e "+top[1][0]:""} concentram ${pct(s2)} do backlog`,top.map(([n,v])=>`${n}: ${v}`).join(" · "));}
+  const semDono=BL.filter(t=>t.dono==="Sem responsável ativo");if(semDono.length)push("warn",`${semDono.length} tickets no backlog sem responsável ativo`,`Sem agente, com agente desativado ou fora do time (ex.: Andrei, Livia). Redistribuir.`);
+  const ag=BL.filter(t=>/aguardando cliente|validacao do cliente/.test(norm(t.st)));const ag90=ag.filter(t=>t.idade>90);
+  push(ag.length/BL.length>0.4?"warn":"ok",`${pct(ag.length/BL.length)} do backlog depende do cliente (${ag.length} tickets)`,`${ag90.length} deles têm mais de 90 dias.`);
+  const par=BL.filter(t=>t.parado>30);push(par.length/BL.length>0.3?"warn":"ok",`${par.length} tickets sem movimentação há mais de 30 dias`,`${pct(par.length/BL.length)} do backlog.`);
+  const ambig=C.T.filter(t=>t.regra==="Padrão");push(ambig.length>20?"warn":"ok",`${ambig.length} tickets com classificação ambígua (regra "Padrão")`,`Sem Subtipo nem Tags que indiquem a categoria — hoje tratados como ${CAT_LAB["migr_nmapeado"]} ou ${CAT_LAB["orcamento"]} por padrão. Revisar o Subtipo no Freshdesk melhora o S&OP.`);
+  const interno=C.T.filter(t=>t.cat==="interno");if(interno.length)push("info",`${interno.length} tickets de Atividades Internas`,`Ficam fora do SLA e da demanda do S&OP, contam só como volume.`);
+  if(S.H){const last=C.months[C.months.length-1];if(last===curMonth){const h=Object.values(C.teamH[last]||{}).reduce((s,x)=>s+x,0);const c=Object.values(C.capM[last]||{}).reduce((s,x)=>s+x,0);if(c&&h<0.3*c)push("warn",`Apontamento de ${mlab(last)} atrasado: ${nf(h)} h de ${nf(c)} h de capacidade`,`O S&OP e a ocupação usam os meses completos (${C.ref.map(mlab).join(", ")}).`);}
+    const semTk=C.A.filter(a=>C.team.has(a.analyst_name)&&!String(a.ticket_id||"").trim()).reduce((s,a)=>s+(a.horas||0),0);const totT=C.A.filter(a=>C.team.has(a.analyst_name)).reduce((s,a)=>s+(a.horas||0),0);
+    push("info",`${pct(semTk/totT)} das horas do time não estão ligadas a um ticket`,`${nf(semTk)} h de ${nf(totT)} h (atividades internas, reuniões, apoio).`);
+    push("info","Horas apontadas começam em "+(C.months[0]?mlab(C.months[0]):"–"),"Antes disso não há registro no Painel de Serviços.");
+  }
+  push("info","Fechamentos antigos arquivados pelo Freshdesk","Tickets Closed antigos somem da API; a extração incremental preserva o histórico a partir de quando passou a rodar.");
+  return F;
+}
+function vDiag(){
+  const C=S.C,sp=C.sop[cenKey()],F=diagnostico();
+  const cls=sp.zerou==null?(sp.extraFTE>0.5?"bad":"warn"):"good";
+  const msg=sp.zerou!=null?`Sim. Pagando até 90% da capacidade mensal ao backlog, o time zera a fila em ${nf(sp.zerou+1)} meses.`:
+    `Não. Mesmo pagando até 90% da capacidade mensal ao backlog, a fila não zera em ${SAFETY_MESES} meses — faltariam ~${nf(sp.extraFTE,1)} pessoa(s) a mais.`;
+  const icon={bad:["bad","Crítico"],warn:["warn","Atenção"],ok:["ok","Ok"],info:["info","Contexto"]};
+  const subBL={};C.BL.forEach(t=>subBL[t.subtipo||"(sem subtipo)"]=(subBL[t.subtipo||"(sem subtipo)"]||0)+1);
+  return `<section class="view">
+   <div class="verdict ${cls}"><span class="lab" style="font-size:12px;font-weight:500">O time atual dá conta da demanda?</span><span class="big">${msg}</span>
+    <span style="font-size:13px">Cenário: ${CEN[sp.cen]} (${nf(sp.nBL)} tickets). Troque o cenário em Configuração ou compare os dois no S&amp;OP.</span></div>
+   <div class="grid g2">
+    <div class="card"><h2>Achados das extrações</h2><p class="hint">Calculados automaticamente a cada carga das bases</p>
+     ${F.map(f=>`<div class="find"><span class="chip ${icon[f.sev][0]}">${icon[f.sev][1]}</span><div><b>${esc(f.t)}</b><p>${esc(f.d)}</p></div></div>`).join("")}</div>
+    <div class="card"><h2>Fila por status</h2><p class="hint">Onde o backlog está parado</p>
+     ${hbars(Object.entries(C.BL.reduce((o,t)=>(o[t.st]=(o[t.st]||0)+1,o),{})).sort((a,b)=>b[1]-a[1]).map(([l,v])=>({l,v})))}
+     <h2 style="margin-top:12px">Backlog por subtipo (Freshdesk)</h2>
+     ${hbars(Object.entries(subBL).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([l,v])=>({l,v})))}</div>
+   </div></section>`;
+}
+
+function blFiltered(){const f=S.blFilter,q=norm(f.q);return S.C.BL.filter(t=>(!f.cat||t.cat===f.cat)&&(!f.sla||t.sla===f.sla)&&(!f.dono||t.dono===f.dono)&&(!f.status||t.st===f.status)&&(!q||norm(t.assunto).includes(q)||String(t.id).includes(q)||norm(t.solicitante).includes(q))).sort((a,b)=>b.idade-a.idade);}
+function vSla(){
+  const C=S.C,SC=C.slaCfg,BL=C.BL.filter(t=>t.cat!=="interno"),R0=slaResumo(BL),RA=slaResumo(BL.filter(t=>t.ativo));
+  const hdr=`<th class="n">Tickets</th><th class="n">Dentro</th><th class="n">Próximos</th><th class="n">Vencidos</th><th class="n">% vencido</th><th class="n">Vencidos ativos</th><th class="n">Aguardando terceiros</th><th class="n">Atraso mediano</th><th class="n">Saldo</th>`;
+  const lin=(l,r,extra)=>`<tr><td>${l}</td>${extra||""}<td class="n">${nf(r.n)}</td><td class="n">${nf(r.dentro)}</td><td class="n">${nf(r.proximo)}</td><td class="n"><b style="font-weight:600">${nf(r.vencido)}</b></td><td class="n">${pct(r.pVenc)}</td><td class="n">${nf(r.vencAtivo)}</td><td class="n">${nf(r.vencTerc)}</td><td class="n">${r.atrasoMed!=null?nf(r.atrasoMed)+" d":"–"}</td><td class="n">${nf(r.saldo)} h</td></tr>`;
+  const porCat=CAT_KEYS.map(k=>({k,r:slaResumo(BL.filter(t=>t.cat===k))})).filter(x=>x.r.n);
+  const porAn=[...new Set(BL.map(t=>t.dono))].map(d=>({d,r:slaResumo(BL.filter(t=>t.dono===d))})).sort((a,b)=>b.r.vencido-a.r.vencido);
+  const faixas=[["até 7 d",0,7],["8–30 d",7,30],["31–60 d",30,60],["61–90 d",60,90],["mais de 90 d",90,1e9]];
+  const venc=BL.filter(t=>t.sla==="vencido");
+  const fx=faixas.map(([l,a,b])=>({l,v:venc.filter(t=>t.atraso>a&&t.atraso<=b).length}));
+  const meses=C.fluxo.map(x=>x.m).filter(m=>m>=(C.months[0]||"0000")&&m<=curMonth);
+  const conc=meses.map(m=>{const L=C.T.filter(t=>!t.backlog&&t.cat!=="interno"&&t.mesSai===m);const ok=L.filter(t=>t.sla==="no_prazo").length;return {m,n:L.length,ok,p:L.length?ok/L.length:null};});
+  return `<section class="view">
+   <div class="kpis">
+    ${kpi("Backlog total",nf(R0.n),`${nf(RA.n)} ativos · ${nf(R0.saldo)} h de saldo`)}
+    ${kpi("Dentro do SLA",nf(R0.dentro),pct(R0.pDentro)+" do backlog",R0.pDentro>0.7?"good":"")}
+    ${kpi("Próximos do vencimento",nf(R0.proximo),`últimos ${pct(SC.proximo)} do prazo`,R0.proximo?"":"good")}
+    ${kpi("SLA vencido",nf(R0.vencido),`${pct(R0.pVenc)} · atraso mediano ${nf(R0.atrasoMed)} d`,R0.vencido?"bad":"good")}
+    ${kpi("Vencidos que dependem do time",nf(R0.vencAtivo),`${nf(R0.vencTerc)} vencidos aguardam o cliente ou terceiros`,R0.vencAtivo?"bad":"good")}
+   </div>
+   <div class="card"><h2>Por categoria</h2><p class="hint">SLA em dias corridos desde a abertura, sem pausa · "próximo" = últimos ${pct(SC.proximo)} do prazo · prazos editáveis em Configuração</p>
+    <div class="tblw"><table><thead><tr><th>Categoria</th><th class="n">SLA</th>${hdr}</tr></thead><tbody>
+     ${porCat.map(x=>lin(esc(CAT_LAB[x.k]),x.r,`<td class="n">${SC.dias[x.k]} d</td>`)).join("")}
+     ${lin("<b style=\"font-weight:600\">Total</b>",R0,"<td></td>")}
+    </tbody></table></div></div>
+   <div class="card"><h2>Por analista</h2><p class="hint">Responsável atual no Freshdesk · "Sem responsável ativo" = sem agente ou fora do time</p>
+    <div class="tblw"><table><thead><tr><th>Analista</th>${hdr}</tr></thead><tbody>
+     ${porAn.map(x=>lin(esc(x.d),x.r)).join("")}
+    </tbody></table></div></div>
+   <div class="grid g2">
+    <div class="card"><h2>Dias de atraso dos vencidos</h2><p class="hint">${nf(venc.length)} tickets vencidos, por faixa de atraso</p>${hbars(fx,{c:"var(--destructive)"})}</div>
+    <div class="card"><h2>Concluídos no prazo, por mês</h2><p class="hint">Tickets resolvidos ou fechados no mês que saíram dentro do SLA da categoria</p>
+     <div class="tblw"><table><thead><tr><th>Mês</th><th class="n">Concluídos</th><th class="n">No prazo</th><th class="n">% no prazo</th></tr></thead><tbody>
+      ${conc.map(x=>`<tr><td>${mlab(x.m)}</td><td class="n">${nf(x.n)}</td><td class="n">${nf(x.ok)}</td><td class="n">${pct(x.p)}</td></tr>`).join("")}
+     </tbody></table></div></div>
+   </div>
+   <div class="card"><h2>Regras</h2><ul class="rules">
+    <li><b>Prazo</b>: ${CAT_KEYS.map(k=>`${CAT_LAB[k]} ${SC.dias[k]} dias`).join(" · ")}, contados em dias corridos desde a criação do ticket. Não pausa enquanto o ticket aguarda o cliente. Atividades Internas ficam fora do SLA.</li>
+    <li><b>Situação</b>: vencido depois da data limite; próximo do vencimento nos últimos ${pct(SC.proximo)} do prazo; senão, dentro do SLA.</li>
+    <li><b>Vencidos que dependem do time</b> = vencidos do backlog ativo. <b>Aguardando terceiros</b> = vencidos que aguardam o cliente, a validação dele, o fornecedor ou estão suspensos.</li>
+    <li><b>Saldo</b> = esforço padrão da categoria (migração: 29 h sem anexo / 55 h com anexo) menos as horas já apontadas no ticket.</li>
+   </ul></div>
+  </section>`;
+}
+function vBacklog(){
+  const C=S.C,L=blFiltered(),f=S.blFilter;
+  const opts=(arr,v)=>`<option value="">Todos</option>`+arr.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("");
+  const donos=[...new Set(C.BL.map(t=>t.dono))].sort(),sts=[...new Set(C.BL.map(t=>t.st))].sort();
+  const reg=(r)=>({Subtipo:"info",Tags:"info",Tipo:"info",Assunto:"y",Padrão:"warn"})[r];
+  return `<section class="view">
+   <div class="filters">
+    <label class="f" for="f_cat">Categoria<select id="f_cat"><option value="">Todas</option>${CAT_KEYS.filter(k=>C.BL.some(t=>t.cat===k)).map(k=>`<option value="${k}" ${k===f.cat?"selected":""}>${esc(CAT_LAB[k])}</option>`).join("")}</select></label>
+    <label class="f" for="f_sla">SLA<select id="f_sla"><option value="">Todos</option>${["vencido","proximo","dentro"].map(k=>`<option value="${k}" ${k===f.sla?"selected":""}>${SLA_LAB[k]}</option>`).join("")}</select></label>
+    <label class="f" for="f_dono">Responsável<select id="f_dono">${opts(donos,f.dono)}</select></label>
+    <label class="f" for="f_status">Status<select id="f_status">${opts(sts,f.status)}</select></label>
+    <label class="f" for="f_q" style="flex:1;min-width:200px">Buscar (assunto, nº, solicitante)<input type="search" id="f_q" value="${esc(f.q)}"></label>
+    <button class="btn" id="f_csv">Exportar CSV</button>
+   </div>
+   <div class="kpis">
+    ${kpi("Tickets no filtro",nf(L.length),`${nf(L.filter(t=>t.cat.startsWith("migr")).length)} em migração`)}
+    ${kpi("Idade mediana",nf(median(L.map(t=>t.idade)))+" d","desde a abertura")}
+    ${kpi("Parados +30 d",nf(L.filter(t=>t.parado>30).length),"sem atualização")}
+    ${kpi("Horas já apontadas",nf(L.reduce((s,t)=>s+t.horas,0))+" h","nos tickets do filtro")}
+    ${kpi("SLA vencido",nf(L.filter(t=>t.sla==="vencido").length),`${nf(L.filter(t=>t.sla==="proximo").length)} próximos do vencimento`,L.some(t=>t.sla==="vencido")?"bad":"good")}
+    ${kpi("Saldo do filtro",nf(L.reduce((s,t)=>s+t.saldo,0))+" h","esforço restante")}
+   </div>
+   <div class="tblw"><table><thead><tr><th>Ticket</th><th>Assunto</th><th>Categoria</th><th>Status</th><th>Responsável</th><th>Subtipo</th><th>Anexo</th><th>SLA</th><th class="n">Limite</th><th class="n">Atraso</th><th class="n">Idade</th><th class="n">Parado</th><th class="n">Horas</th><th class="n">Saldo</th></tr></thead><tbody>
+   ${L.slice(0,f.limite).map(t=>`<tr><td><a href="https://projuris-helpdesk.freshdesk.com/a/tickets/${t.id}" target="_blank" rel="noopener">${t.id}</a></td><td style="min-width:260px">${esc(t.assunto)}</td>
+    <td><span class="chip" style="background:color-mix(in srgb,${CAT_COL[t.cat]} 18%,transparent);color:${CAT_COL[t.cat]}">${esc(CAT_LAB[t.cat])}</span> <span class="chip ${reg(t.regra)}" title="Coluna que definiu a categoria">${t.regra}</span></td>
+    <td>${esc(t.st)}</td><td>${esc(t.dono)}</td><td>${esc(t.subtipo||"–")}</td><td>${t.anexo==null?"–":(t.anexo?"Com anexo":"Sem anexo")}</td><td><span class="chip ${SLA_CLS[t.sla]||""}">${esc(SLA_LAB[t.sla]||"–")}</span></td><td class="n">${fdia(t.limite)}</td><td class="n">${t.atraso?nf(t.atraso)+" d":"–"}</td><td class="n">${t.idade} d</td><td class="n">${t.parado} d</td><td class="n">${t.horas?nf(t.horas,1):"–"}</td><td class="n">${nf(t.saldo,1)} h</td></tr>`).join("")}
+   </tbody></table></div>
+   ${L.length>f.limite?`<button class="btn" id="f_more">Mostrar mais (${nf(L.length-f.limite)} restantes)</button>`:""}
+  </section>`;
+}
+
+function vTime(){
+  const C=S.C,team=[...C.team];
+  const ult=C.ref[C.ref.length-1];
+  const rows=team.map(n=>{const bl=C.BL.filter(t=>t.donoFull===n);const hRef=C.ref.map(m=>(C.teamH[m]||{})[n]||0);const cRef=C.ref.map(m=>(C.capM[m]||{})[n]||0);
+    const fr=C.fech.find(f=>f.analyst_name===n&&f.month===ult)||{};
+    return {n:short(n),bl:bl.length,ag:bl.filter(t=>/aguardando cliente|validacao do cliente/.test(norm(t.st))).length,
+      idade:median(bl.map(t=>t.idade)),par:bl.filter(t=>t.parado>30).length,hMed:mean(hRef),cMed:mean(cRef),ocup:cRef.reduce((s,x)=>s+x,0)?hRef.reduce((s,x)=>s+x,0)/cRef.reduce((s,x)=>s+x,0):null,prod:fr.produtividade_pct,
+      cargaMeses:(bl.reduce((s,t)=>s+Math.max(0,t.esf-t.horas),0))/((mean(cRef)||S.params.horas_mes_padrao)*S.params.fator_produtivo)};});
+  const hm=C.months.map(m=>{const o={lab:mlab(m)};team.forEach((n,i)=>o["a"+i]=(C.teamH[m]||{})[n]||0);return o;});
+  const cols=["var(--primary)","var(--serie-saida)","#0EA5E9","var(--serie-4)"];
+  const byCat=team.map(n=>{const bl=C.BL.filter(t=>t.donoFull===n);const o={l:short(n)};return {l:short(n),parts:CAT_KEYS.filter(k=>bl.some(t=>t.cat===k)).map(k=>({v:bl.filter(t=>t.cat===k).length,c:CAT_COL[k],l:CAT_LAB[k]}))};});
+  return `<section class="view">
+   <div class="tblw"><table><thead><tr><th>Analista</th><th class="n">Backlog</th><th class="n">Aguard. cliente</th><th class="n">Idade med.</th><th class="n">Parados +30 d</th><th class="n">Horas/mês</th><th class="n">Capacidade/mês</th><th class="n">Ocupação</th><th class="n">Produtividade ${ult?mlab(ult):""}</th><th class="n">Carga (meses)</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr><td><b style="font-weight:500">${esc(r.n)}</b></td><td class="n">${r.bl}</td><td class="n">${r.ag}</td><td class="n">${nf(r.idade)} d</td><td class="n">${r.par}</td><td class="n">${nf(r.hMed)} h</td><td class="n">${nf(r.cMed)} h</td><td class="n">${pct(r.ocup)}</td><td class="n">${r.prod!=null?nf(r.prod)+"%":"–"}</td><td class="n">${nf(r.cargaMeses,1)}</td></tr>`).join("")}
+   </tbody></table></div>
+   <p class="hint" style="margin:0;font-size:12px;color:var(--muted-foreground)">Horas, capacidade e ocupação: média dos meses completos de apontamento (${C.ref.map(mlab).join(", ")||"–"}). Produtividade: fechamento do Painel de Serviços. Carga: horas estimadas do backlog de cada analista ÷ capacidade produtiva mensal dele.</p>
+   <div class="grid g2">
+    <div class="card"><h2>Backlog por analista e categoria</h2>${legend(CAT_SERIES.map(s=>[s.c,s.l]))}${hbars(byCat)}</div>
+    <div class="card"><h2>Horas apontadas por analista e mês</h2>${legend(team.map((n,i)=>[cols[i%4],short(n)]))}
+     ${colChart(hm,team.map((n,i)=>({k:"a"+i,c:cols[i%4],l:short(n)})),{h:240,labels:false,aria:"Horas por analista"})}</div>
+   </div>
+  </section>`;
+}
+
+function vHoras(){
+  const C=S.C;if(!S.H)return `<section class="view"><p class="note">A base de horas ainda não foi carregada. Carregue o arquivo em Configuração.</p></section>`;
+  const TA=C.A.filter(a=>C.team.has(a.analyst_name));const tot=TA.reduce((s,a)=>s+(a.horas||0),0);
+  const byTipo=Object.entries(TA.reduce((o,a)=>(o[a.tipo||"(sem tipo)"]=(o[a.tipo||"(sem tipo)"]||0)+(a.horas||0),o),{})).sort((a,b)=>b[1]-a[1]);
+  const byAtv=Object.entries(TA.reduce((o,a)=>(o[a.atividade||"(sem)"]=(o[a.atividade||"(sem)"]||0)+(a.horas||0),o),{})).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const inSrv=TA.filter(a=>C.byId.has(String(a.ticket_id||"").trim())).reduce((s,a)=>s+(a.horas||0),0);
+  const semTk=TA.filter(a=>!String(a.ticket_id||"").trim()).reduce((s,a)=>s+(a.horas||0),0);
+  const outros=C.A.filter(a=>!C.team.has(a.analyst_name)&&C.byId.has(String(a.ticket_id||"").trim())).reduce((s,a)=>s+(a.horas||0),0);
+  const P=S.params;const topT=[...C.T].filter(t=>t.horas>0).sort((a,b)=>b.horas-a.horas).slice(0,12);
+  const real={};for(const k of CAT_KEYS){const v=C.T.filter(t=>t.cat===k&&t.saida&&t.horas>0).map(t=>t.horas);real[k]={n:v.length,media:mean(v),mediana:median(v)};}
+  return `<section class="view">
+   <div class="kpis">
+    ${kpi("Horas do time",nf(tot)+" h",`${C.months.map(mlab).join(", ")}`)}
+    ${kpi("Em tickets de Serviços ADV",pct(inSrv/tot),nf(inSrv)+" h")}
+    ${kpi("Sem ticket",pct(semTk/tot),nf(semTk)+" h · internas e apoio")}
+    ${kpi("Outros analistas nos nossos tickets",nf(outros)+" h","apoio de fora do time (ex.: Andrei, Livia)")}
+   </div>
+   <div class="grid g2">
+    <div class="card"><h2>Esforço real por categoria (concluídos)</h2><p class="hint">Horas apontadas por ticket, só os já resolvidos ou fechados · compare com o padrão de Configuração</p>
+     <div class="tblw"><table><thead><tr><th>Categoria</th><th class="n">Tickets</th><th class="n">Média</th><th class="n">Mediana</th><th class="n">Padrão (sem/com anexo)</th></tr></thead><tbody>
+     ${CAT_KEYS.map(k=>{const e=esforcoPadrao(k);return `<tr><td>${esc(CAT_LAB[k])}</td><td class="n">${real[k].n}</td><td class="n">${nf(real[k].media,2)} h</td><td class="n">${nf(real[k].mediana,2)} h</td><td class="n">${e.sem===e.com?nf(e.sem,1)+" h":nf(e.sem,1)+" / "+nf(e.com,1)+" h"}</td></tr>`;}).join("")}
+     </tbody></table></div></div>
+    <div class="card"><h2>Horas por tipo de apontamento</h2>${hbars(byTipo.map(([l,v])=>({l,v})),{suf:" h"})}
+     <h2 style="margin-top:8px">Principais atividades</h2>${hbars(byAtv.map(([l,v])=>({l,v})),{suf:" h",c:CS})}</div>
+   </div>
+   <div class="card"><h2>Tickets com mais horas apontadas</h2>
+    <div class="tblw"><table><thead><tr><th>Ticket</th><th>Assunto</th><th>Categoria</th><th>Status</th><th class="n">Horas</th></tr></thead><tbody>
+    ${topT.map(t=>`<tr><td><a href="https://projuris-helpdesk.freshdesk.com/a/tickets/${t.id}" target="_blank" rel="noopener">${t.id}</a></td><td>${esc(t.assunto)}</td><td>${esc(CAT_LAB[t.cat]||t.cat)}</td><td>${esc(t.st)}</td><td class="n">${nf(t.horas,1)}</td></tr>`).join("")}
+    </tbody></table></div></div>
+  </section>`;
+}
+
+function quadroEficiencia(){
+  const C=S.C,corte=addMonths(curMonth,-1);
+  const done=C.T.filter(t=>t.cat!=="interno"&&t.saida&&t.horas>0&&t.esf>0&&t.mesSai>=corte).map(t=>({...t,efic:t.horas/t.esf}));
+  const n=done.length,media=mean(done.map(t=>t.efic));
+  const show=[...done].sort((a,b)=>a.efic-b.efic);
+  return `<div class="card"><h2>Eficiência dos tickets concluídos</h2><p class="hint">Eficiência = horas apontadas ÷ horas estimadas da categoria (migração: conforme com/sem anexo) · quanto menos horas apontadas em relação ao estimado, menor a eficiência · concluídos em ${mlab(corte)} e ${mlab(curMonth)} · ${nf(n)} tickets, média ${pct(media)}</p>
+   <div class="tblw"><table><thead><tr><th>Ticket</th><th>Assunto</th><th>Categoria</th><th>Mês conclusão</th><th class="n">Estimado</th><th class="n">Apontado</th><th class="n">Eficiência</th></tr></thead><tbody>
+   ${show.map(t=>`<tr><td><a href="https://projuris-helpdesk.freshdesk.com/a/tickets/${t.id}" target="_blank" rel="noopener">${t.id}</a></td><td style="min-width:220px">${esc(t.assunto)}</td><td>${esc(CAT_LAB[t.cat])}</td><td>${mlab(t.mesSai)}</td><td class="n">${nf(t.esf,1)} h</td><td class="n">${nf(t.horas,1)} h</td><td class="n"><span class="chip ${t.efic<0.5?"warn":""}">${pct(t.efic)}</span></td></tr>`).join("")}
+   </tbody></table></div>
+   <p class="hint" style="margin:0">${n?`${nf(n)} tickets concluídos nos últimos 2 meses, do menos eficiente ao mais eficiente.`:"Nenhum ticket concluído nos últimos 2 meses."}</p></div>`;
+}
+function forecast(){const C=S.C,M=C.fechados,n=Math.max(1,M.length);
+  const rows=CAT_KEYS.map(k=>{const v=M.map(m=>C.T.filter(t=>t.novo_no_ano&&t.mesEnt===m&&t.cat===k).length);const fc=v.reduce((a,b)=>a+b,0)/n;
+    return {k,v,fc,min:Math.min(...v),max:Math.max(...v),esf:esforcoMedioCat(k),h:fc*esforcoMedioCat(k)};}).filter(r=>r.fc>0);
+  const v=M.map(m=>C.T.filter(t=>t.novo_no_ano&&t.cat!=="interno"&&t.mesEnt===m).length);
+  const tot={k:"Total",v,fc:v.reduce((a,b)=>a+b,0)/n,min:Math.min(...v),max:Math.max(...v),h:rows.reduce((a,r)=>a+r.h,0)};tot.esf=tot.fc?tot.h/tot.fc:0;
+  const sai=M.map(m=>C.T.filter(t=>t.mesSai===m).length);
+  return {meses:M,rows,tot,sai,saiMed:sai.reduce((a,b)=>a+b,0)/n};}
+function tendencia(F){const C=S.C,cap=C.sop.total.capMedio;
+  const vaz=F.tot.esf?cap/F.tot.esf:0;const out={cap,vaz,cen:{}};
+  for(const cen of ["total","ativo"]){const L=cen==="ativo"?C.BL.filter(t=>t.ativo):C.BL;let n=L.length,h=L.reduce((a,t)=>a+t.saldo,0);const serie=[{m:curMonth,n,h}];
+    for(let i=1;i<=6;i++){n=Math.max(0,n+F.tot.fc-vaz);h=Math.max(0,h+F.tot.h-cap);serie.push({m:addMonths(curMonth,i),n,h});}
+    const d=serie[0].n?(serie[6].n-serie[0].n)/serie[0].n:0;out.cen[cen]={serie,delta:d,selo:d>0.05?"cresce":d<-0.05?"reduz":"estabiliza"};}
+  return out;}
+const SELO_CLS={cresce:"bad",estabiliza:"warn",reduz:"ok"};
+function cardForecast(){const C=S.C,F=forecast(),Tn=tendencia(F),M=F.meses;
+  const tr=(r,b)=>`<tr${b?' style="font-weight:500"':""}><td>${esc(r.k==="Total"?"Total":CAT_LAB[r.k])}</td>${r.v.map(x=>`<td class="n">${nf(x)}</td>`).join("")}<td class="n"><b style="font-weight:600">${nf(r.fc,1)}</b></td><td class="n">${nf(r.min)}–${nf(r.max)}</td><td class="n">${nf(r.esf,1)} h</td><td class="n">${nf(r.h)} h</td></tr>`;
+  const t=Tn.cen.total,a=Tn.cen.ativo;
+  return `<div class="card"><h2>Forecast de novos tickets e tendência do backlog</h2>
+   <p class="hint">Forecast = tickets criados nos 3 últimos meses completos (${M.map(mlab).join(", ")}) ÷ 3 · horas = forecast × esforço da categoria · vazão prevista = capacidade produtiva (${nf(Tn.cap)} h/mês) ÷ esforço médio das entradas (${nf(F.tot.esf,2)} h)</p>
+   <div class="grid g2" style="align-items:start">
+    <div class="tblw"><table><thead><tr><th>Categoria</th>${M.map(m=>`<th class="n">${mlab(m)}</th>`).join("")}<th class="n">Forecast/mês</th><th class="n">Faixa</th><th class="n">Esforço</th><th class="n">Horas/mês</th></tr></thead><tbody>
+     ${F.rows.map(r=>tr(r,false)).join("")}${tr(F.tot,true)}
+     <tr><td style="color:var(--muted-foreground)">Saídas observadas</td>${F.sai.map(x=>`<td class="n" style="color:var(--muted-foreground)">${nf(x)}</td>`).join("")}<td class="n" style="color:var(--muted-foreground)">${nf(F.saiMed,1)}</td><td></td><td></td><td></td></tr>
+    </tbody></table></div>
+    <div>
+     <div class="kpis" style="margin:0 0 8px">
+      ${kpi("Backlog total em 6 meses",nf(t.serie[6].n)+" tickets",`hoje ${nf(t.serie[0].n)} · <span class="chip ${SELO_CLS[t.selo]}">${t.selo}</span>`,SELO_CLS[t.selo]==="bad"?"bad":"")}
+      ${kpi("Backlog ativo em 6 meses",nf(a.serie[6].n)+" tickets",`hoje ${nf(a.serie[0].n)} · <span class="chip ${SELO_CLS[a.selo]}">${a.selo}</span>`,SELO_CLS[a.selo]==="bad"?"bad":"")}
+      ${kpi("Entradas × vazão prevista",nf(F.tot.fc)+" × "+nf(Tn.vaz)+"/mês",F.tot.fc>Tn.vaz?`a fila cresce ~${nf(F.tot.fc-Tn.vaz)} tickets/mês`:`a fila cai ~${nf(Tn.vaz-F.tot.fc)} tickets/mês`,F.tot.fc>Tn.vaz?"bad":"good")}
+     </div>
+     <div class="tblw"><table><thead><tr><th>Mês</th><th class="n">Total (tickets)</th><th class="n">Total (h)</th><th class="n">Ativo (tickets)</th><th class="n">Ativo (h)</th></tr></thead><tbody>
+      ${t.serie.map((x,i)=>`<tr><td>${i?mlab(x.m):"hoje"}</td><td class="n">${nf(x.n)}</td><td class="n">${nf(x.h)}</td><td class="n">${nf(a.serie[i].n)}</td><td class="n">${nf(a.serie[i].h)}</td></tr>`).join("")}
+     </tbody></table></div>
+    </div>
+   </div>
+   <p class="hint" style="margin:0">Projeção: backlog do mês seguinte = backlog + forecast − vazão prevista. "Cresce" ou "reduz" quando a variação em 6 meses passa de 5%.</p></div>`;}
+function vSop(){
+  const C=S.C,P=S.params,A=C.sop.total,B=C.sop.ativo;
+  const col=(x,t)=>{
+    const chartData=x.meses.map(mm=>({lab:mlab(mm.m),pago:mm.pago,forecast:mm.forecast,cap:mm.cap}));
+    return `<div class="card"><h2>${t}</h2><p class="hint">${nf(x.nBL)} tickets no backlog (${nf(x.blH0)} h)${x.nFora?` (sem ${nf(x.nFora)} que dependem do cliente ou de terceiros)`:""}</p>
+   <div class="kpis" style="margin:0">
+    ${kpi("Zera em",x.zerou!=null?nf(x.zerou+1)+" meses":`+${SAFETY_MESES} meses`,x.zerou!=null?`pagando até 90% da capacidade (${nf(x.meses[0]?x.meses[0].capBL:0)} h/mês)`:`faltariam ~${nf(x.extraFTE,1)} pessoa(s) a mais`,x.zerou==null?"bad":"good")}
+    ${kpi("Capacidade reservada ao backlog",nf(x.capMedio*0.9)+" h/mês","90% da capacidade produtiva média")}
+    ${kpi("Forecast",nf(x.entH)+" h/mês","entradas previstas · fora do cálculo do backlog, pode passar da capacidade")}
+    ${kpi("Pessoas no time",nf(x.fteAtual),`${nf(x.capFTE,1)} h/mês por pessoa`)}
+   </div>
+   ${legend([["var(--primary)","Pago ao backlog (até 90%)"],["var(--serie-saida)","Forecast (entradas previstas)"],["var(--destructive)","Capacidade do mês"]])}
+   ${colChart(chartData,[{k:"pago",c:"var(--primary)",l:"Pago ao backlog"},{k:"forecast",c:"var(--serie-saida)",l:"Forecast"}],{stack:true,line:{k:"cap",c:"var(--destructive)",l:"Capacidade"},h:220,aria:"Backlog pago e forecast por mês, com a capacidade do mês como referência"})}
+   <div class="tblw"><table><thead><tr><th>Mês</th><th class="n">Capacidade</th><th class="n">90% (backlog)</th><th class="n">Pago</th><th class="n">Restante</th><th class="n">Forecast</th></tr></thead><tbody>
+    ${x.meses.map(mm=>`<tr><td>${mlab(mm.m)}</td><td class="n">${nf(mm.cap)} h</td><td class="n">${nf(mm.capBL)} h</td><td class="n">${nf(mm.pago)} h</td><td class="n">${nf(mm.restante)} h</td><td class="n">${nf(mm.forecast)} h</td></tr>`).join("")}
+   </tbody></table></div>
+  </div>`;};
+  const V=sopVivo();
+  return `<section class="view">
+   <p class="note">S&amp;OP geral: todos os tickets de Serviços ADV × todos os analistas do time (${[...C.team].map(short).join(", ")}). Time único — sem squads. Simulação mês a mês: até 90% da capacidade do mês paga o backlog existente; o Forecast (entradas previstas) fica à parte e pode passar da capacidade, pois não há garantia de que vão entrar.</p>
+   <div class="grid g2">${col(A,"Cenário 1 · backlog total")}${col(B,"Cenário 2 · backlog ativo")}</div>
+   ${cardForecast()}
+   <h2 style="font-size:18px;line-height:24px;font-weight:600;margin:8px 0 0">Projeção viva <span class="chip" style="vertical-align:middle">realista · até ${MAX_MESES_VIVO} meses</span></h2>
+   <p class="note">Diferente dos cenários acima (Forecast fora da conta), aqui pelo menos metade do Forecast de cada mês entra de fato na fila. A linha do tempo se estende até o backlog cair para 50% da capacidade do mês (uma fila saudável, não uma fila zerada) — ou até ${MAX_MESES_VIVO} meses, o teto desta projeção.</p>
+   <div class="grid g2">${cardVivo(V.total,"Cenário 1 · backlog total")}${cardVivo(V.ativo,"Cenário 2 · backlog ativo")}</div>
+   ${quadroEficiencia()}
+   <div class="card"><h2>Como o S&amp;OP é calculado</h2><ul class="rules">
+    <li><b>Capacidade</b>: capacidade mensal de cada analista do time no Painel de Serviços × ${pct(P.fator_produtivo)} de tempo produtivo. Sem capacidade cadastrada no mês, usa ${P.horas_mes_padrao} h por pessoa.</li>
+    <li><b>Backlog</b>: esforço de cada ticket (padrão por categoria, editável em Configuração; migração varia por anexo) menos as horas já apontadas.</li>
+    <li><b>Simulação mês a mês</b>: cada mês paga ao backlog no máximo 90% da capacidade do mês; o que sobra do backlog vai para o mês seguinte, até zerar — ou até ${SAFETY_MESES} meses, por segurança (se não zerar até lá, o painel avisa e estima quantas pessoas a mais seriam necessárias).</li>
+    <li><b>Forecast</b>: média mensal de tickets novos por categoria nos meses fechados (${C.fechados.map(mlab).join(", ")}) × o esforço médio da categoria (migração pondera pela mistura real de com/sem anexo). Fica fora da conta do backlog — é só contexto, porque pode passar da capacidade.</li>
+    <li><b>Cenários</b>: o <b>backlog total</b> conta todos os tickets abertos; o <b>backlog ativo</b> tira os que dependem do cliente, estão suspensos, com fornecedor ou cancelados — cada um simulado separadamente.</li>
+    <li><b>Projeção viva</b>: mesma regra dos 90%, mas a cada mês soma-se à fila pelo menos metade do Forecast (ele deixa de ficar só como contexto); a régua de parada é a fila cair para 50% da capacidade do mês, não zerar — e o teto de segurança sobe para ${MAX_MESES_VIVO} meses.</li>
+   </ul></div></section>`;
+}
+
+// ---------------- S&OP por Analista (sem squads: forecast dividido igualmente ou pelo histórico) ----------------
+const SA_DEF={horizonte:6,recupera:3,teto:1,limite:0.85,ded:{},ferias:{},novos:[],rampa:[0.3,0.6,0.9,1]};
+function saCfg(){const s=(S.params&&S.params.sop_analista)||{};
+  return {...SA_DEF,...s,ded:{...(s.ded||{})},ferias:JSON.parse(JSON.stringify(s.ferias||{})),novos:(s.novos||[]).filter(x=>x&&String(x.nome||"").trim()),rampa:(Array.isArray(s.rampa)&&s.rampa.length===4)?s.rampa.map(Number):SA_DEF.rampa.slice()};}
+const SA_ST={acima:["Acima do teto","bad"],limite:["No limite","warn"],folga:["Com folga","ok"],sem:["Sem capacidade","bad"],nd:["–",""]};
+function saStatus(oc,cap,al,Q){if(!cap)return al>0.5?"sem":"nd";const o=Math.round(oc*100),t=Math.round(Q.teto*100),l=Math.round(Q.limite*100);return o>t?"acima":o>=l?"limite":"folga";}
+const sgn=v=>{const r=Math.round(v)||0;return (r>=0?"+":"")+nf(r);};
+function diasUteis(a,b){let n=0;for(let d=Math.floor(a/864e5);d*864e5<b;d++){const w=new Date(d*864e5).getUTCDay();if(w>0&&w<6)n++;}return n;}
+const mIni=m=>Date.UTC(+m.slice(0,4),+m.slice(5,7)-1,1);
+const mDiff=(a,b)=>(+b.slice(0,4)-+a.slice(0,4))*12+(+b.slice(5,7)-+a.slice(5,7));
+const SA_SEM="_sem";
+function sopAnalista(cen,modo,o){o=o||{};
+  const C=S.C,P=S.params,Q=saCfg(),H=o.H||Math.max(1,Math.min(12,Math.round(+Q.horizonte||6))),R=Math.max(1,+Q.recupera||3),fp=+P.fator_produtivo||0.85;
+  const now=Date.now();let m0=curMonth,t0=now;const parcial0=(mIni(addMonths(curMonth,1))-now)/864e5;
+  if(o.m0){m0=o.m0;t0=mIni(m0);}else if(parcial0<7){m0=addMonths(curMonth,1);t0=mIni(m0);}
+  const meses=[];for(let k=0;k<H;k++)meses.push(addMonths(m0,k));
+  const ini=meses.map((m,i)=>i===0?t0:mIni(m)),fim=meses.map(m=>mIni(addMonths(m,1)));
+  const du=meses.map((m,i)=>diasUteis(mIni(m),fim[i]));
+  const frac=meses.map((m,i)=>du[i]?diasUteis(ini[i],fim[i])/du[i]:0);
+  const team=[...C.team];
+  const pessoas=[...team.map(n=>({id:n,nome:short(n),novo:false,ded:Q.ded[n]!=null?+Q.ded[n]:1})),
+    ...Q.novos.map((n,j)=>({id:"novo:"+j,nome:String(n.nome).trim(),novo:true,mes:n.mes||addMonths(m0,2),ded:n.ded!=null?+n.ded:1}))];
+  const rampa=(p,i)=>{if(!p.novo)return 1;const k=mDiff(p.mes,meses[i]);return k<0?0:Q.rampa[Math.min(3,k)];};
+  const cap={};for(const p of pessoas)cap[p.id]=meses.map((m,i)=>{const base=p.novo?P.horas_mes_padrao:(((C.capM[m]||{})[p.id])||P.horas_mes_padrao);
+    const fer=p.novo?0:+(((Q.ferias[p.id]||{})[m])||0);return base*fp*p.ded*Math.max(0,1-fer/Math.max(1,du[i]))*rampa(p,i)*frac[i];});
+  const ids=[...pessoas.map(p=>p.id),SA_SEM];const z=()=>meses.map(()=>0);
+  const fila={},nFila={},fc={},nFc={};for(const id of ids){fila[id]=z();nFila[id]=z();fc[id]=z();nFc[id]=z();}
+  const own=t=>C.team.has(t.donoFull)?t.donoFull:SA_SEM;
+  const BL=o.BL||(cen==="ativo"?C.BL.filter(t=>t.ativo&&t.cat!=="interno"):C.BL.filter(t=>t.cat!=="interno"));const sal=o.saldo||(t=>t.saldo||0);const tR=t0+R*30.44*864e5;let apos=0,totSaldo=0,semSq=0;
+  const snap={};for(const id of ids)snap[id]={n:0,venc:0,saldo:0,cat:{}};
+  for(const t of BL){const o=own(t),s=sal(t);totSaldo+=s;const sn=snap[o];sn.n++;sn.saldo+=s;if(t.limite!=null?t.limite<=t0:t.sla==="vencido")sn.venc++;
+    sn.cat[t.cat]=sn.cat[t.cat]||{n:0,h:0};sn.cat[t.cat].n++;sn.cat[t.cat].h+=s;
+    let b;if(t.limite!=null&&t.limite>t0)b=Math.max(t.limite,t0+7*864e5);else b=tR;const L=b-t0;let dentro=0;
+    for(let i=0;i<H;i++){const x=Math.max(0,Math.min(b,fim[i])-Math.max(t0,ini[i]));if(x>0){const h=s*x/L;fila[o][i]+=h;dentro+=h;nFila[o][i]++;if(o===SA_SEM&&i<Math.min(R,H))semSq+=h;}}
+    apos+=s-dentro;}
+  const F=forecast(),fcG={};for(const k of CAT_KEYS)fcG[k]=z();
+  for(const r of F.rows)for(let i=0;i<H;i++)fcG[r.k][i]+=r.h*frac[i];
+  if(modo==="hist"){const M=C.fechados;
+    for(const r of F.rows){const L=C.T.filter(t=>t.novo_no_ano&&M.includes(t.mesEnt)&&t.cat===r.k);if(!L.length){for(let i=0;i<H;i++){fc[SA_SEM][i]+=r.h*frac[i];nFc[SA_SEM][i]+=r.fc*frac[i];}continue;}
+      const cnt={};for(const t of L){const o=own(t);cnt[o]=(cnt[o]||0)+1;}
+      for(const o in cnt){const sh=cnt[o]/L.length;for(let i=0;i<H;i++){fc[o][i]+=r.h*sh*frac[i];nFc[o][i]+=r.fc*sh*frac[i];}}}}
+  else{for(const r of F.rows){const mem=pessoas;
+    for(let i=0;i<H;i++){const w=mem.map(p=>p.novo?rampa(p,i):1),W=w.reduce((a,b)=>a+b,0);
+      if(!W){fc[SA_SEM][i]+=r.h*frac[i];nFc[SA_SEM][i]+=r.fc*frac[i];continue;}
+      mem.forEach((p,j)=>{fc[p.id][i]+=r.h*frac[i]*w[j]/W;nFc[p.id][i]+=r.fc*frac[i]*w[j]/W;});}}}
+  const mk=(p)=>{const c=p.sem?z():cap[p.id],al=meses.map((_,i)=>fila[p.id][i]+fc[p.id][i]);const oc=meses.map((_,i)=>c[i]?al[i]/c[i]:null);
+    const sc=c.reduce((a,b)=>a+b,0),sa=al.reduce((a,b)=>a+b,0);
+    return {...p,cap:c,fila:fila[p.id],fc:fc[p.id],al,oc,st:meses.map((_,i)=>saStatus(oc[i],c[i],al[i],Q)),nTk:meses.map((_,i)=>nFila[p.id][i]+nFc[p.id][i]),
+      saldo:meses.map((_,i)=>c[i]-al[i]),ocMed:sc?sa/sc:null,snap:snap[p.id],fcMes:fc[p.id].reduce((a,b)=>a+b,0)/Math.max(1e-9,frac.reduce((a,b)=>a+b,0))};};
+  const rows=[...pessoas.map(mk),mk({id:SA_SEM,nome:"Sem responsável ativo",sem:true})];
+  const P_=rows.filter(r=>!r.sem),sem=rows.find(r=>r.sem);
+  const sum=k=>meses.map((_,i)=>P_.reduce((a,r)=>a+r[k][i],0));
+  const tot={cap:sum("cap"),fila:sum("fila"),fc:sum("fc"),al:sum("al"),nTk:sum("nTk")};tot.saldo=meses.map((_,i)=>tot.cap[i]-tot.al[i]);tot.oc=meses.map((_,i)=>tot.cap[i]?tot.al[i]/tot.cap[i]:null);
+  const Wn=Math.min(R,H),sug=[];
+  const exc={},folga={};for(const r of P_){let e=0,f=0;for(let i=0;i<Wn;i++){e+=Math.max(0,r.al[i]-r.cap[i]*Q.teto);f+=Math.max(0,r.cap[i]*Q.limite-r.al[i]);}exc[r.id]=e;folga[r.id]=f;}
+  const hTk=r=>r.snap&&r.snap.n?r.snap.saldo/r.snap.n:null;
+  const don=P_.filter(r=>exc[r.id]>1).sort((a,b)=>exc[b.id]-exc[a.id]);const rec=P_.filter(r=>folga[r.id]>1).sort((a,b)=>folga[b.id]-folga[a.id]);
+  for(const d of don){for(const r of rec){if(exc[d.id]<=1)break;const h=Math.min(exc[d.id],folga[r.id]);if(h<=1)continue;exc[d.id]-=h;folga[r.id]-=h;const ht=hTk(d);sug.push({de:d.nome,para:r.nome,h,tk:ht?h/ht:null});}}
+  let hs=semSq;for(const r of rec){if(hs<=1)break;const h=Math.min(hs,folga[r.id]);if(h<=1)continue;hs-=h;folga[r.id]-=h;sug.push({de:"Sem responsável ativo",para:r.nome,h,tk:null});}
+  for(const d of don)if(exc[d.id]>1)sug.push({de:d.nome,para:null,h:exc[d.id]});
+  if(hs>1)sug.push({de:"Sem responsável ativo",para:null,h:hs});
+  const alocFila=ids.reduce((a,id)=>a+fila[id].reduce((x,y)=>x+y,0),0);
+  return {meses,frac,parcial:frac[0]<0.999,m0,t0,H,R,Q,rows,pes:P_,sem,tot,fcG,sug,Wn,apos,totSaldo,alocFila,nBL:BL.length,cen,modo,F};
+}
+function saPlanoMes(cen,modo){
+  const C=S.C,D=mIni(curMonth),iso=new Date(D).toISOString().slice(0,10);
+  const hAntes=new Map();for(const a of C.A){if(!a.work_date||a.work_date>=iso)continue;const k=String(a.ticket_id||"").trim();if(k&&C.byId.has(k))hAntes.set(k,(hAntes.get(k)||0)+(a.horas||0));}
+  const aberto=t=>{const cr=new Date(t.criado_em).getTime();if(!(cr<D))return false;if(t.backlog)return true;const sd=t.saida?new Date(t.saida).getTime():NaN;return !isNaN(sd)&&sd>=D;};
+  const L=C.T.filter(t=>t.cat!=="interno"&&aberto(t)&&(cen!=="ativo"||!t.backlog||t.ativo));
+  return sopAnalista(cen,modo,{m0:curMonth,H:1,BL:L,saldo:t=>Math.max(0,t.esf-(hAntes.get(String(t.id))||0))});
+}
+function saHistorico(cen,modo){
+  const C=S.C,P=S.params,Q=saCfg(),fp=+P.fator_produtivo||0.85,ano=curMonth.slice(0,4);
+  const X=sopAnalista(cen,modo),PM=saPlanoMes(cen,modo);
+  const pass=[];for(let m=ano+"-01";m<curMonth;m=addMonths(m,1))pass.push(m);
+  const fut=X.meses.filter(m=>m>curMonth);
+  const comAp=new Set(C.months);
+  const hTk={};for(const a of C.A){if(!C.team.has(a.analyst_name))continue;const k=String(a.ticket_id||"").trim();if(k&&C.byId.has(k)){const o=(hTk[a.mes]=hTk[a.mes]||{});o[a.analyst_name]=(o[a.analyst_name]||0)+(a.horas||0);}}
+  const capR=(n,m)=>((((C.capM[m]||{})[n])||P.horas_mes_padrao))*fp*(Q.ded[n]!=null?+Q.ded[n]:1);
+  const real=(n,m)=>comAp.has(m)?(((C.teamH[m]||{})[n])||0):null;
+  const pessoas=X.pes.map(r=>({id:r.id,nome:r.nome,novo:r.novo}));
+  const rows=pessoas.map(p=>{const xr=X.pes.find(r=>r.id===p.id),pr=PM.pes.find(r=>r.id===p.id);
+    const cel=[];
+    for(const m of pass){const al=p.novo?null:real(p.id,m),c=p.novo?0:capR(p.id,m);cel.push({m,k:"real",al,tk:al==null?null:((hTk[m]||{})[p.id]||0),cap:c,oc:al!=null&&c?al/c:null});}
+    const cA=p.novo?(pr?pr.cap[0]:0):capR(p.id,curMonth);
+    const prev={m:curMonth,k:"prev",al:pr?pr.al[0]:0,fila:pr?pr.fila[0]:0,fc:pr?pr.fc[0]:0,cap:cA};prev.oc=cA?prev.al/cA:null;
+    const ra=p.novo?null:real(p.id,curMonth);const rea={m:curMonth,k:"real",al:ra==null&&!p.novo?0:ra,tk:(hTk[curMonth]||{})[p.id]||0,cap:cA};rea.oc=rea.al!=null&&cA?rea.al/cA:null;
+    const futC=fut.map(m=>{const i=X.meses.indexOf(m);return {m,k:"prev",al:xr.al[i],fila:xr.fila[i],fc:xr.fc[i],cap:xr.cap[i],oc:xr.oc[i]};});
+    return {...p,pass:cel,prev,rea,fut:futC};});
+  const ultAp=C.A.filter(a=>C.team.has(a.analyst_name)).map(a=>a.work_date).filter(Boolean).sort().pop()||null;
+  return {pass,fut,rows,X,PM,comAp,ultAp,Q,nPlano:PM.nBL,saldoPlano:PM.totSaldo};
+}
+function cardHist(cen,modo){
+  const C=S.C,Hs=saHistorico(cen,modo),Q=Hs.Q,atual=S.sa.atual==="real"?"real":"prev";
+  const hh=v=>v==null?"–":nf(Math.round(v)||0);
+  const ocC=(v)=>{if(v==null)return "–";const st=saStatus(v,1,v,Q);return `<span class="chip ${(SA_ST[st]||SA_ST.nd)[1]}" style="min-width:44px;justify-content:center">${pct(v)}</span>`;};
+  const cols=[...Hs.pass.map(m=>({m,t:"real"})),{m:curMonth,t:atual},...Hs.fut.map(m=>({m,t:"prev"}))];
+  const cel=(r,c)=>c.m<curMonth?r.pass.find(x=>x.m===c.m):c.m===curMonth?(c.t==="real"?r.rea:r.prev):r.fut.find(x=>x.m===c.m);
+  const semAp=c=>c.m<curMonth&&!Hs.comAp.has(c.m);
+  const thc=c=>`<th class="n" style="${c.m===curMonth?"background:var(--tag-blue);color:var(--tag-blue-fg)":""}">${mlab(c.m)}<div style="font-weight:400;font-size:11px;line-height:14px">${c.m===curMonth?(c.t==="real"?"realizado":"previsto"):c.m<curMonth?"realizado":"previsto"}</div></th>`;
+  const H=cols.length;const grp=t=>`<tr><td colspan="${H+1}" style="background:var(--muted);font-weight:600">${t}</td></tr>`;
+  const nm=r=>`${esc(r.nome)}${r.novo?' <span class="chip info">novo</span>':""}`;
+  const td=(c,v)=>`<td class="n"${c.m===curMonth?' style="background:color-mix(in srgb,var(--tag-blue) 45%,transparent)"':""}>${v}</td>`;
+  const linha=(r,f)=>`<tr><td style="white-space:nowrap">${nm(r)}</td>${cols.map(c=>td(c,semAp(c)?'<span style="color:var(--muted-foreground)">s/ apont.</span>':f(cel(r,c)||{},c))).join("")}</tr>`;
+  const tot=(f)=>`<tr style="font-weight:500"><td>Total do time</td>${cols.map(c=>{if(semAp(c))return td(c,"–");const L=Hs.rows.map(r=>cel(r,c)||{});return td(c,f(L));}).join("")}</tr>`;
+  const sumK=(L,k)=>L.reduce((a,x)=>a+(x[k]||0),0);
+  const gd=cols.map(c=>{const L=Hs.rows.map(r=>cel(r,c)||{});const al=semAp(c)?0:sumK(L,"al");return {lab:mlab(c.m),r:c.t==="real"?al:0,p:c.t==="prev"?al:0,cap:sumK(L,"cap")};});
+  const tg=(v,l)=>`<button class="btn${atual===v?" pri":""}" data-sa-k="atual" data-sa-v="${v}" aria-pressed="${atual===v}">${l}</button>`;
+  const du=diasUteis(mIni(curMonth),mIni(addMonths(curMonth,1))),dd=diasUteis(mIni(curMonth),Date.now()+864e5);
+  const tp=sumK(Hs.rows.map(r=>r.prev),"al"),trr=sumK(Hs.rows.map(r=>r.rea),"al"),tc=sumK(Hs.rows.map(r=>r.prev),"cap");
+  const pend=tc&&trr<0.5*tc*dd/Math.max(1,du);
+  return `<div class="card"><h2>Histórico e projeção por analista · ${mlab(Hs.pass[0]||curMonth)} → ${mlab(Hs.fut[Hs.fut.length-1]||curMonth)}</h2>
+   <p class="hint">Meses anteriores: alocação realizada (horas apontadas no Painel de Serviços). Meses futuros: alocação prevista (mesma regra do S&amp;OP mensal acima). ${mlab(curMonth)}: escolha a visão</p>
+   <div class="filters" style="align-items:center;gap:8px"><span style="font-size:13px;color:var(--muted-foreground)">Mês atual (${mlab(curMonth)}):</span>${tg("prev","Visão 1 · alocação prevista")}${tg("real","Visão 2 · alocação realizada")}</div>
+   ${pend?`<p class="note" style="margin:0">Apontamentos de ${mlab(curMonth)} provavelmente pendentes: o time apontou ${nf(trr)} h (último lançamento em ${Hs.ultAp?fdia(new Date(Hs.ultAp+"T12:00:00Z").getTime()):"–"}), contra ${nf(tc)} h de capacidade no mês.</p>`:""}
+   <div class="tblw"><table><thead><tr><th>Analista</th>${cols.map(thc).join("")}</tr></thead><tbody>
+    ${grp("Alocação (h/mês)")}${Hs.rows.map(r=>linha(r,x=>hh(x.al))).join("")}${tot(L=>hh(sumK(L,"al")))}
+    ${grp("Realizado em tickets de Serviços ADV (h/mês)")}${Hs.rows.map(r=>linha(r,(x,c)=>c.t==="real"?hh(x.tk):'<span style="color:var(--muted-foreground)">·</span>')).join("")}
+    ${grp("Capacidade (h/mês)")}${Hs.rows.map(r=>linha(r,x=>hh(x.cap))).join("")}${tot(L=>hh(sumK(L,"cap")))}
+    ${grp("Ocupação (alocação ÷ capacidade)")}${Hs.rows.map(r=>linha(r,x=>ocC(x.oc))).join("")}${tot(L=>{const c=sumK(L,"cap");return c?pct(sumK(L,"al")/c):"–";})}
+   </tbody></table></div>
+   <h2 style="margin-top:4px">Alocação do time × capacidade (h/mês)</h2>
+   ${legend([["var(--serie-saida)","Realizado"],["var(--primary)","Previsto"],["var(--destructive)","Capacidade"]])}
+   ${colChart(gd,[{k:"r",c:"var(--serie-saida)",l:"Realizado"},{k:"p",c:"var(--primary)",l:"Previsto"}],{h:230,stack:true,hideZero:true,line:{k:"cap",c:"var(--destructive)",l:"Capacidade"},aria:"Alocação realizada e prevista do time por mês"})}
+  </div>`;
+}
+function saLabel(X,i){return mlab(X.meses[i])+(i===0&&X.parcial?"*":"");}
+const SA_COL=["var(--primary)","var(--serie-saida)","#0EA5E9","var(--serie-4)","#7C3AED","#DB2777"];
+function vSopa(){
+  const C=S.C,P=S.params;if(!S.H)return `<section class="view"><p class="note">O S&amp;OP por Analista precisa da base de horas (capacidade do Painel de Serviços). Carregue-a em Configuração.</p></section>`;
+  const cen=S.sa.cen==="ativo"?"ativo":"total",modo=S.sa.modo==="hist"?"hist":"squad";
+  const X=sopAnalista(cen,modo),Y=sopAnalista(cen,modo==="hist"?"squad":"hist"),Q=X.Q,M=X.meses,H=X.H;
+  const iR=X.parcial&&H>1?1:0;
+  const hh=v=>nf(Math.round(v)||0)+" h",sg=v=>sgn(v)+" h";
+  const stc=s=>{const [l,c]=SA_ST[s]||SA_ST.nd;return `<span class="chip ${c}">${l}</span>`;};
+  const ocC=(v,s)=>v==null?"–":`<span class="chip ${(SA_ST[s]||SA_ST.nd)[1]}" style="min-width:44px;justify-content:center">${pct(v)}</span>`;
+  const tg=(k,v,l)=>`<button class="btn${(k==="cen"?cen:modo)===v?" pri":""}" data-sa-k="${k}" data-sa-v="${v}" aria-pressed="${(k==="cen"?cen:modo)===v}">${l}</button>`;
+  const P_=X.pes,sem=X.sem,acima=P_.filter(r=>r.st[iR]==="acima");
+  const nomeCen=cen==="ativo"?"Em andamento":"Backlog Geral";
+  const th=`<th>Analista</th>${M.map((_,i)=>`<th class="n">${saLabel(X,i)}</th>`).join("")}`;
+  const grp=t=>`<tr><td colspan="${H+1}" style="background:var(--muted);font-weight:600">${t}</td></tr>`;
+  const nm=r=>`${esc(r.nome)}${r.novo?' <span class="chip info">novo</span>':""}`;
+  const linha=(r,f)=>`<tr><td style="white-space:nowrap">${nm(r)}</td>${M.map((_,i)=>`<td class="n">${f(r,i)}</td>`).join("")}</tr>`;
+  const totl=(l,f)=>`<tr style="font-weight:500"><td>${l}</td>${M.map((_,i)=>`<td class="n">${f(i)}</td>`).join("")}</tr>`;
+  const semRow=(f)=>sem.fila.some(x=>x>0.5)||sem.fc.some(x=>x>0.5)?`<tr style="color:var(--muted-foreground)"><td>Sem responsável ativo</td>${M.map((_,i)=>`<td class="n">${f(sem,i)}</td>`).join("")}</tr>`:"";
+  const gd=M.map((_,i)=>{const o={lab:saLabel(X,i),ref:Q.teto*100};P_.forEach((r,j)=>o["p"+j]=r.oc[i]!=null?r.oc[i]*100:0);return o;});
+  const cats=CAT_KEYS.filter(k=>X.rows.some(r=>r.snap&&r.snap.cat[k]));
+  const cols=[...P_.filter(r=>!r.novo),sem];
+  const rp=Q.rampa.map(v=>pct(v)).join(" / ");
+  const dis=S.canEdit?"":"disabled";
+  const mesesOpt=[];for(let k=0;k<12;k++)mesesOpt.push(addMonths(curMonth,k));
+  const novos=[...Q.novos];while(novos.length<3)novos.push({nome:"",mes:addMonths(X.m0,2),ded:1});
+  return `<section class="view">
+   <p class="note">S&amp;OP por Analista: a capacidade de cada analista confrontada com a própria fila (saldo de horas dos tickets dele) e com a parte que lhe cabe das entradas previstas, mês a mês. Time único: sem squads, todos atendem todas as categorias.</p>
+   <div class="filters" style="align-items:center;gap:8px">
+    <span style="font-size:13px;color:var(--muted-foreground)">Fila:</span>${tg("cen","total","Backlog Geral")}${tg("cen","ativo","Em andamento")}
+    <span style="font-size:13px;color:var(--muted-foreground);margin-left:12px">Forecast por analista:</span>${tg("modo","squad","Igual entre o time")}${tg("modo","hist","Pelo histórico (3 meses)")}
+    <button class="btn" id="sa_csv" style="margin-left:auto">Exportar CSV</button>
+   </div>
+   <div class="kpis">
+    ${kpi("Capacidade do time · "+saLabel(X,iR),hh(X.tot.cap[iR]),`${P_.length} pessoa(s) · ${pct(P.fator_produtivo)} produtivo`)}
+    ${kpi("Alocação · "+saLabel(X,iR),hh(X.tot.al[iR]),`fila ${hh(X.tot.fila[iR])} + entradas ${hh(X.tot.fc[iR])}`)}
+    ${kpi("Saldo · "+saLabel(X,iR),sg(X.tot.saldo[iR]),X.tot.saldo[iR]>=0?"sobra":"falta",X.tot.saldo[iR]<0?"bad":"good")}
+    ${kpi("Ocupação do time",pct(X.tot.oc[iR]),`teto ${pct(Q.teto)} · limite ${pct(Q.limite)}`,X.tot.oc[iR]>Q.teto?"bad":X.tot.oc[iR]>=Q.limite?"":"good")}
+    ${kpi("Analistas acima do teto",nf(acima.length)+" de "+nf(P_.length),acima.map(r=>r.nome).join(", ")||"nenhum",acima.length?"bad":"good")}
+    ${kpi("Fila sem responsável",nf(sem.snap.n)+" tickets",`${hh(sem.snap.saldo)} de saldo sem dono`,sem.snap.n?"bad":"good")}
+   </div>
+   <div class="card"><h2>Por analista · ${nomeCen}</h2><p class="hint">Fila de hoje × capacidade de ${saLabel(X,iR)} · meses de fila = saldo ÷ capacidade mensal · status: acima do teto &gt; ${pct(Q.teto)}, no limite ≥ ${pct(Q.limite)}</p>
+    <div class="tblw"><table><thead><tr><th>Analista</th><th class="n">Tickets</th><th class="n">Vencidos</th><th class="n">% vencidos</th><th class="n">Saldo</th><th class="n">Capacidade</th><th class="n">Alocação</th><th class="n">Ocupação</th><th class="n">Meses de fila</th><th>Status</th></tr></thead><tbody>
+     ${[...P_,sem].map(r=>{const s=r.snap||{n:0,venc:0,saldo:0};return `<tr${r.sem?' style="color:var(--muted-foreground)"':""}><td style="white-space:nowrap">${nm(r)}</td><td class="n">${nf(s.n)}</td><td class="n">${nf(s.venc)}</td><td class="n">${s.n?pct(s.venc/s.n):"–"}</td><td class="n">${hh(s.saldo)}</td><td class="n">${r.sem?"–":hh(r.cap[iR])}</td><td class="n">${hh(r.al[iR])}</td><td class="n">${r.sem?"–":ocC(r.oc[iR],r.st[iR])}</td><td class="n">${!r.sem&&r.cap[iR]?nf(s.saldo/r.cap[iR],1):"–"}</td><td>${r.sem?'<span class="chip bad">Redistribuir</span>':stc(r.st[iR])}</td></tr>`;}).join("")}
+     <tr style="font-weight:500"><td>Total</td><td class="n">${nf(X.nBL)}</td><td class="n">${nf(X.rows.reduce((a,r)=>a+(r.snap?r.snap.venc:0),0))}</td><td class="n">${X.nBL?pct(X.rows.reduce((a,r)=>a+(r.snap?r.snap.venc:0),0)/X.nBL):"–"}</td><td class="n">${hh(X.totSaldo)}</td><td class="n">${hh(X.tot.cap[iR])}</td><td class="n">${hh(X.tot.al[iR]+sem.al[iR])}</td><td class="n">${pct(X.tot.cap[iR]?(X.tot.al[iR]+sem.al[iR])/X.tot.cap[iR]:null)}</td><td class="n">${X.tot.cap[iR]?nf(X.totSaldo/X.tot.cap[iR],1):"–"}</td><td></td></tr>
+    </tbody></table></div></div>
+   <div class="card"><h2>S&amp;OP mensal por analista · ${nomeCen}</h2><p class="hint">Alocação = fila atual espalhada até o limite do SLA de cada ticket (vencidos em ${X.R} meses) + entradas previstas ${modo==="squad"?"divididas igualmente pelo time":"pela participação histórica"}${X.parcial?` · *${saLabel(X,0).slice(0,-1)} a partir de hoje (${pct(X.frac[0])} dos dias úteis)`:""}</p>
+    <div class="tblw"><table><thead><tr>${th}</tr></thead><tbody>
+     ${grp("1. Tickets abertos no mês (fila + entradas previstas)")}${P_.map(r=>linha(r,(r,i)=>nf(r.nTk[i]))).join("")}${semRow((r,i)=>nf(r.nTk[i]))}${totl("Total do time",i=>nf(X.tot.nTk[i]))}
+     ${grp("2. Alocação (h/mês)")}${P_.map(r=>linha(r,(r,i)=>nf(r.al[i]))).join("")}${semRow((r,i)=>nf(r.al[i]))}${totl("Total do time",i=>nf(X.tot.al[i]))}
+     ${grp("3. Capacidade (h/mês)")}${P_.map(r=>linha(r,(r,i)=>nf(r.cap[i]))).join("")}${totl("Total do time",i=>nf(X.tot.cap[i]))}
+     ${grp("4. Saldo = capacidade − alocação (h/mês)")}${P_.map(r=>linha(r,(r,i)=>`<span style="color:${Math.round(r.saldo[i])<0?"var(--destructive)":"inherit"}">${sgn(r.saldo[i])}</span>`)).join("")}${totl("Total do time",i=>sgn(X.tot.saldo[i]))}
+     ${grp("5. Ocupação (alocação ÷ capacidade)")}${P_.map(r=>linha(r,(r,i)=>ocC(r.oc[i],r.st[i]))).join("")}${totl("Total do time",i=>pct(X.tot.oc[i]))}
+    </tbody></table></div>
+    <h2 style="margin-top:4px">Ocupação por analista (%)</h2>
+    ${legend([...P_.map((r,j)=>[SA_COL[j%SA_COL.length],r.nome]),["var(--destructive)","Teto ("+pct(Q.teto)+")"]])}
+    ${colChart(gd,P_.map((r,j)=>({k:"p"+j,c:SA_COL[j%SA_COL.length],l:r.nome})),{h:240,labels:false,line:{k:"ref",c:"var(--destructive)",l:"Teto"},aria:"Ocupação por analista e mês"})}
+   </div>
+   ${cardHist(cen,modo)}
+   <div class="card"><h2>Time com forecast de entradas (h/mês)</h2><p class="hint">Forecast: ${nf(X.F.tot.fc)} tickets e ${hh(X.F.tot.h)} por mês (média de ${C.fechados.map(mlab).join(", ")})</p>
+    <div class="tblw"><table><thead><tr><th>Linha</th>${M.map((_,i)=>`<th class="n">${saLabel(X,i)}</th>`).join("")}</tr></thead><tbody>
+     ${[["Fila atual · com responsável",X.tot.fila],["Fila atual · sem responsável ativo",sem.fila]].map(([l,v])=>`<tr><td>${l}</td>${v.map(x=>`<td class="n">${nf(x)}</td>`).join("")}</tr>`).join("")}
+     ${CAT_KEYS.map(k=>`<tr><td>Forecast · ${esc(CAT_LAB[k])}</td>${X.fcG[k].map(x=>`<td class="n">${nf(x)}</td>`).join("")}</tr>`).join("")}
+     ${(()=>{const al=M.map((_,i)=>X.tot.fila[i]+sem.fila[i]+CAT_KEYS.reduce((s,k)=>s+X.fcG[k][i],0));return `<tr style="font-weight:500"><td>Alocação total</td>${al.map(x=>`<td class="n">${nf(x)}</td>`).join("")}</tr>
+      <tr><td>Capacidade do time</td>${X.tot.cap.map(x=>`<td class="n">${nf(x)}</td>`).join("")}</tr>
+      <tr style="font-weight:500"><td>Saldo</td>${al.map((x,i)=>`<td class="n" style="color:${Math.round(X.tot.cap[i]-x)<0?"var(--destructive)":"inherit"}">${sgn(X.tot.cap[i]-x)}</td>`).join("")}</tr>
+      <tr style="font-weight:500"><td>Ocupação</td>${al.map((x,i)=>`<td class="n">${pct(X.tot.cap[i]?x/X.tot.cap[i]:null)}</td>`).join("")}</tr>`;})()}
+    </tbody></table></div></div>
+   <div class="card"><h2>Sugestão de redistribuição · próximos ${X.Wn} meses</h2><p class="hint">Horas acima do teto de um analista que cabem até o limite (${pct(Q.limite)}) de outro, e para onde levar a fila sem responsável</p>
+    ${X.sug.length?`<ul class="rules">${X.sug.map(s=>s.para?`<li><b>${esc(s.de)} → ${esc(s.para)}</b>: ~${hh(s.h)}${s.tk?` (≈ ${nf(s.tk)} tickets)`:""}</li>`:`<li><b>${esc(s.de)}</b>: ~${hh(s.h)} sem folga no time · precisa de capacidade extra (contratação ou ações do Plano de Ação)</li>`).join("")}</ul>`:`<p class="note" style="margin:0">Nenhum analista acima do teto nos próximos ${X.Wn} meses e nenhuma fila sem responsável.</p>`}</div>
+   <div class="card"><h2>Categoria × analista · ${nomeCen}</h2><p class="hint">Tickets e saldo de horas na fila de hoje</p>
+    <div class="tblw"><table><thead><tr><th>Categoria</th>${cols.map(r=>`<th class="n">${esc(r.sem?"Sem resp.":r.nome)}</th>`).join("")}<th class="n">Total</th></tr></thead><tbody>
+     ${cats.map(k=>{let tn=0,thh=0;const cs=cols.map(r=>{const x=(r.snap&&r.snap.cat[k])||{n:0,h:0};tn+=x.n;thh+=x.h;return `<td class="n">${x.n?`${nf(x.n)} <span style="color:var(--muted-foreground)">· ${nf(x.h)} h</span>`:"–"}</td>`;}).join("");return `<tr><td>${esc(CAT_LAB[k])}</td>${cs}<td class="n"><b style="font-weight:500">${nf(tn)}</b> <span style="color:var(--muted-foreground)">· ${nf(thh)} h</span></td></tr>`;}).join("")}
+    </tbody></table></div></div>
+   <div class="card"><h2>Premissas do S&amp;OP por Analista</h2><p class="hint">${S.canEdit?"Ajuste e salve: a aba recalcula na hora e a cada nova extração.":"Somente leitura."} Capacidade = capacidade do Painel de Serviços no mês × ${pct(P.fator_produtivo)} × dedicação × (1 − dias de férias ÷ dias úteis)</p>
+    <div class="filters">
+     <label class="f" for="sa_hz">Horizonte (meses)<input type="number" id="sa_hz" min="3" max="12" step="1" value="${H}" ${dis}></label>
+     <label class="f" for="sa_rc">Janela de recuperação dos vencidos (meses)<input type="number" id="sa_rc" min="1" max="12" step="1" value="${X.R}" ${dis}></label>
+     <label class="f" for="sa_teto">Teto de ocupação (%)<input type="number" id="sa_teto" min="50" max="150" step="5" value="${Math.round(Q.teto*100)}" ${dis}></label>
+     <label class="f" for="sa_lim">"No limite" a partir de (%)<input type="number" id="sa_lim" min="50" max="100" step="5" value="${Math.round(Q.limite*100)}" ${dis}></label>
+     ${Q.rampa.map((v,i)=>`<label class="f" for="sa_rp${i}">Rampa mês ${i+1}${i===3?"+":""} (%)<input type="number" id="sa_rp${i}" min="0" max="100" step="5" value="${Math.round(v*100)}" ${dis}></label>`).join("")}
+    </div>
+    <h2 style="margin-top:8px">Dedicação e férias</h2><p class="hint">Férias em dias úteis por mês. Use só se as férias não estiverem na capacidade do Painel de Serviços.</p>
+    <div class="tblw"><table><thead><tr><th>Analista</th><th class="n">Dedicação (%)</th>${M.map(m=>`<th class="n">Férias ${mlab(m)}</th>`).join("")}</tr></thead><tbody>
+     ${[...C.team].map((n,i)=>`<tr><td style="white-space:nowrap">${esc(short(n))}</td><td class="n"><input type="number" id="sa_ded${i}" data-n="${esc(n)}" min="0" max="100" step="5" value="${Math.round((Q.ded[n]!=null?+Q.ded[n]:1)*100)}" style="width:72px" aria-label="Dedicação de ${esc(short(n))}" ${dis}></td>${M.map(m=>`<td class="n"><input type="number" class="sa_fer" data-n="${esc(n)}" data-m="${m}" min="0" max="23" step="1" value="${+(((Q.ferias[n]||{})[m])||0)}" style="width:60px" aria-label="Férias de ${esc(short(n))} em ${mlab(m)}" ${dis}></td>`).join("")}</tr>`).join("")}
+    </tbody></table></div>
+    <h2 style="margin-top:8px">Novos analistas (simulação)</h2><p class="hint">Deixe o nome em branco para não simular. A capacidade segue a rampa (${rp}) a partir do mês de entrada, com ${P.horas_mes_padrao} h/mês de base.</p>
+    <div class="tblw"><table><thead><tr><th>Nome</th><th>Mês de entrada</th><th class="n">Dedicação (%)</th></tr></thead><tbody>
+     ${novos.map((n,k)=>`<tr><td><input type="text" id="sa_nn${k}" value="${esc(n.nome||"")}" placeholder="Novo analista ${k+1}" style="width:160px" aria-label="Nome do novo analista ${k+1}" ${dis}></td>
+      <td><select id="sa_nm${k}" aria-label="Mês de entrada do novo analista ${k+1}" ${dis}>${mesesOpt.map(m=>`<option value="${m}" ${m===(n.mes||"")?"selected":""}>${mlab(m)}</option>`).join("")}</select></td>
+      <td class="n"><input type="number" id="sa_nd${k}" min="0" max="100" step="5" value="${Math.round((n.ded!=null?+n.ded:1)*100)}" style="width:72px" aria-label="Dedicação do novo analista ${k+1}" ${dis}></td></tr>`).join("")}
+    </tbody></table></div>
+    ${S.canEdit?`<div><button class="btn pri" id="sa_save">Salvar premissas</button></div>`:""}
+   </div>
+   <div class="card"><h2>Como o S&amp;OP por Analista é calculado</h2><ul class="rules">
+    <li><b>Fila de cada analista</b>: tickets do backlog (${nomeCen}: ${nf(X.nBL)} tickets) com o responsável atual. Carga de cada ticket = saldo de horas (esforço padrão da categoria − horas já apontadas).</li>
+    <li><b>Alocação no tempo</b>: o saldo de cada ticket no prazo é espalhado de hoje até o limite do SLA (mínimo 7 dias); o de ticket vencido, pelos próximos ${X.R} meses (janela de recuperação).</li>
+    <li><b>Entradas previstas</b>: forecast por categoria (horas = tickets × esforço), ${modo==="squad"?"divididas igualmente entre o time":"pela participação histórica de cada analista"} — time único, sem squads.</li>
+    <li><b>Capacidade</b>: capacidade do Painel de Serviços de cada analista no mês (${P.horas_mes_padrao} h quando não houver) × ${pct(P.fator_produtivo)} de tempo produtivo × dedicação × (1 − férias). Novos analistas seguem a rampa ${rp}.</li>
+    <li><b>Status</b>: acima do teto quando a ocupação passa de ${pct(Q.teto)}; no limite a partir de ${pct(Q.limite)}; com folga abaixo disso.</li>
+    <li><b>Checagem</b>: fila alocada nos ${H} meses ${hh(X.alocFila)} + saldo que fica depois do horizonte ${hh(Math.max(0,X.apos))} = saldo total da fila ${hh(X.totSaldo)}${Math.abs(X.alocFila+X.apos-X.totSaldo)<1?' <span class="chip ok">confere</span>':' <span class="chip bad">diverge</span>'}.</li>
+   </ul></div>
+  </section>`;
+}
+async function saveSa(){if(!S.db)return;const g=id=>{const e=document.getElementById(id);return e?+e.value:null;};
+  const Q=saCfg();const ded={},ferias={};
+  document.querySelectorAll("input[id^=sa_ded]").forEach(e=>{ded[e.dataset.n]=Math.min(1,Math.max(0,(+e.value||0)/100));});
+  document.querySelectorAll("input.sa_fer").forEach(e=>{const v=Math.max(0,+e.value||0);if(v){(ferias[e.dataset.n]=ferias[e.dataset.n]||{})[e.dataset.m]=v;}});
+  for(const n in Q.ferias)for(const m in Q.ferias[n]){if(!document.querySelector(`input.sa_fer[data-n="${CSS.escape(n)}"][data-m="${m}"]`)){(ferias[n]=ferias[n]||{})[m]=Q.ferias[n][m];}}
+  const novos=[];for(let k=0;k<3;k++){const nm=(document.getElementById("sa_nn"+k)||{}).value||"";if(!nm.trim())continue;
+    novos.push({nome:nm.trim().slice(0,40),mes:document.getElementById("sa_nm"+k).value,ded:Math.min(1,Math.max(0,(g("sa_nd"+k)||0)/100))});}
+  const teto=Math.min(1.5,Math.max(0.5,(g("sa_teto")||100)/100)),lim=Math.min(teto,Math.max(0.5,(g("sa_lim")||85)/100));
+  const sa={horizonte:Math.min(12,Math.max(3,Math.round(g("sa_hz")||6))),recupera:Math.min(12,Math.max(1,Math.round(g("sa_rc")||3))),teto,limite:lim,ded,ferias,novos,
+    rampa:[0,1,2,3].map(i=>Math.min(1,Math.max(0,(g("sa_rp"+i)||0)/100)))};
+  const p={...S.params,sop_analista:sa,atualizado_em:new Date().toISOString()};
+  try{await S.db.doc("cfg/params").set(p);toast("Premissas salvas");}catch(e){toast(e&&e.code==="invalid_argument"?"Você não tem permissão para alterar as premissas.":"Não foi possível salvar. Tente de novo.");}}
+async function exportSa(){const dl=await window.claude?.use?.("downloads");if(!dl){toast("Download indisponível nesta visualização.");return;}
+  const cen=S.sa.cen==="ativo"?"ativo":"total",modo=S.sa.modo==="hist"?"hist":"squad";const X=sopAnalista(cen,modo);
+  const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';const d=v=>v==null?"":String((+v).toFixed(1)).replace(".",",");
+  const head=["Fila","Forecast","Analista","Mês","Tickets no mês","Alocação fila (h)","Alocação entradas (h)","Alocação total (h)","Capacidade (h)","Saldo (h)","Ocupação (%)","Status"];
+  const L=[];for(const r of X.rows)X.meses.forEach((m,i)=>L.push([cen==="ativo"?"Em andamento":"Backlog Geral",modo==="hist"?"Histórico":"Igual",r.nome,m,d(r.nTk[i]),d(r.fila[i]),d(r.fc[i]),d(r.al[i]),r.sem?"":d(r.cap[i]),r.sem?"":d(r.saldo[i]),r.oc[i]==null?"":d(r.oc[i]*100),r.sem?"Redistribuir":(SA_ST[r.st[i]]||SA_ST.nd)[0]]));
+  const csv="﻿"+[head.join(";")].concat(L.map(r=>r.map(q).join(";"))).join("\r\n");
+  try{await dl.save({filename:"sop_por_analista_adv.csv",data:new Blob([csv],{type:"text/csv"})});}catch(e){toast("Download não concluído.");}}
+
+// ---------------- Plano de Ação (v1 simplificada: sem catálogo de automação específico) ----------------
+const PLANO_DEF={dias_inatividade:30,meta_sla:0.8,contratar_pessoas:null,contratar_mes:3};
+function plano(cenArg){
+  const C=S.C,P=S.params,Q={...PLANO_DEF,...(P.plano||{})};
+  const cen=cenArg||cenKey();const sp=C.sop[cen];const capFTE=sp.capFTE;
+  const deficitMes=sp.zerou==null?sp.extraFTE*capFTE:0;
+  const esperaRe=/aguardando cliente|validacao do cliente/;
+  const espera=C.BL.filter(t=>esperaRe.test(norm(t.st))&&t.parado>Q.dias_inatividade);
+  const esperaH=espera.reduce((s,t)=>s+Math.max(0,t.esf-t.horas),0);
+  const H=SAFETY_MESES;
+  const ganho=cen==="ativo"?0:esperaH/H;
+  const cobre=deficitMes?Math.min(1,ganho/deficitMes):null;
+  const resid=Math.max(0,deficitMes-ganho);const contratar=resid>0?Math.ceil(resid/capFTE*10)/10:0;
+  return {Q,cen,sp,deficitMes,espera,esperaH,ganho,cobre,resid,contratar,capFTE};
+}
+const PRAZO_MES={"2 semanas":0};
+function simFila(ganhos,pessoas,mesPessoas,capFTE,F,opts){
+  const C=S.C,SC=C.slaCfg,WPM=4.345,W=Math.round(18*WPM),t0=Date.now(),cap0=C.sop.total.capMedio;
+  let items=C.BL.filter(t=>t.ativo&&t.cat!=="interno"&&t.limite!=null).map(t=>({lim:t.limite,rem:Math.max(t.saldo,0.25),cat:t.cat}));
+  const acc={},mon=[];
+  for(let w=0;w<W;w++){const m=Math.floor(w/WPM),ws=t0+w*7*864e5;
+    for(const r of F.rows){acc[r.k]=(acc[r.k]||0)+r.fc/WPM;while(acc[r.k]>=1){acc[r.k]-=1;items.push({lim:ws+3.5*864e5+SC.dias[r.k]*864e5,rem:r.esf,cat:r.k});}}
+    const capM=cap0+ganhos.reduce((a,g)=>a+(m>=g.mes?g.h:0),0)+(m>=mesPessoas?pessoas*capFTE:0);
+    const cap=capM/WPM;let left=cap;items.sort((a,b)=>a.lim-b.lim);const mm=mon[m]=mon[m]||{ok:0,late:0,cap:capM};
+    for(const it of items){if(left<=1e-9)break;const tk=Math.min(it.rem,left);it.rem-=tk;left-=tk;if(it.rem<=1e-9){it.done=1;if(ws+((cap-left)/cap)*7*864e5<=it.lim)mm.ok++;else mm.late++;}}
+    for(let i=items.length-1;i>=0;i--)if(items[i].done)items.splice(i,1);
+    mm.used=(mm.used||0)+(cap-left);mm.capW=(mm.capW||0)+cap;
+    const fim=ws+7*864e5;mm.bl=items.length;mm.venc=items.filter(i=>i.lim<fim).length;}
+  const meses=mon.map((x,i)=>({i,m:new Date(t0+(i+0.5)*30.44*864e5).toISOString().slice(0,7),ent:x.ok+x.late,p:(x.ok+x.late)?x.ok/(x.ok+x.late):null,bl:x.bl,venc:x.venc,cap:x.cap,ocup:x.capW?x.used/x.capW:null}));
+  return meses;}
+function estabiliza(meses,meta){let k=null;for(let i=meses.length-1;i>=0;i--){if(meses[i].p!=null&&meses[i].p>=meta)k=i;else break;}
+  const z=meses.findIndex(x=>x.venc===0);return {mes:k,venc0:z<0?null:z};}
+function cardEstab(X){
+  const C=S.C,Q=X.Q,meta=+Q.meta_sla||0.8,F=forecast();
+  const ganhos=X.ganho>0?[{id:"fila",t:"Encerrar fila parada aguardando cliente",h:X.ganho,mes:0}]:[];
+  const hc=Q.contratar_pessoas!=null?+Q.contratar_pessoas:Math.max(1,Math.ceil(X.contratar||1));const hm=+Q.contratar_mes||3;
+  const cap0=C.sop.total.capMedio,entH=F.tot.h,team=C.team.size;
+  const CEN=[
+    {id:"base",t:"Sem mudanças",d:"capacidade atual",g:[],p:0},
+    {id:"fila",t:"Encerrando a fila parada",d:ganhos.length?`libera ~${nf(X.esperaH)} h de backlog estimado`:"nenhum ganho estimado neste cenário",g:ganhos,p:0},
+    {id:"acoes_hc",t:`Fila + ${hc} contratação(ões)`,d:`a ação acima e +${hc} × ${nf(X.capFTE)} h a partir do mês ${hm+1}`,g:ganhos,p:hc},
+    {id:"hc",t:`Só ${hc} contratação(ões)`,d:`+${hc} × ${nf(X.capFTE)} h a partir do mês ${hm+1}, sem a ação acima`,g:[],p:hc}];
+  for(const c of CEN){c.meses=simFila(c.g,c.p,hm,X.capFTE,F);c.e=estabiliza(c.meses,meta);c.capF=c.meses[c.meses.length-1].cap;}
+  for(let p=0;p<=6;p++){if(p===hc)continue;const ms=simFila(ganhos,p,hm,X.capFTE,F),e=estabiliza(ms,meta);if(e.mes!=null&&e.mes<=5){
+    if(p<hc)CEN.splice(2,0,{id:"min",t:p?`Fila + ${p} contratação(ões) · mínimo para até 6 meses`:"Só a fila já estabiliza em até 6 meses",d:"",g:ganhos,p,meses:ms,e,capF:ms[ms.length-1].cap});break;}}
+  const MM=CEN[0].meses.map(x=>x.m);const lbl=i=>i==null?"não estabiliza em 18 meses":`${mlab(MM[i])} (mês ${i+1})`;
+  const best=CEN.filter(c=>c.e.mes!=null).sort((a,b)=>a.e.mes-b.e.mes)[0];
+  const pc=p=>p==null?"–":`<span class="chip ${p>=meta?"ok":p>=meta/2?"warn":"bad"}" style="min-width:40px;justify-content:center">${Math.round(p*100)}%</span>`;
+  return `<div class="card"><h2>Quando a operação estabiliza (≥ ${pct(meta)} das entregas no prazo)</h2>
+   <p class="hint">Simulação semana a semana da fila ativa (${nf(C.BL.filter(t=>t.ativo&&t.cat!=="interno").length)} tickets, ${nf(C.BL.filter(t=>t.ativo&&t.cat!=="interno").reduce((a,t)=>a+t.saldo,0))} h de saldo) com as entradas do forecast (${nf(F.tot.fc)} tickets e ${nf(entH)} h por mês) e a capacidade de cada cenário (hoje ${nf(cap0)} h/mês, ${team} pessoas).</p>
+   <div class="verdict ${best?(best.id==="base"?"good":"warn"):"bad"}" style="margin:0"><span class="big">${best?`O caminho mais rápido é "${esc(best.t.toLowerCase())}": ${pct(meta)} ou mais das entregas no prazo a partir de ${lbl(best.e.mes)}.`:`Nenhum cenário chega a ${pct(meta)} das entregas no prazo em 18 meses. Aumente a contratação nas premissas abaixo.`}</span></div>
+   <div class="tblw"><table><thead><tr><th>Cenário</th><th class="n">Capacidade final</th><th>Estabiliza (≥ ${pct(meta)} no prazo)</th><th>Vencidos zerados</th><th class="n">Fila ativa em 6 meses</th><th class="n">Fila ativa em 12 meses</th></tr></thead><tbody>
+    ${CEN.map(c=>`<tr><td style="min-width:240px"><b style="font-weight:500">${esc(c.t)}</b><div style="color:var(--muted-foreground);font-size:12px;line-height:16px">${esc(c.d)}</div></td><td class="n">${nf(c.capF)} h/mês${c.capF<entH?`<div style="color:var(--destructive);font-size:12px">abaixo das entradas (${nf(entH)} h)</div>`:""}</td><td><span class="chip ${c.e.mes==null?"bad":c.e.mes<=6?"ok":"warn"}">${esc(lbl(c.e.mes))}</span></td><td>${c.e.venc0==null?"–":esc(mlab(MM[c.e.venc0]))}</td><td class="n">${nf(c.meses[5].bl)}</td><td class="n">${nf(c.meses[11].bl)}</td></tr>`).join("")}
+   </tbody></table></div>
+   <ul class="rules">
+    <li><b>Por que o índice sobe de repente</b>: enquanto houver vencidos na fila, eles são entregues primeiro, e toda entrega de um vencido conta como fora do prazo. A estabilização é, na prática, o mês em que o time zera os vencidos com folga para as entradas.</li>
+    <li><b>Premissas</b>: forecast e esforço padrão constantes; só a fila ativa; a contratação entra no mês ${hm+1} com capacidade cheia (${nf(X.capFTE)} h/mês por pessoa). Pessoas, mês de entrada e meta são editáveis nas premissas.</li>
+   </ul></div>`;}
+function resumoAndamento(){
+  const C=S.C,XA=plano("ativo"),Q=XA.Q,meta=+Q.meta_sla||0.8,F=forecast();
+  const BL=C.BL.filter(t=>t.cat!=="interno"),AT=BL.filter(t=>t.ativo),fora=BL.filter(t=>!t.ativo);
+  const porSt=Object.entries(fora.reduce((o,t)=>(o[t.st]=(o[t.st]||0)+1,o),{})).sort((a,b)=>b[1]-a[1]);
+  const hG=BL.reduce((a,t)=>a+t.saldo,0),hA=AT.reduce((a,t)=>a+t.saldo,0);
+  const rS=slaResumo(AT);
+  const ganhos=XA.ganho>0?[{h:XA.ganho,mes:0}]:[];
+  const hm=+Q.contratar_mes||3;
+  const eBase=estabiliza(simFila([],0,99,XA.capFTE,F),meta),eAc=estabiliza(simFila(ganhos,0,99,XA.capFTE,F),meta);
+  let min=null;for(let p=1;p<=6;p++){const e=estabiliza(simFila(ganhos,p,hm,XA.capFTE,F),meta);if(e.mes!=null&&e.mes<=5){min={p,e};break;}}
+  const MM=simFila([],0,99,XA.capFTE,F).map(x=>x.m),lbl=e=>e.mes==null?"não estabiliza em 18 meses":`${mlab(MM[e.mes])} (mês ${e.mes+1})`;
+  return `<div class="card" style="border-color:var(--primary)">
+   <h2>Resumo · backlog em andamento com o time</h2>
+   <p class="hint">Só os tickets que o time consegue tocar agora: sem ${porSt.map(([st,n])=>`${esc(st)} (${nf(n)})`).join(", ")}.</p>
+   <div class="kpis" style="margin:0">
+    ${kpi("Em andamento com o time",nf(AT.length)+" tickets",`${pct(AT.length/Math.max(1,BL.length))} do Backlog Geral (${nf(BL.length)}) · ${nf(hA)} h de saldo (geral ${nf(hG)} h)`)}
+    ${kpi("Déficit de capacidade",XA.deficitMes>0?nf(XA.deficitMes)+" h/mês":"sem déficit",XA.deficitMes>0?"faltam horas por mês":"capacidade cobre a demanda",XA.deficitMes>0?"bad":"good")}
+    ${kpi("Com a fila parada encerrada",XA.deficitMes>0?(XA.contratar>0?`faltam ~${nf(XA.contratar,1)} pessoa(s)`:"sem contratar"):"sem contratar",XA.deficitMes>0?`cobre ${pct(XA.cobre||0)} do déficit`:"",XA.contratar>0?"bad":"good")}
+    ${kpi("SLA vencido",nf(rS.vencido)+" tickets",`${pct(rS.pVenc)} do que está em andamento · atraso mediano ${nf(rS.atrasoMed)} d`,rS.vencido?"bad":"good")}
+   </div>
+   <div class="tblw"><table><thead><tr><th>Quando estabiliza (≥ ${pct(meta)} das entregas no prazo)</th><th>Resultado</th></tr></thead><tbody>
+    <tr><td>Sem mudanças</td><td><span class="chip ${eBase.mes==null?"bad":"ok"}">${esc(lbl(eBase))}</span></td></tr>
+    <tr><td>Só encerrar a fila parada</td><td><span class="chip ${eAc.mes==null?"bad":eAc.mes<=6?"ok":"warn"}">${esc(lbl(eAc))}</span></td></tr>
+    <tr><td>Menor contratação que estabiliza em até 6 meses</td><td>${min?`<span class="chip ok">${min.p} pessoa(s) · ${esc(lbl(min.e))}</span>`:`<span class="chip bad">nenhuma até 6 pessoas</span>`}</td></tr>
+   </tbody></table></div>
+  </div>`;}
+function vAcao(){
+  const C=S.C,X=plano("total"),P=S.params;if(!S.H)return `<section class="view"><p class="note">O Plano de Ação precisa da base de horas. Carregue-a em Configuração.</p></section>`;
+  const reab=C.T.filter(t=>t.reaberto_em).length;const fr1=median(C.T.filter(t=>t.novo_no_ano&&t.primeira_resposta_h!==""&&t.primeira_resposta_h!=null).map(t=>+t.primeira_resposta_h));
+  const ambig=C.T.filter(t=>t.regra==="Padrão").length;
+  return `<section class="view">
+   ${resumoAndamento()}
+   <h2 style="font-size:18px;line-height:24px;font-weight:600;margin:8px 0 0">Backlog Geral <span class="chip" style="vertical-align:middle">${nf(C.BL.filter(t=>t.cat!=="interno").length)} tickets · todos os status em aberto</span></h2>
+   <div class="verdict ${X.deficitMes>0?(X.contratar>0?"bad":"warn"):"good"}">
+    <span style="font-size:12px;font-weight:500">Backlog Geral · capacidade × demanda</span>
+    <span class="big">${X.deficitMes<=0?`A capacidade já cobre a demanda no cenário ${CEN[X.cen]}; o foco é ganhar folga e reduzir a fila parada.`:
+      X.contratar>0?`Encerrar a fila parada cobre ${pct(X.cobre||0)} do déficit de ${nf(X.deficitMes)} h/mês; o restante pede ~${nf(X.contratar,1)} pessoa(s).`:
+      `Encerrar a fila parada cobre o déficit de ${nf(X.deficitMes)} h/mês sem contratar.`}</span>
+    <span style="font-size:13px">Backlog Geral (${nf(C.BL.filter(t=>t.cat!=="interno").length)} tickets, inclusive suspensos e aguardando o cliente) · capacidade de ${nf(X.capFTE)} h/mês por pessoa. Premissas editáveis no fim desta aba.</span></div>
+   ${cardEstab(X)}
+   <div class="card"><h2>Outras análises</h2>
+    <div class="find"><span class="chip warn">Fila</span><div><b>${nf(X.espera.length)} tickets aguardam o cliente há mais de ${X.Q.dias_inatividade} dias</b><p>Não consomem horas hoje, mas ocupam a fila e distorcem a idade do backlog e o S&amp;OP. Encerramento por inatividade com reabertura automática resolve sem custo.</p></div></div>
+    <div class="find"><span class="chip info">Resposta</span><div><b>1ª resposta mediana de ${nf(fr1)} h nos tickets do ano</b><p>Uma triagem com resposta automática e checklist de pré-requisitos por categoria reduz idas e vindas com o cliente.</p></div></div>
+    <div class="find"><span class="chip info">Retrabalho</span><div><b>${nf(reab)} tickets foram reabertos</b><p>Checklist de encerramento e validação com o cliente antes de fechar reduzem retorno à fila.</p></div></div>
+    <div class="find"><span class="chip y">Classificação</span><div><b>${nf(ambig)} tickets com classificação ambígua (regra "Padrão")</b><p>Sem Subtipo nem Tags que indiquem a categoria. Tornar o Subtipo e as tags "sistema mapeado/não mapeado" e "com/sem anexos" obrigatórios na abertura melhora o S&amp;OP.</p></div></div>
+   </div>
+   <div class="card"><h2>Premissas das ações</h2><p class="hint">Ajuste para simular cenários${S.canEdit?"":" (somente leitura)"}</p>
+    <div class="filters">
+     <label class="f" for="a_hc">Pessoas a contratar (simulação)<input type="number" id="a_hc" min="0" max="10" step="1" value="${X.Q.contratar_pessoas!=null?X.Q.contratar_pessoas:Math.max(1,Math.ceil(X.contratar||1))}" ${S.canEdit?"":"disabled"}></label>
+     <label class="f" for="a_hm">Contratação entra no mês<input type="number" id="a_hm" min="1" max="12" step="1" value="${(+X.Q.contratar_mes||3)+1}" ${S.canEdit?"":"disabled"}></label>
+     <label class="f" for="a_mt">Meta de entregas no prazo (%)<input type="number" id="a_mt" min="50" max="100" step="5" value="${Math.round((+X.Q.meta_sla||0.8)*100)}" ${S.canEdit?"":"disabled"}></label>
+     <label class="f" for="a_di">Dias aguardando cliente para encerrar<input type="number" id="a_di" min="7" max="180" step="1" value="${X.Q.dias_inatividade}" ${S.canEdit?"":"disabled"}></label>
+     ${S.canEdit?`<button class="btn pri" id="a_save">Salvar premissas</button>`:""}
+    </div></div>
+  </section>`;
+}
+async function saveAcao(){if(!S.db)return;const g=id=>+document.getElementById(id).value;
+  const p={...S.params,plano:{dias_inatividade:g("a_di"),contratar_pessoas:Math.max(0,g("a_hc")),contratar_mes:Math.max(0,g("a_hm")-1),meta_sla:Math.min(1,Math.max(0.5,g("a_mt")/100))},atualizado_em:new Date().toISOString()};
+  try{await S.db.doc("cfg/params").set(p);toast("Premissas salvas");}catch(e){toast("Não foi possível salvar.");}}
+
+function vCfg(){
+  const P=S.params,ro=!S.canEdit,dis=ro?"disabled":"";const b=S.bases||{};
+  const pessoas=[...new Set([...(S.T||[]).map(t=>t.agente).filter(Boolean),...((S.H&&S.H["Analistas"])||[]).map(a=>a.name).filter(Boolean)])].filter(n=>!/Agente Padr/.test(n)).sort();
+  const st=(k,lab)=>{const x=b[k];return x?`<span class="chip ok">${lab}: ${esc((x.gerado_em||"").replace("T"," ").slice(0,16))} · ${nf(x.linhas)} linhas</span>`:`<span class="chip warn">${lab}: não carregada</span>`;};
+  return `<section class="view">
+   ${ro?`<p class="note">Somente leitura. Parâmetros, time e cargas são mantidos por quem pode editar o painel.</p>`:""}
+   <div class="grid g2">
+    <div class="card"><h2>Parâmetros do S&amp;OP</h2>
+     <div class="filters">
+      <label class="f" for="p_fp">Tempo produtivo (%)<input type="number" id="p_fp" step="5" min="10" max="100" value="${Math.round(P.fator_produtivo*100)}" ${dis}></label>
+      <label class="f" for="p_hp">Horas/mês sem capacidade no Painel<input type="number" id="p_hp" step="1" min="40" max="220" value="${P.horas_mes_padrao}" ${dis}></label>
+      <label class="f" for="p_cen">Cenário do diagnóstico<select id="p_cen" ${dis}><option value="total" ${cenKey()==="total"?"selected":""}>Backlog total</option><option value="ativo" ${cenKey()==="ativo"?"selected":""}>Backlog ativo</option></select></label>
+     </div>
+     <h2 style="margin-top:8px">Esforço padrão por categoria (h)</h2><p class="hint">Migração tem dois valores: sem anexo e com anexo (tag do Freshdesk decide qual usar em cada ticket)</p>
+     <div class="filters">${CATS.map((c,i)=>{const e=esforcoPadrao(c.k);return c.esf!=null?`<label class="f" for="pe_${i}">${esc(c.lab)}<input type="number" id="pe_${i}" data-k="${c.k}" step="0.5" min="0" value="${e.sem}" ${dis}></label>`:
+       `<label class="f" for="pe_${i}s">${esc(c.lab)} · sem anexo<input type="number" id="pe_${i}s" data-k="${c.k}" data-sub="sem" step="0.5" min="0" value="${e.sem}" ${dis}></label><label class="f" for="pe_${i}c">${esc(c.lab)} · com anexo<input type="number" id="pe_${i}c" data-k="${c.k}" data-sub="com" step="0.5" min="0" value="${e.com}" ${dis}></label>`;}).join("")}</div>
+     <h2 style="margin-top:8px">SLA por categoria (dias corridos)</h2>
+     <div class="filters">${CAT_KEYS.map((k,i)=>`<label class="f" for="sl_${i}">${esc(CAT_LAB[k])}<input type="number" id="sl_${i}" data-k="${k}" step="1" min="1" max="180" value="${slaCfg().dias[k]}" ${dis}></label>`).join("")}
+      <label class="f" for="sl_px">"Próximo" nos últimos (%)<input type="number" id="sl_px" step="5" min="5" max="75" value="${Math.round(slaCfg().proximo*100)}" ${dis}></label></div>
+     <h2 style="margin-top:8px">Time</h2><p class="hint">Time único: quem entra na capacidade e na fila atende todas as categorias. Quem sai do time tem os tickets contados como "Sem responsável ativo".</p>
+     <div style="display:flex;flex-wrap:wrap;gap:8px 16px">${pessoas.map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" id="tm_${i}" data-n="${esc(n)}" ${(P.time||[]).includes(n)?"checked":""} ${dis}>${esc(short(n))}</label>`).join("")}</div>
+     ${ro?"":`<div><button class="btn pri" id="p_save">Salvar parâmetros</button></div>`}
+    </div>
+    <div class="card"><h2>Bases de dados</h2><div class="chips">${st("tickets","Tickets")} ${st("horas","Horas")}</div>
+     <p class="hint" style="margin:0">As bases são geradas no computador do Diego (extração agendada seg-sex às 20h) e carregadas aqui. Arquivos: <span class="mono">base_servicos_adv.json</span> e <span class="mono">horas_apontadas_&lt;ano&gt;_painel.json</span> (mesma base do time Técnico — o painel filtra pelos 4 analistas do time).</p>
+     ${S.assets?`<label class="f" for="up_file">Carregar arquivo de base (JSON)<input type="file" id="up_file" accept=".json,application/json"></label>`:`<p class="note">A carga de arquivos está disponível só para quem pode editar o painel.</p>`}
+     <h2 style="margin-top:8px">Regras de classificação</h2><ul class="rules">
+      <li><b>Migração</b> (Sistemas Mapeados / Não Mapeados) quando o Subtipo diz isso; "com/sem anexos" vem das tags.</li>
+      <li><b>Ações em Lote / Scripts</b>, <b>Importação de Dados</b>, <b>Importação de Documentos</b> pelo Subtipo.</li>
+      <li><b>Viabilidade/Orçamento</b> quando não há Subtipo e o Tipo fala de orçamento ou dúvidas (inclui as antigas "Dúvidas").</li>
+      <li>"Ajustes de inconsistências" e "Migração" genérica (sem mapeado/não mapeado no Subtipo) usam as Tags e, por último, o Assunto; sem nenhuma pista, viram Migração · Não Mapeados e ficam marcados como "Padrão" (ambíguo) no Backlog.</li>
+      <li>Saídas = tickets resolvidos ou fechados no mês. Backlog = status diferente de Resolved e Closed. Atividades Internas ficam fora do SLA e da demanda.</li></ul>
+    </div>
+   </div></section>`;
+}
+
+// ---------------- render / eventos ----------------
+function drawTabs(){$("#tabs").innerHTML=TABS.map(([v,l])=>`<button role="tab" data-v="${v}" aria-selected="${S.view===v}">${esc(l)}</button>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{S.view=b.dataset.v;try{localStorage.setItem("sa_view",S.view);}catch(e){}render();});}
+function drawFresh(){const b=S.bases||{},el=$("#fresh");if(!b.tickets&&!b.horas){el.innerHTML=`<span class="chip warn">Bases não carregadas</span>`;return;}
+  const age=x=>x&&x.gerado_em?Math.floor((Date.now()-new Date(x.gerado_em))/36e5):null;
+  const c=(x,l)=>{if(!x)return `<span class="chip warn">${l}: sem carga</span>`;const h=age(x);return `<span class="chip ${h>30?"warn":"ok"}">${l}: ${esc((x.gerado_em||"").slice(8,10)+"/"+(x.gerado_em||"").slice(5,7)+" "+(x.gerado_em||"").slice(11,16))} UTC</span>`;};
+  el.innerHTML=c(b.tickets,"Tickets")+c(b.horas,"Horas")+(S.C?`<span class="chip">Time: ${[...S.C.team].map(short).join(", ")}</span>`:"");}
+function drawUpd(){const el=$("#upd");if(!el)return;el.innerHTML=`<span class="chip">Carga manual em Configuração</span>`;}
+function render(){drawTabs();drawFresh();drawUpd();const m=$("#main");
+  if(S.loadErr){m.innerHTML=`<section class="view"><p class="note">${esc(S.loadErr)}</p></section>`+(S.view==="cfg"?vCfg():"");bind();return;}
+  if(!S.db&&S.ready){m.innerHTML=`<section class="view"><p class="note">Este painel lê as bases do banco do artefato. Abra-o no Claude, com sua conta da organização.</p></section>`;return;}
+  if(!S.C){m.innerHTML=S.ready?`<section class="view"><p class="note">Nenhuma base carregada ainda. Em Configuração, carregue <span class="mono">base_servicos_adv.json</span> e <span class="mono">horas_apontadas_&lt;ano&gt;_painel.json</span>.</p></section>`+(S.view==="cfg"?vCfg():""):`<section class="view"><p class="note">Carregando dados…</p></section>`;bind();return;}
+  m.innerHTML=({geral:vGeral,diag:vDiag,sla:vSla,backlog:vBacklog,time:vTime,horas:vHoras,sop:vSop,sopa:vSopa,acao:vAcao,cfg:vCfg}[S.view]||vGeral)();bind();}
+function bind(){
+  const on=(id,ev,fn)=>{const e=document.getElementById(id);if(e)e[ev]=fn;};
+  ["cat","sla","dono","status"].forEach(k=>on("f_"+k,"onchange",e=>{S.blFilter[k]=e.target.value;S.blFilter.limite=200;render();}));
+  on("f_q","oninput",e=>{clearTimeout(bind._q);const v=e.target.value;bind._q=setTimeout(()=>{S.blFilter.q=v;render();const n=$("#f_q");if(n){n.focus();n.setSelectionRange(v.length,v.length);}},300);});
+  on("f_more","onclick",()=>{S.blFilter.limite+=300;render();});
+  on("f_csv","onclick",exportCsv);
+  on("p_save","onclick",saveParams);
+  on("a_save","onclick",saveAcao);
+  on("sa_save","onclick",saveSa);
+  on("sa_csv","onclick",exportSa);
+  document.querySelectorAll("[data-sa-k]").forEach(b=>b.onclick=()=>{S.sa[b.dataset.saK]=b.dataset.saV;try{localStorage.setItem("sa_sa",JSON.stringify(S.sa));}catch(e){}render();});
+  on("up_file","onchange",e=>upload(e.target.files[0]));
+}
+async function exportCsv(){const dl=await window.claude?.use?.("downloads");if(!dl){toast("Download indisponível nesta visualização.");return;}
+  const L=blFiltered();const head=["Ticket","Assunto","Categoria","Regra","Status","Responsável","Subtipo","Anexo","Situação do SLA","Data limite","Dias de atraso","Idade (dias)","Parado (dias)","Horas apontadas","Saldo (h)"];
+  const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  const csv="﻿"+[head.join(";")].concat(L.map(t=>[t.id,t.assunto,CAT_LAB[t.cat],t.regra,t.st,t.dono,t.subtipo,t.anexo==null?"":(t.anexo?"Com anexo":"Sem anexo"),SLA_LAB[t.sla]||"",t.limite?new Date(t.limite).toISOString().slice(0,10):"",Math.round(t.atraso),t.idade,t.parado,String(t.horas.toFixed(2)).replace(".",","),String(t.saldo.toFixed(2)).replace(".",",")].map(q).join(";"))).join("\r\n");
+  try{await dl.save({filename:"backlog_servicos_adv.csv",data:new Blob([csv],{type:"text/csv"})});}catch(e){toast("Download não concluído.");}}
+async function saveParams(){if(!S.db)return;const g=id=>+document.getElementById(id).value;
+  const time=[...document.querySelectorAll("input[id^=tm_]")].filter(i=>i.checked).map(i=>i.dataset.n);
+  const esforco={};document.querySelectorAll("input[data-k][data-sub]").forEach(e=>{esforco[e.dataset.k]=esforco[e.dataset.k]||{};esforco[e.dataset.k][e.dataset.sub]=+e.value||0;});
+  document.querySelectorAll("input[id^=pe_]:not([data-sub])").forEach(e=>{if(e.dataset.k)esforco[e.dataset.k]={sem:+e.value||0,com:+e.value||0};});
+  const p={...S.params,esforco:{...S.params.esforco,...esforco},fator_produtivo:g("p_fp")/100,horas_mes_padrao:g("p_hp"),cenario:document.getElementById("p_cen").value,time,atualizado_em:new Date().toISOString()};
+  const dias={};document.querySelectorAll("input[id^=sl_]").forEach(e=>{if(e.dataset.k)dias[e.dataset.k]=Math.max(1,+e.value||SLA_DIAS_DEF[e.dataset.k]);});
+  const px=document.getElementById("sl_px");p.sla={dias,proximo:px?Math.min(0.75,Math.max(0.05,(+px.value||25)/100)):0.25};
+  if(!time.length){toast("Selecione ao menos uma pessoa no time.");return;}
+  try{await S.db.doc("cfg/params").set(p);toast("Parâmetros salvos");}catch(e){toast(e&&e.code==="invalid_argument"?"Você não tem permissão para alterar os parâmetros.":"Não foi possível salvar. Tente de novo.");}}
+async function upload(file){if(!file||!S.assets||!S.db)return;
+  let j;try{j=JSON.parse(await file.text());}catch(e){toast("O arquivo não é um JSON válido.");return;}
+  const kind=j.tabelas&&j.tabelas["Apontamentos"]?"horas":(j.colunas&&j.linhas?"tickets":null);
+  if(!kind){toast("Arquivo não reconhecido. Use base_servicos_adv.json ou horas_apontadas_<ano>_painel.json.");return;}
+  toast("Enviando "+(kind==="horas"?"base de horas":"base de tickets")+"…");
+  try{const r=await S.assets.upload(file,{type:"application/json"});const old=(S.bases||{})[kind];
+    const meta=j.meta||{};const linhas=kind==="horas"?(j.tabelas["Apontamentos"].linhas||[]).length:j.linhas.length;
+    const doc={...(S.bases||{}),[kind]:{asset:r.id,gerado_em:meta.gerado_em||"",linhas,enviado_em:new Date().toISOString(),arquivo:file.name}};
+    await S.db.doc("cfg/bases").set(doc);
+    if(old&&old.asset&&old.asset!==r.id){try{await S.assets.delete(old.asset);}catch(e){}}
+    toast("Base carregada");}
+  catch(e){toast({too_large:"Arquivo acima de 20 MB.",rate_limited:"Muitas tentativas; aguarde um pouco.",not_granted:"Sem permissão para carregar arquivos."}[e&&e.code]||"Não foi possível carregar o arquivo.");}}
+
+// ---------------- boot ----------------
+try{const a=JSON.parse(localStorage.getItem("sa_sa")||"null");if(a&&typeof a==="object")S.sa={cen:a.cen==="ativo"?"ativo":"total",modo:a.modo==="hist"?"hist":"squad",atual:a.atual==="real"?"real":"prev"};}catch(e){}
+try{const v=localStorage.getItem("sa_view");if(v&&TABS.some(t=>t[0]===v))S.view=v;}catch(e){}
+if(/^#[a-z]+$/.test(location.hash)&&TABS.some(t=>"#"+t[0]===location.hash))S.view=location.hash.slice(1);
+render();
+(async function boot(){const c=window.claude;
+  const [db,user]=await Promise.all([c?.use?.("db")??null,c?.use?.("user")??null]);
+  S.db=db;S.user=user;S.ready=true;
+  if(user){try{S.canEdit=await user.canEdit();}catch(e){}}
+  if(S.canEdit){c?.use?.("assets").then(a=>{S.assets=a;if(S.view==="cfg")render();}).catch(()=>{});}
+  if(!db){render();return;}
+  db.doc("cfg/params").onSnapshot(s=>{S.params=s.exists?{...JSON.parse(JSON.stringify(DEFAULT_PARAMS)),...s.data()}:JSON.parse(JSON.stringify(DEFAULT_PARAMS));if(S.T){compute();}render();},()=>{});
+  db.doc("cfg/bases").onSnapshot(s=>{S.bases=s.exists?s.data():null;loadBases();},()=>{S.loadErr="Não foi possível ler o banco do painel.";render();});
+})();
+})();
+</script>

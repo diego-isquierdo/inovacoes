@@ -36,3 +36,10 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ---- Integrações (dado de cliente e arquivos gerados) ----
+**/base_integracoes*.json
+**/horas_integracoes*.json
+**/snapshots/
+**/automacao/manifesto_integracoes.json
+**/painel/painel_teste.html

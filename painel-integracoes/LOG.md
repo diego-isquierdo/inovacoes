@@ -8,6 +8,14 @@ Respostas: projetos em especificação ficam só em Projetos; tipos Erro/Falha =
 
 Script ajustado (família Bug, `tipo_fila` vazio para Projeto, `CAMPO_HORAS_CONTRATADAS`). Tarefa do Windows "Painel Integrações - Atualizar tickets" criada (seg-sex 21:00, incremental). Primeira execução completa iniciada em segundo plano; resultado será registrado aqui.
 
+## 08/10/2026 (4) — Automação das cargas e versionamento
+
+**Automação (decisão: automatizar).** `automacao/atualizar_tickets.ps1` agora faz, seg-sex 21:00 (tarefa do Windows "Painel Integrações - Atualizar tickets"): tickets incremental → horas globais do Painel de Serviços → base de horas só da área Integração (`ferramentas/preparar_base_horas_integracoes.py`) → manifesto com sha256 (`ferramentas/gerar_manifesto_integracoes.py`). Testada ponta a ponta em 08/10 (tickets 13 s, horas 74 s, manifesto ok). Depois, a tarefa agendada do Claude "Integrações · carregar bases no painel" (seg-sex ~21:30) compara o sha256 com `cfg/bases` do painel, envia só o que mudou e apaga os assets antigos. Requer o app Claude aberto no computador; se estiver fechado, roda na próxima abertura. Recomendado clicar em "Run now" uma vez para pré-aprovar as ferramentas.
+
+**Versionamento.** Commit `68d4694` e push em `diego-isquierdo/inovacoes`, pasta `painel-integracoes/` (sem bases, logs ou dados de cliente; nome de cliente anonimizado). Os arquivos de ADV com diferença de fim de linha no clone não foram tocados.
+
+**Decisão do Diego:** seguir com os 23 projetos atrasados como estão; validar as datas limite depois.
+
 ## 08/10/2026 (3) — Fases 3 e 4: modelo analítico e painel publicado
 
 Regra de cancelamento por tag aplicada no script (`cancelado` em qualquer status; verificação por tag: 44 = 44). Efeito: backlog geral 166, ativo 130, suspenso 36, concluído no ano 42, resolvido 104, cancelado 44 (classificados por família).

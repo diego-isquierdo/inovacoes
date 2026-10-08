@@ -75,11 +75,11 @@ Abas: **Visão geral** · **Projetos** (principal) · **Diagnóstico** · **SLA/
 
 Só entra a demanda **do time**: projetos e suporte (e consultoria, se o Diego confirmar). A fila de orçamento é contexto, não carga. Projetos entram pelo cronograma (Data Início/Fim + estimativa), suporte por forecast histórico. Capacidade sem o Ewerton. Parâmetros (teto, parada, forecast) a decidir ❓ (LOG_SOP §10).
 
-## Fase 6 — Automação (botão "Atualizar") ⏳
+## Fase 6 — Automação ✅ (sem botão "Atualizar"; tarefa das 21h + carga por tarefa agendada do Claude, 08/10/2026)
 
 Reaproveitar Mensageiro + vigia vs. trilha própria — mesma decisão pendente do ADV.
 
-## Fase 7 — Versionamento ⏳
+## Fase 7 — Versionamento ✅ (primeiro envio em 08/10/2026, commit 68d4694)
 
 Repositório `diego-isquierdo/inovacoes`, pasta `painel-integracoes/`. **Commit e push pelo Claude somente quando o Diego mandar.** Antes do primeiro push: garantir `.gitignore` para `output/` e `cache/` (dado de cliente) e conferir que nenhum `.env`/chave entre no commit.
 
